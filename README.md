@@ -8,20 +8,16 @@ data collection and analysis workflow. It provides a secure environment
 for your data during an on-going data collection or analysis. Other project
 members can only access your data after a data access request.
 
-Main features of the BEFdata platform are:
+## Main features
 
-* Users can add data using the spreadsheet software (e.g. Excel)
+A brief list of the most important features:
 
-* The software can export the metadata into as international standard (EML)
-
-* Provide online access and manage within collaboration naming conventions as
-  part of the primary data.
-
+* Users can add data using a spreadsheet software (e.g. Excel)
+* Online access to data of working groups for better collaboration
+* Provides tools to curate naming conventions in primary data.
+* The software can export metadata as Ecological Metadata Standard
 * Keep record of ideas for analysis and data exchange (Proposals)
-
-BEFdata is developed within the Chinese-European DFG Research Unit “BEF China”
-(FOR 891), a new forest Biodiversity and Ecosystem Functioning (BEF) experiment
-in subtropical forests in China.
+* Access to data with the rBEFdata R package for (analysis, documentation)
 
 ## Getting Started
 
@@ -39,6 +35,10 @@ Install the following tools on your server system.
 2. Download the source code
 
 * You can e.g. the `git clone` command
+
+At the moment you find the last stable version on branch 1.6. After you cloned
+the project you should thus checkout that branch. `git checkout v1.6`.
+
 * Configure the software
 
 You can use the template configuration files in the project configuration
@@ -60,8 +60,8 @@ production mode.
 
 3. Set up the database-connection
 
-   In config/database.yml set the username and password for the "development"
-   and "test" and "production" databases.
+In config/database.yml set the username and password for the "development" and
+"test" and "production" databases.
 
 4. Configure ImageMagick
 
@@ -71,7 +71,7 @@ which convert
 
 # Check if the path in config/environments/development.rb
 # (or production.rb etc.) is corresponding to the one of convert
-Paperclip.options[:command_path] = "/usr/bin/"
+Paperclip.options[:command_path] = "/usr/bin/convert"
 ```
 
 5. Setup the database
