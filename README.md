@@ -96,10 +96,10 @@ befdata instance. You can login with the username "Admin" and the password
 
 Befdata is released under the MIT License (MIT):
 
-Copyright (c) 2012 Department of Special Botany, University of Leipzig,
+Copyright (c) 2019 Department of Special Botany, University of Leipzig,
 represented by Christian Wirth, The BEF-China Research Unit of the German
 Research Foundation (DFG), represented by Helge Bruelheide, as well as Karin
-Nadrowski and Sophia Ratcliffe
+Nadrowski, Sophia Ratcliffe, Claas-Thido Pfaff
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
