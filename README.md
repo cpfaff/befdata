@@ -65,18 +65,24 @@ production mode.
 
 4. Configure ImageMagick
 
-   Check ImageMagick path by running
-    which convert
-   Check if the path in config/environments/development.rb (or production.rb etc.) is corresponding to the one of convert
-    Paperclip.options[:command_path] = "/usr/bin/"
+```
+# Check ImageMagick path by running (working on linux only)
+which convert
+
+# Check if the path in config/environments/development.rb
+# (or production.rb etc.) is corresponding to the one of convert
+Paperclip.options[:command_path] = "/usr/bin/"
+```
 
 5. Setup the database
 
-    bundle exec rake db:setup
+```
+# setup the database
+bundle exec rake db:setup
 
-    # seed the database
-
-    bundle exec rake db:seed
+# fill the database with default values
+bundle exec rake db:seed
+```
 
 6. Fire up development server
 
