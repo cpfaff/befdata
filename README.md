@@ -28,7 +28,7 @@ below.
 
 Install the following tools on your server system.
 
-* Ruby 1.9.3
+* Ruby 1.9.3 (You can use a ruby version manager e.g. rvm)
 * PostgreSql Database with plpgsql language (version <= 9.6)
 * ImageMagick
 
