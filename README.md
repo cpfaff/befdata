@@ -23,10 +23,10 @@ A brief list of the most important features:
 
 ## Getting Started
 
-BEF-Data is developed under [MIT](LICENSE.md). You can set up the software for
-your own projects. To set up a local instance on your computer follow the steps
-below. In the wiki you will find instructions about how to setup a dedicated
-linux server instsance.
+BEF-Data is developed under an [MIT](LICENSE.md) license. You can set up the
+software for your own projects. To set up a local instance on your computer
+follow the steps below. In the wiki you will find instructions about how to
+setup a dedicated linux server instsance.
 
 1. Prerequisites
 
