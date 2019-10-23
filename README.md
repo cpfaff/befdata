@@ -8,6 +8,8 @@ data collection and analysis workflow. It provides a secure environment
 for your data during an on-going data collection or analysis. Other project
 members can only access your data after a data access request.
 
+[![Build Status](https://travis-ci.org/cpfaff/befdata.svg?branch=v1.6.1)](https://travis-ci.org/cpfaff/befdata)
+
 ## Main features
 
 A brief list of the most important features:
