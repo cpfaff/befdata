@@ -41,8 +41,8 @@ Install the following tools on your system.
 * You can e.g. use the `git clone` command or the
   [download](https://github.com/cpfaff/befdata/archive/master.zip) button.
 
-At the moment you find the last stable version on branch 1.6. After you cloned
-the project you should thus checkout that branch. `git checkout v1.6`.
+At the moment you find the last stable version on branch v1.6.1 After you cloned
+the project you should thus checkout that branch. `git checkout v1.6.1`.
 
 * Configure the software
 
@@ -56,12 +56,8 @@ database.yml.dist -> database.yml
 application.yml.dist -> appication.yml
 ```
 
-The application.yml contains environment variables which are used to configure
-the application secret token. This token is used to verify the integrity of
-signed cookies. Make sure the secret is at least 30 characters and all random,
-no regular words or you'll be exposed to dictionary attacks! The
-application.yml also configures the party foul gem to track issues in
-production mode.
+Afterwards you need to open them and make your changes to the configuration.
+Information for each file is detaild in the wiki.
 
 3. Set up the database-connection
 
