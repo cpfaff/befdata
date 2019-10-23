@@ -8,7 +8,7 @@ data collection and analysis workflow. It provides a secure environment
 for your data during an on-going data collection or analysis. Other project
 members can only access your data after a data access request.
 
-[![Build Status](https://travis-ci.org/cpfaff/befdata.svg?branch=v1.6.1)](https://travis-ci.org/cpfaff/befdata)
+[![Build Status](https://travis-ci.org/cpfaff/befdata.svg?branch=master)](https://travis-ci.org/cpfaff/befdata)
 
 ## Main features
 
@@ -24,11 +24,13 @@ A brief list of the most important features:
 ## Getting Started
 
 BEF-Data is developed under [MIT](LICENSE.md). You can set up the software for
-your own projects. Simply follow the steps below.
+your own projects. To set up a local instance on your computer follow the steps
+below. In the wiki you will find instructions about how to setup a dedicated
+linux server instsance.
 
 1. Prerequisites
 
-Install the following tools on your server system.
+Install the following tools on your system.
 
 * Ruby 1.9.3 (You can use a ruby version manager e.g. rvm)
 * PostgreSql Database with plpgsql language (version <= 9.6)
@@ -36,7 +38,8 @@ Install the following tools on your server system.
 
 2. Download the source code
 
-* You can e.g. the `git clone` command
+* You can e.g. use the `git clone` command or the
+  [download](https://github.com/cpfaff/befdata/archive/master.zip) button.
 
 At the moment you find the last stable version on branch 1.6. After you cloned
 the project you should thus checkout that branch. `git checkout v1.6`.
