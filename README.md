@@ -92,7 +92,7 @@ bundle exec rake db:seed
 rails server
 ```
 
-And pointing your browser to localhost:3000 you should see your very own
-befdata instance. You can login with the username "Admin" and the password
-"test". You should change it in your profile.
-
+Afterwards you can use your browser and add `localhost:3000` in the address
+bar. There you should find your very own befdata instance. You can login with
+the username "Admin" and the password "test". You should change that password
+in the profile of the user.
