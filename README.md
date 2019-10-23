@@ -23,8 +23,8 @@ A brief list of the most important features:
 
 ## Getting Started
 
-You can set up the software for your own projects. Simply follow the steps
-below.
+BEF-Data is developed under [MIT](LICENSE.md). You can set up the software for
+your own projects. Simply follow the steps below.
 
 1. Prerequisites
 
@@ -95,8 +95,4 @@ rails server
 And pointing your browser to localhost:3000 you should see your very own
 befdata instance. You can login with the username "Admin" and the password
 "test". You should change it in your profile.
-
-## License
-
-[MIT](LICENSE.md)
 
