@@ -88,7 +88,9 @@ bundle exec rake db:seed
 
 6. Fire up development server
 
-    rails server
+```
+rails server
+```
 
 And pointing your browser to localhost:3000 you should see your very own
 befdata instance. You can login with the username "Admin" and the password
