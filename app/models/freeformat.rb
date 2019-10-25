@@ -9,7 +9,7 @@ class Freeformat < ActiveRecord::Base
 
   has_attached_file :file, :basename => "basename", :path => ":rails_root/files/freeformats/:id_:filename"
   # this is not good. As everybody can pass anything. We need to create a list and maintain the list of
-  do_not_validate_attachment_file_type :file
+  # do_not_validate_attachment_file_type :file
 
   def basename
     return File.basename(self.file.original_filename, File.extname(self.file.original_filename))

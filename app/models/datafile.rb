@@ -2,7 +2,8 @@ class Datafile < ActiveRecord::Base
   belongs_to :dataset, :counter_cache => true
 
   has_attached_file :file, :basename => "basename", :path => ":rails_root/files/uploaded/:id_:filename"
-  validates_attachment_content_type :file, :content_type => ["text/csv", "application/vnd.ms-excel"]
+  # validates_attachment_content_type :file, :content_type => ["text/csv", "application/vnd.ms-excel"]
+  # do_not_validate_attachment_file_type :file
 
   validates_attachment_presence :file
 
