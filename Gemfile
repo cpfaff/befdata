@@ -15,7 +15,7 @@ gem 'daemons', '1.1.9'
 gem 'whenever', '0.8.2', :require => false 
 gem 'activerecord-import', '0.4.1'
 gem 'pg_search', '0.5.7'
-gem 'jquery-rails', '2.1.4'
+gem 'jquery-rails', '3.1.3'
 gem 'jquery-ui-rails', '3.0.1'
 gem 'will_paginate', '3.0.5'
 
