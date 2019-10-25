@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.19'
+gem 'rails', '3.2.22.5'
 gem 'pg', '0.14.1'
 gem 'haml', '3.1.7'
 gem 'authlogic', '3.2.0' 
