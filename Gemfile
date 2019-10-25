@@ -1,9 +1,10 @@
 source 'https://rubygems.org'
 
 gem 'rails', '3.2.22.5'
+gem 'gemsurance', "~> 0.9.0"
 gem 'pg', '0.14.1'
 gem 'haml', '3.1.7'
-gem 'authlogic', '3.2.0' 
+gem 'authlogic', '3.3.0' 
 gem 'acl9', '~> 0.12.1'
 gem 'dynamic_form', '1.1.4'
 gem 'paperclip', '~> 3.5.4'
