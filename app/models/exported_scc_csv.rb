@@ -1,8 +1,8 @@
 class ExportedSccCsv < ExportedFile
 
-  has_attached_file :file, :path => ":rails_root/files/generated/:dataset_id_generated-download_scc.csv"
+  has_attached_file :file, :path => ":rails_root/files/generated/:dataset_id_generated-download_scc.csv", validate_media_type: false
   # validates_attachment_content_type :file, :content_type => ["text/csv"]
-  # do_not_validate_attachment_file_type :file
+  do_not_validate_attachment_file_type :file
 
   def format
     'csv2'

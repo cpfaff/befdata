@@ -3,9 +3,9 @@ require "dataworkbook_format"
 class ExportedExcel < ExportedFile
   include DataworkbookFormat
 
-  has_attached_file :file, :path => ":rails_root/files/generated/:dataset_id_generated-download.xls"
+  has_attached_file :file, :path => ":rails_root/files/generated/:dataset_id_generated-download.xls", validate_media_type: false
   # validates_attachment_content_type :file, :content_type => ["application/vnd.ms-excel"]
-  # do_not_validate_attachment_file_type :file
+  do_not_validate_attachment_file_type :file
 
   def format
     'xls'
