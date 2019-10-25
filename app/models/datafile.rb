@@ -2,6 +2,7 @@ class Datafile < ActiveRecord::Base
   belongs_to :dataset, :counter_cache => true
 
   has_attached_file :file, :basename => "basename", :path => ":rails_root/files/uploaded/:id_:filename"
+  validates_attachment_content_type :file, :content_type => ["text/csv", "application/vnd.ms-excel"]
 
   validates_attachment_presence :file
 
@@ -24,6 +25,7 @@ class Datafile < ActiveRecord::Base
   end
   delegate :import_data, :general_metadata_hash, :authors_list, :projects_list, :to => :spreadsheet, :allow_nil => true
 
+  # TODO: that might be deprecated with the paperclip validation
   validate :check_spreadsheet, :if => Proc.new {file.present?}
   def check_spreadsheet
     self.errors[:base] = 'We currently only support Excel-2003 and CSV files.' and return unless spreadsheet
