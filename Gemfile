@@ -70,7 +70,7 @@ group :test, :development do
   # gem 'ruby-prof'
 
   # bindings for the GNOME Libxml2
-  gem 'libxml-ruby', '~> 2.9.0'
+  gem 'libxml-ruby', '~> 2.4.0'
 
   # wrapper for Linux inotify
   gem 'rb-inotify', '~> 0.9.1'
