@@ -82,7 +82,7 @@ group :test, :development do
   gem 'better_errors', '~> 0.3.2'
 
   # retrieve the binding of a method's caller
-  gem 'binding_of_caller', '~> 0.6.8'
+  gem 'binding_of_caller', '~> 0.8.0'
 
   # hosted test coverage service (badge)
   gem 'coveralls', '~> 0.6.7', require: false
