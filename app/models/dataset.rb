@@ -26,49 +26,49 @@
 require 'acl_patch'
 class Dataset < ActiveRecord::Base
   include PgSearch
-  acts_as_authorization_object :subject_class_name => 'User', join_table_name: 'roles_users'
+  acts_as_authorization_object subject_class_name: 'User', join_table_name: 'roles_users'
   include AclPatch
 
   attr_writer :owner_ids
   acts_as_taggable
 
-  has_many :datafiles, :class_name => "Datafile", :order => 'id DESC', :dependent => :destroy
-  has_one  :current_datafile,  :class_name => "Datafile", :order => 'id DESC'
+  has_many :datafiles, class_name: 'Datafile', order: 'id DESC', dependent: :destroy
+  has_one  :current_datafile, class_name: 'Datafile', order: 'id DESC'
 
-  has_many :exported_files, :dependent => :destroy
+  has_many :exported_files, dependent: :destroy
   has_one  :exported_excel   # exported Excel workbook
   has_one  :exported_csv     # exported regular csv
   has_one  :exported_scc_csv # exported csv with separate coategory columns
 
-  has_many :datacolumns, :dependent => :destroy, :order => "columnnr"
-  has_many :sheetcells, :through => :datacolumns
-  has_many :datagroups, :through => :datacolumns, :include => :categories
-  has_many :freeformats, :as => :freeformattable, :dependent => :destroy
+  has_many :datacolumns, dependent: :destroy, order: 'columnnr'
+  has_many :sheetcells, through: :datacolumns
+  has_many :datagroups, through: :datacolumns, include: :categories
+  has_many :freeformats, as: :freeformattable, dependent: :destroy
 
   has_many :dataset_downloads
-  has_many :downloaders, :through => :dataset_downloads, :source => :user, :uniq => true
+  has_many :downloaders, through: :dataset_downloads, source: :user, uniq: true
 
-  has_many :dataset_edits, :order => 'updated_at DESC', :dependent => :destroy
-  has_one :unsubmitted_edit, :class_name => 'DatasetEdit', :conditions => ['submitted=?',false]
+  has_many :dataset_edits, order: 'updated_at DESC', dependent: :destroy
+  has_one :unsubmitted_edit, class_name: 'DatasetEdit', conditions: ['submitted=?', false]
 
   has_and_belongs_to_many :projects
   has_many :dataset_paperproposals
-  has_many :paperproposals, :through => :dataset_paperproposals
-  has_many :proposers, :through => :paperproposals, :source => :author, :uniq => true
+  has_many :paperproposals, through: :dataset_paperproposals
+  has_many :proposers, through: :paperproposals, source: :author, uniq: true
 
   has_many :dataset_tags
-  has_many :all_tags, :through => :dataset_tags, :source => :tag, :order => 'lower(name)'
+  has_many :all_tags, through: :dataset_tags, source: :tag, order: 'lower(name)'
 
-  validates :title, :presence => true, :uniqueness => { case_sensitive: false }
+  validates :title, presence: true, uniqueness: { case_sensitive: false }
 
   ACCESS_CODES = {
     private: 0,
     free_within_projects: 1,
     free_for_members: 2,
     free_for_public: 3
-  }
-  validates_inclusion_of :access_code, :in => ACCESS_CODES.values,
-                         :message => 'is invalid! Access Rights is out of Range.'
+  }.freeze
+  validates_inclusion_of :access_code, in: ACCESS_CODES.values,
+                                       message: 'is invalid! Access Rights is out of Range.'
 
   before_destroy :check_for_paperproposals
   before_save :set_include_license, :check_author
@@ -80,25 +80,25 @@ class Dataset < ActiveRecord::Base
     temporalextent: 'C',
     taxonomicextent: 'C',
     circumstances: 'C',
-    dataanalysis: 'C',
+    dataanalysis: 'C'
   }, associated_against: {
-    tags: {name: 'A'}
-  },using: {
+    tags: { name: 'A' }
+  }, using: {
     tsearch: {
-      dictionary: "english",
+      dictionary: 'english',
       prefix: true
     }
   }
 
   def load_projects_and_authors_from_current_datafile
     return unless current_datafile
-    current_datafile.authors_list[:found_users].each {|user| user.has_role!(:owner, self) }
+    current_datafile.authors_list[:found_users].each { |user| user.has_role!(:owner, self) }
     self.projects = current_datafile.projects_list if current_datafile.projects_list.present?
   end
 
   def add_datafile(datafile)
     datafile.update_attributes(dataset: self)
-    self.update_attributes(filename: datafile.basename, import_status: 'new')
+    update_attributes(filename: datafile.basename, import_status: 'new')
   end
 
   def has_research_data?
@@ -106,32 +106,32 @@ class Dataset < ActiveRecord::Base
   end
 
   def access_rights
-    (ACCESS_CODES.invert)[access_code].to_s.humanize
+    ACCESS_CODES.invert[access_code].to_s.humanize
   end
 
-  %w{free_within_projects free_for_members free_for_public}.each do |right|
+  %w(free_within_projects free_for_members free_for_public).each do |right|
     define_method("#{right}?") do
       access_code >= ACCESS_CODES[right.to_sym]
     end
   end
 
   def abstract_with_freeformats
-    f_strings = self.freeformats.collect do |f|
-      "File asset " + f.file_file_name + (f.description.blank? ? "" : (": " + f.description))
+    f_strings = freeformats.collect do |f|
+      'File asset ' + f.file_file_name + (f.description.blank? ? '' : (': ' + f.description))
     end
-    self.abstract.to_s + (f_strings.empty? ? "" : (" - " + f_strings.join(" - ")))
+    abstract.to_s + (f_strings.empty? ? '' : (' - ' + f_strings.join(' - ')))
   end
 
   def cells_linked_to_values?
-    self.sheetcells.exists?(["accepted_value IS NOT NULL OR accepted_value !='' OR category_id > 0"])
+    sheetcells.exists?(["accepted_value IS NOT NULL OR accepted_value !='' OR category_id > 0"])
   end
 
   def headers
-    self.datacolumns.pluck(:columnheader)
+    datacolumns.pluck(:columnheader)
   end
 
   def predefined_columns
-    datacolumns.select{|dc| dc.predefined? }
+    datacolumns.select(&:predefined?)
   end
 
   def approve_predefined_columns
@@ -144,7 +144,7 @@ class Dataset < ActiveRecord::Base
       column.datatype_approved = true
 
       # Check for invalid values
-      column.finished = true if !column.has_invalid_values?
+      column.finished = true unless column.has_invalid_values?
       @columns_with_invalid_values << column if column.has_invalid_values?
 
       # Save the column
@@ -153,62 +153,60 @@ class Dataset < ActiveRecord::Base
   end
 
   def columns_with_invalid_values_after_approving_predefined
-    #TODO this should be a proper method without relying on the state of this object
+    # TODO: this should be a proper method without relying on the state of this object
     raise "This method may be only called directly after executing 'approve_predefined_columns'" unless @columns_with_invalid_values
     @columns_with_invalid_values
   end
 
   def delete_imported_research_data
     datacolumns.destroy_all
-    self.exported_files.destroy_all
+    exported_files.destroy_all
   end
 
   def log_download(downloading_user)
-    DatasetDownload.create(:user => downloading_user, :dataset => self)
+    DatasetDownload.create(user: downloading_user, dataset: self)
   end
 
   def number_of_observations
-    #TODO use sql query finding max rownumber
+    # TODO: use sql query finding max rownumber
     return 0 if datacolumns.empty?
-    return datacolumns.first.sheetcells.count
+    datacolumns.first.sheetcells.count
   end
 
   def import_data
-    begin
-      self.update_attribute(:import_status, 'started importing')
-      current_datafile.import_data
-      self.update_attribute(:import_status, 'finished')
-      ExportedFile.initialize_export(self)
-    rescue Exception => e
-      Rails.logger.error e.message
-      Rails.logger.error e.backtrace.join("\n")
-      self.update_attribute(:import_status, "error: #{e.message.first(248)}")
-    end
+    update_attribute(:import_status, 'started importing')
+    current_datafile.import_data
+    update_attribute(:import_status, 'finished')
+    ExportedFile.initialize_export(self)
+  rescue Exception => e
+    Rails.logger.error e.message
+    Rails.logger.error e.backtrace.join("\n")
+    update_attribute(:import_status, "error: #{e.message.first(248)}")
   end
 
   def finished_import?
-    self.import_status.to_s == 'finished' || !self.has_research_data?
+    import_status.to_s == 'finished' || !has_research_data?
   end
 
-  def being_imported?   # TODO: this is prone to be out of sync if new status added
-    return false unless self.has_research_data?
-    %w{new finished}.exclude?(import_status) && !import_status.start_with?('error')
+  def being_imported? # TODO: this is prone to be out of sync if new status added
+    return false unless has_research_data?
+    %w(new finished).exclude?(import_status) && !import_status.start_with?('error')
   end
 
   def refresh_paperproposal_authors
-    self.paperproposals.each {|pp| pp.update_datasets_providers}
+    paperproposals.each(&:update_datasets_providers)
   end
 
   # This method returns similar datasets which share keywords with current dataset.
   # datasets are sorted by similarity in descending order
   def find_related_datasets
-    tags = self.all_tags.pluck(:id)
+    tags = all_tags.pluck(:id)
     return [] if tags.empty?
     datasets = Dataset.joins(:dataset_tags)
-                      .select("datasets.*")
-                      .where(["tag_id in (?) and datasets.id <> ?", tags, self.id])
-                      .group("datasets.id").order("count(tag_id) desc")
-    return(datasets)
+                      .select('datasets.*')
+                      .where(['tag_id in (?) and datasets.id <> ?', tags, id])
+                      .group('datasets.id').order('count(tag_id) desc')
+    datasets
   end
 
   # acl9 role related staff: different kinds of user
@@ -220,36 +218,36 @@ class Dataset < ActiveRecord::Base
     owners.map(&:id)
   end
 
-  def owners= (people)
+  def owners=(people)
     set_user_with_role(:owner, people)
   end
 
   # keep log of edits
   def create_or_use_unsubmitted_edit
-    if !self.unsubmitted_edit.nil?
-      self.unsubmitted_edit
+    if !unsubmitted_edit.nil?
+      unsubmitted_edit
     else
-      self.dataset_edits.new
+      dataset_edits.new
     end
   end
 
   def log_edit(string)
-    unless self.unsubmitted_edit.nil? && (Time.now - 10.minutes) < self.created_at
-      self.create_or_use_unsubmitted_edit.add_line!(string)
+    unless unsubmitted_edit.nil? && (Time.now - 10.minutes) < created_at
+      create_or_use_unsubmitted_edit.add_line!(string)
     end
   end
 
   def free_for?(user)
-    return true if self.free_for_public?
+    return true if free_for_public?
     return false unless user
-    return true if self.free_for_members?
-    return true if self.free_within_projects? && !(user.projects & self.projects).empty?
+    return true if free_for_members?
+    return true if free_within_projects? && !(user.projects & projects).empty?
     false
   end
 
   def can_download_by?(user)
-    return false unless self.current_datafile
-    return true if self.free_for?(user)
+    return false unless current_datafile
+    return true if free_for?(user)
     return false unless user
     return true if user.has_role?(:proposer, self) || user.has_role?(:owner, self)
     return true if user.has_role?(:admin) || user.has_role?(:data_admin)
@@ -262,26 +260,26 @@ class Dataset < ActiveRecord::Base
     false
   end
 
-private
+  private
 
   def check_for_paperproposals
     if paperproposals.count > 0
       errors.add(:dataset,
-                 "can not be deleted while linked paperproposals exist [ids: #{paperproposals.map{|pp| pp.id}.join(", ")}]")
+                 "can not be deleted while linked paperproposals exist [ids: #{paperproposals.map(&:id).join(', ')}]")
       return false
     end
   end
 
   def set_include_license
-    self.include_license = false unless self.free_for_public?
-    return true
+    self.include_license = false unless free_for_public?
+    true
   end
 
   def check_author
     if @owner_ids
       @owner_ids.reject!(&:blank?)
       if @owner_ids.empty?
-        self.errors.add :base, 'The dataset should have at least one author.'
+        errors.add :base, 'The dataset should have at least one author.'
         return false
       else
         self.owners = User.find(@owner_ids)

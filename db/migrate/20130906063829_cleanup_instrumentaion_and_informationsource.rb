@@ -1,6 +1,6 @@
 class CleanupInstrumentaionAndInformationsource < ActiveRecord::Migration
   def up
-    change_table :datacolumns, :bulk => true do |t|
+    change_table :datacolumns, bulk: true do |t|
       t.change :informationsource, :text
       t.change :instrumentation, :text
       t.string :acknowledge_unknown
@@ -32,7 +32,7 @@ class CleanupInstrumentaionAndInformationsource < ActiveRecord::Migration
   end
 
   def down
-    change_table :datagroups, :bulk => true do |t|
+    change_table :datagroups, bulk: true do |t|
       t.text :instrumentation
       t.text :informationsource
       t.string :methodvaluetype

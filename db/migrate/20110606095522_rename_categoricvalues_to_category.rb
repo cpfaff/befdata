@@ -4,6 +4,6 @@ class RenameCategoricvaluesToCategory < ActiveRecord::Migration
   end
 
   def self.down
-     rename_table :categories, :categoricvalues
+    rename_table :categories, :categoricvalues
   end
 end

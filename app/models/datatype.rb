@@ -18,7 +18,6 @@ class Datatype
   end
 
   def is_category?
-    return (@name == "category")
+    (@name == 'category')
   end
-
 end

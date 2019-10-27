@@ -1,8 +1,8 @@
 class AddStatusFieldToSheetcellTable < ActiveRecord::Migration
- def self.up
+  def self.up
     # sheetcells
     add_column :sheetcells, :status_id, :integer
-  end
+   end
 
   def self.down
     # sheetcell

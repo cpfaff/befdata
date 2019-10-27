@@ -5,5 +5,5 @@
 ## A Cart can have one or more Dataset s; they are linked using the CartDataset class.
 class Cart < ActiveRecord::Base
   has_many :cart_datasets
-  has_many :datasets, :through => :cart_datasets
+  has_many :datasets, through: :cart_datasets
 end

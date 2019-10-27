@@ -1,6 +1,5 @@
 class NotificationsController < ApplicationController
-
-  before_filter :load_notification, :except => [:index]
+  before_filter :load_notification, except: [:index]
 
   skip_before_filter :deny_access_to_all
 
@@ -27,11 +26,10 @@ class NotificationsController < ApplicationController
     redirect_to notifications_url
   end
 
-private
+  private
 
   def load_notification
-    @notification = current_user.notifications.where(:id => params[:id]).first
-    redirect_to :back and return unless @notification
+    @notification = current_user.notifications.where(id: params[:id]).first
+    redirect_to(:back) && return unless @notification
   end
-
 end

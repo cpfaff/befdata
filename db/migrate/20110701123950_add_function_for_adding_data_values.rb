@@ -1,7 +1,7 @@
 class AddFunctionForAddingDataValues < ActiveRecord::Migration
   def self.up
     execute <<-SQL
-    
+
 --
 -- Name: accept_text_datacolumn_values(integer); Type: FUNCTION; Schema: public; Owner: -
 --
@@ -150,7 +150,5 @@ SQL
   end
 
   def self.down
-
   end
-
 end

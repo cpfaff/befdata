@@ -4,7 +4,7 @@ class AddFieldsToCategoriesTable < ActiveRecord::Migration
     add_column :categories, :datagroup_id, :integer
     add_column :categories, :user_id, :integer
     add_column :categories, :status_id, :integer
-    #datagroups
+    # datagroups
     add_column :datagroups, :system, :boolean
   end
 
@@ -13,7 +13,7 @@ class AddFieldsToCategoriesTable < ActiveRecord::Migration
     remove_column :categories, :datagroup_id
     remove_column :categories, :user_id
     remove_column :categories, :status_id
-    #datagroups
+    # datagroups
     remove_column :datagroups, :system
   end
 end

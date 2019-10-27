@@ -15,7 +15,7 @@
 # to "none". She or he can now either reject the submission and
 # communicate tipps in the "comment" attributes, or "accept" the
 # submission.
-# 
+#
 # After all project board members have accepted a proposal, the owners
 # of the datasets are given paperproposal votes. In this case the
 # attribute "project_board vote" is set to false, but the procedure is
@@ -25,18 +25,18 @@ class PaperproposalVote < ActiveRecord::Base
   belongs_to :user
   belongs_to :paperproposal
 
-  validates_uniqueness_of :paperproposal_id, :scope => [:user_id, :project_board_vote]
+  validates_uniqueness_of :paperproposal_id, scope: [:user_id, :project_board_vote]
 
   scope :pending, where(vote: 'none')
   scope :accepted, where(vote: 'accept')
   scope :rejected, where(vote: 'reject')
 
-  STATE = {accepted: 'accept', rejected: 'reject'}
+  STATE = { accepted: 'accept', rejected: 'reject' }.freeze
   def accepted?
-    self.vote.eql? STATE[:accepted]
+    vote.eql? STATE[:accepted]
   end
 
   def rejected?
-    self.vote.eql? STATE[:rejected]
+    vote.eql? STATE[:rejected]
   end
 end

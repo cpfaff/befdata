@@ -3,7 +3,7 @@ class CreateDatasetEdits < ActiveRecord::Migration
     create_table :dataset_edits do |t|
       t.references :dataset
       t.text :description
-      t.boolean :submitted, :default => false
+      t.boolean :submitted, default: false
 
       t.timestamps
     end

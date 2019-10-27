@@ -19,19 +19,19 @@ class MakeFreeformatsPolymorphic < ActiveRecord::Migration
   end
 
   def self.make_old_dataset_freefromats_polymorpic
-    Freeformat.select{|ff| !ff.dataset_id.blank?}.each do |ff|
+    Freeformat.select { |ff| !ff.dataset_id.blank? }.each do |ff|
       ff.update_attribute :freeformattable_id, ff.dataset_id
-      ff.update_attribute :freeformattable_type, "Dataset"
+      ff.update_attribute :freeformattable_type, 'Dataset'
     end
   end
 
   def self.convert_paperproposal_datafiles_to_freeformats
     Paperproposal.all.each do |pp|
       pp.datafiles.each do |df|
-        ff = Freeformat.new :file => File.new(df.file.path)
+        ff = Freeformat.new file: File.new(df.file.path)
         ff.save false
         ff.update_attribute :freeformattable_id, df.paperproposal_id
-        ff.update_attribute :freeformattable_type, "Paperproposal"
+        ff.update_attribute :freeformattable_type, 'Paperproposal'
         df.destroy
       end
     end
@@ -39,13 +39,13 @@ class MakeFreeformatsPolymorphic < ActiveRecord::Migration
 
   def self.convert_polymorphic_freeformats_back
     # care about the freeformats with datasets
-    Freeformat.select{|ff| ff.freeformattable_type == "Dataset"}.each do |ff|
+    Freeformat.select { |ff| ff.freeformattable_type == 'Dataset' }.each do |ff|
       ff.update_attribute :dataset_id, ff.freeformattable_id
     end
 
     # care about the datafiles on paperproposals
-    Freeformat.select{|ff| ff.freeformattable_type == "Paperproposal"}.each do |ff|
-      df = Datafile.new :file => File.new(ff.file.path)
+    Freeformat.select { |ff| ff.freeformattable_type == 'Paperproposal' }.each do |ff|
+      df = Datafile.new file: File.new(ff.file.path)
       df.save false
       df.update_attribute :paperproposal_id, ff.freeformattable_id
       ff.destroy

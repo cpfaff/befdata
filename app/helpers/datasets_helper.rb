@@ -5,15 +5,15 @@ module DatasetsHelper
 
   def eml_unit_for_column(column)
     case column.unit
-      when 'meter' || 'm'
-        "meter"
-      when 'millimeter' || 'mm'
-        "millimeter"
-      when 'gram' || 'g'
-        "gram"
-      when 'gramsPerSquareMeter' || 'g/m^2'
-      else
-        "dimensionless"
+    when 'meter' || 'm'
+      'meter'
+    when 'millimeter' || 'mm'
+      'millimeter'
+    when 'gram' || 'g'
+      'gram'
+    when 'gramsPerSquareMeter' || 'g/m^2'
+    else
+      'dimensionless'
     end
   end
 
@@ -27,9 +27,9 @@ module DatasetsHelper
 
   def dropdown_list_to_sort_datasets
     options_for_select(
-      { "Title" => 'title-asc',
-        "Newest" => 'id-desc',
-        "Recently Updated" => 'last_update-desc'
-      }, selected: "#{params[:sort]}-#{params[:direction]}")
+      { 'Title' => 'title-asc',
+        'Newest' => 'id-desc',
+        'Recently Updated' => 'last_update-desc' }, selected: "#{params[:sort]}-#{params[:direction]}"
+    )
   end
 end

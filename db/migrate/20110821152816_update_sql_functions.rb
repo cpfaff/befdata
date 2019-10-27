@@ -83,7 +83,6 @@ CREATE OR REPLACE FUNCTION accept_datacolumn_values(datatype_id integer, datacol
       drop function if exists insert_category(text, text, integer, integer);
 
     SQL
-
   end
 
   def self.down

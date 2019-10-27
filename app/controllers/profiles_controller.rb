@@ -7,7 +7,7 @@ class ProfilesController < ApplicationController
   end
 
   def show
-    @datasets_owned = @user.datasets_owned.sort_by {|d| d.title.to_s}
+    @datasets_owned = @user.datasets_owned.sort_by { |d| d.title.to_s }
     @datasets_with_responsible_datacolumns_not_owned = @user.datasets_with_responsible_datacolumns - @datasets_owned
     @project_roles = @user.projectroles
     @paperproposals = @user.paperproposals
@@ -15,7 +15,7 @@ class ProfilesController < ApplicationController
 
   def update
     if @user.update_attributes(user_params)
-      redirect_to profile_path, :notice => "Saved successfully"
+      redirect_to profile_path, notice: 'Saved successfully'
     else
       render :edit
     end
@@ -24,14 +24,14 @@ class ProfilesController < ApplicationController
   def update_credentials
     @user.reset_single_access_token!
     respond_to do |format|
-      format.html { redirect_to :profile, :notice => "Your login credentials was updated successfully!" }
+      format.html { redirect_to :profile, notice: 'Your login credentials was updated successfully!' }
       format.js
     end
   end
 
   def votes
     @project_board_votes = @user.project_board_votes.includes(:paperproposal).pending.select do |vote|
-      %w{submit, re_prep}.include? vote.paperproposal.board_state
+      %w(submit re_prep).include? vote.paperproposal.board_state
     end
     @project_board_votes.sort_by!(&:paperproposal)
 
@@ -42,18 +42,19 @@ class ProfilesController < ApplicationController
   end
 
   def votes_history
-    @given_votes = @user.paperproposal_votes.where("vote <> 'none'").order("updated_at DESC")
+    @given_votes = @user.paperproposal_votes.where("vote <> 'none'").order('updated_at DESC')
   end
 
-private
+  private
+
   def load_current_user
     @user = current_user
   end
 
   def user_params
     params[:user].slice(:login, :password, :password_confirmation, :firstname,
-          :middlenames, :lastname, :email, :salutation, :institution_name,
-          :institution_url, :institution_phone, :institution_fax, :url, :country,
-          :city, :street, :comment, :avatar, :receive_emails)
+                        :middlenames, :lastname, :email, :salutation, :institution_name,
+                        :institution_url, :institution_phone, :institution_fax, :url, :country,
+                        :city, :street, :comment, :avatar, :receive_emails)
   end
 end

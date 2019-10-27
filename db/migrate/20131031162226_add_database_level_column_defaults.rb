@@ -4,9 +4,9 @@ class AddDatabaseLevelColumnDefaults < ActiveRecord::Migration
     change_column_default :datacolumns, :datatype_approved, false
     change_column_default :datacolumns, :finished, false
 
-    change_column_default :datagroups, :type_id, 1  # Datagrouptype::DEFAULT
+    change_column_default :datagroups, :type_id, 1 # Datagrouptype::DEFAULT
 
-    change_column_default :sheetcells, :status_id, 1  # Sheetcellstatus::UNPROCESSED
+    change_column_default :sheetcells, :status_id, 1 # Sheetcellstatus::UNPROCESSED
   end
 
   def down

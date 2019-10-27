@@ -3,15 +3,15 @@ class RemoveDatagroupSystemFieldAddTypeId < ActiveRecord::Migration
     add_column :datagroups, :type_id, :integer
 
     datagroups = Datagroup.all.select
-    datagroups.each { |dg|
+    datagroups.each do |dg|
       type_id = Datagrouptype::DEFAULT
-      if(dg.title == "Category sheet match") then
+      if dg.title == 'Category sheet match'
         type_id = Datagrouptype::SHEETCATEGORYMATCH
-      elsif(dg.title == "Helper") then
+      elsif dg.title == 'Helper'
         type_id = Datagrouptype::HELPER
       end
-      dg.update_attributes(:type_id => type_id)
-     }
+      dg.update_attributes(type_id: type_id)
+    end
 
     remove_column :datagroups, :system
   end

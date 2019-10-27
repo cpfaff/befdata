@@ -11,6 +11,3 @@ class RenameFilevalueToDatafile < ActiveRecord::Migration
     add_index :filevalues, [:paperproposal_id]
   end
 end
-
-
-    

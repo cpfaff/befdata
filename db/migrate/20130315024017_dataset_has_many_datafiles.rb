@@ -14,7 +14,7 @@ class DatasetHasManyDatafiles < ActiveRecord::Migration
 
   def down
     add_column :datasets, :upload_spreadsheet_id, :integer
-    add_index "datasets", ["upload_spreadsheet_id"], :name => "index_datasets_on_upload_spreadsheet_id"
+    add_index 'datasets', ['upload_spreadsheet_id'], name: 'index_datasets_on_upload_spreadsheet_id'
     execute <<-SQL
       update datasets
       set upload_spreadsheet_id = (

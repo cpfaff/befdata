@@ -11,7 +11,7 @@ class BefParam
   end
 
   def to_s
-    arr = @params.collect do |k,v|
+    arr = @params.collect do |k, v|
       next if v.blank?
       v_str = v.is_a?(Array) ? v.join('|') : v
       "#{k}:#{v_str}"
@@ -30,7 +30,7 @@ class BefParam
         return false unless v.class == @params[k].class
         return false unless [v].flatten.sort == [@params[k]].flatten.sort
       else
-        return false unless ([v].flatten - [@params[k]].flatten).length == 0
+        return false unless ([v].flatten - [@params[k]].flatten).empty?
       end
       return true
     else
@@ -44,33 +44,33 @@ class BefParam
 
   alias [] get_param
 
-  def []=(k,v)
+  def []=(k, v)
     @params[k] = v
   end
 
   def dup
-    self.class.new(self.to_s, @param_config)
+    self.class.new(to_s, @param_config)
   end
 
   def set_param(args)
-    self.dup.set_param!(args)
+    dup.set_param!(args)
   end
 
   def set_param!(args)
     @params.merge! args
-    return self
+    self
   end
 
   def toggle_param(k, v1, *options)
-    self.dup.toggle_param!(k, v1, *options)
+    dup.toggle_param!(k, v1, *options)
   end
 
   def toggle_param!(k, v)
     p = get_param(k)
     if @param_config[k].eql? 'radio'
-      has_param?(k, v) ? set_param!({k => nil}) : set_param!({k => v})
+      has_param?(k, v) ? set_param!(k => nil) : set_param!(k => v)
     else
-      has_param?(k, v) ? set_param!({k => ([p].flatten - [v].flatten).reject(&:blank?).uniq}) : set_param!({k => [p, v].flatten.reject(&:blank?).uniq})
+      has_param?(k, v) ? set_param!(k => ([p].flatten - [v].flatten).reject(&:blank?).uniq) : set_param!(k => [p, v].flatten.reject(&:blank?).uniq)
     end
   end
 
@@ -80,16 +80,16 @@ class BefParam
 
     bef_param_str.split(',').each do |pairs|
       next unless pairs.include? ':'
-      k,v = pairs.split(':')
-      parsed_params[k] = (v =~ /\|/ )? v.split('|') : v
+      k, v = pairs.split(':')
+      parsed_params[k] = (v =~ /\|/) ? v.split('|') : v
     end
     parsed_params
   end
 
   def self.parse_config(config)
     parsed_config = HashWithIndifferentAccess.new('radio')
-    config.each do |k,v|
-      if %w{radio checkbox}.include?(k.to_s)
+    config.each do |k, v|
+      if %w(radio checkbox).include?(k.to_s)
         [v].flatten.each do |x|
           parsed_config[x] = k.to_s
         end

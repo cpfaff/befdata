@@ -4,6 +4,6 @@ class RenameImportcategoricvaluesToImportcategories < ActiveRecord::Migration
   end
 
   def self.down
-     rename_table :import_categories, :import_categoricvalues
+    rename_table :import_categories, :import_categoricvalues
   end
 end

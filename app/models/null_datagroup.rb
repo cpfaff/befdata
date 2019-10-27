@@ -1,10 +1,23 @@
 class NullDatagroup
-  def nil?; true; end
-  def present?; false; end
-  def empty?; true; end
-  def !; true; end
+  def nil?
+    true
+  end
 
-  def categories; []; end
+  def present?
+    false
+  end
+
+  def empty?
+    true
+  end
+
+  def !
+    true
+  end
+
+  def categories
+    []
+  end
 
   Datagroup.attribute_names.each do |f|
     define_method f do
@@ -12,7 +25,7 @@ class NullDatagroup
     end
   end
 
-  def self.decrement_counter(counter_name, id); ; end
-  def self.increment_counter(counter_name, id); ; end
+  def self.decrement_counter(_counter_name, _id); ; end
 
+  def self.increment_counter(_counter_name, _id); ; end
 end

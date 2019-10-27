@@ -7,7 +7,7 @@ class AddIndexes2 < ActiveRecord::Migration
     add_index :categoricvalues, [:short]
 
     # roles_users
-    add_index :roles, [:authorizable_type,:authorizable_id]
+    add_index :roles, [:authorizable_type, :authorizable_id]
   end
 
   def self.down
@@ -18,6 +18,6 @@ class AddIndexes2 < ActiveRecord::Migration
     remove_index :categoricvalues, [:short]
 
     # roles
-    remove_index :roles, [:authorizable_type,:authorizable_id]
+    remove_index :roles, [:authorizable_type, :authorizable_id]
   end
 end

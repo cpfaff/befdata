@@ -9,7 +9,7 @@ class RemoveDestroyMeMarkers < ActiveRecord::Migration
   end
 
   def self.down
-    add_column :datasets, :destroy_me, :boolean, :default => fals
+    add_column :datasets, :destroy_me, :boolean, default: fals
     add_column :datasets, :destroy_me_date, :date
   end
 end

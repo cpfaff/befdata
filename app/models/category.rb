@@ -2,7 +2,7 @@
 ##
 ## Categories are linked to "Datagroup"s. The validation process ensures that Categories are unique within a "Datagroup".
 class Category < ActiveRecord::Base
-  belongs_to :datagroup, :class_name => "Datagroup", :foreign_key => "datagroup_id"
+  belongs_to :datagroup, class_name: 'Datagroup', foreign_key: 'datagroup_id'
   has_many :sheetcells
 
   validates_presence_of :short, :long, :description
@@ -13,34 +13,34 @@ class Category < ActiveRecord::Base
 
   def self.delete_orphan_categories
     # delete categories that has no assciated sheetcells
-    to_be_deleted = Category.joins('left outer join sheetcells on sheetcells.category_id = categories.id').
-              where('sheetcells.category_id is NULL')
+    to_be_deleted = Category.joins('left outer join sheetcells on sheetcells.category_id = categories.id')
+                            .where('sheetcells.category_id is NULL')
     puts "#{to_be_deleted.count} categories is deleted at #{Time.now.utc}" unless to_be_deleted.empty?
     Category.delete(to_be_deleted)
   end
 
   def try_filling_missing_values
-    if self.short then
-      self.long = self.short if self.long.blank?
-      self.description = self.long if self.description.blank?
+    if short
+      self.long = short if long.blank?
+      self.description = long if description.blank?
     end
   end
 
   def show_value
     "#{long} (#{short})"
   end
-  
+
   def check_for_sheetcells_associated
-    sc = self.sheetcells(true)
+    sc = sheetcells(true)
     unless sc.empty? || (sc.count == 1 && sc.first.destroyed?)
-      self.errors[:base] = "#{self.short} has associated sheetcells, thus can't be deleted"
+      errors[:base] = "#{short} has associated sheetcells, thus can't be deleted"
       false
     end
   end
 
   def self.search(search)
     if search
-      where('short iLIKE :q OR long iLIKE :q OR description iLIKE :q', :q => "%#{search}%")
+      where('short iLIKE :q OR long iLIKE :q OR description iLIKE :q', q: "%#{search}%")
     else
       scoped
     end
@@ -50,32 +50,33 @@ class Category < ActiveRecord::Base
     begin
       lines = CSV.read(file, CsvData::OPTS)
     rescue
-      errors.add :file, 'can not be read' and return false
+      errors.add(:file, 'can not be read') && (return false)
     end
     return false if validate_sheetcells_csv?(lines)
 
     update_overview = split_sheetcells_category(lines, user)
     unless update_overview.blank?
-      self.comment = "#{self.comment} Split via CVS by #{user.lastname}, #{Time.now.to_s}.".strip
-      self.save
+      self.comment = "#{comment} Split via CVS by #{user.lastname}, #{Time.now}.".strip
+      save
     end
     update_overview
   end
 
   def merge_to(to_category, user)
-    return unless self.datagroup_id == to_category.datagroup_id
-    self.expire_related_exported_datasets
+    return unless datagroup_id == to_category.datagroup_id
+    expire_related_exported_datasets
 
-    comment_string = "Merged #{self.short} by #{user.lastname} at #{Time.now.utc.to_s} via CSV; "
-    self.sheetcells.update_all(:category_id => to_category.id, :updated_at => Time.now)
-    Category.where(:id => to_category.id).update_all(
-        :comment => "#{to_category.comment} #{comment_string}".strip,
-        :updated_at => Time.now
+    comment_string = "Merged #{short} by #{user.lastname} at #{Time.now.utc} via CSV; "
+    sheetcells.update_all(category_id: to_category.id, updated_at: Time.now)
+    Category.where(id: to_category.id).update_all(
+      comment: "#{to_category.comment} #{comment_string}".strip,
+      updated_at: Time.now
     )
-    self.delete
+    delete
   end
 
-protected
+  protected
+
   # find and update the updated_at date for all datasets that share this category
   def expire_related_exported_datasets
     sql = "select update_date_category_datasets(#{id})"
@@ -83,32 +84,32 @@ protected
     connection.execute(sql)
   end
 
-private
+  private
 
   def validate_sheetcells_csv?(csv_lines)
-    errors.add :csv, 'seems to be empty' and return false if csv_lines.empty?
-    unless (['ID'  ,'IMPORT VALUE'  ,'COLUMNHEADER'  ,'DATASET'  ,'NEW CATEGORY SHORT'] - csv_lines.headers).empty?
-      errors.add :csv, 'column headers does not match' and return false
+    errors.add(:csv, 'seems to be empty') && (return false) if csv_lines.empty?
+    unless (['ID', 'IMPORT VALUE', 'COLUMNHEADER', 'DATASET', 'NEW CATEGORY SHORT'] - csv_lines.headers).empty?
+      errors.add(:csv, 'column headers does not match') && (return false)
     end
 
-    csv_sheetcell_ids = csv_lines["ID"].collect {|s| s.to_i}
-    errors.add :csv, 'IDs must be unique' and return false unless csv_sheetcell_ids.uniq!.nil?
+    csv_sheetcell_ids = csv_lines['ID'].collect(&:to_i)
+    errors.add(:csv, 'IDs must be unique') && (return false) unless csv_sheetcell_ids.uniq!.nil?
 
-    errors.add :csv, 'ID must not be empty' and return false if csv_lines["ID"].any?{|s| s.blank?}
+    errors.add(:csv, 'ID must not be empty') && (return false) if csv_lines['ID'].any?(&:blank?)
 
-    cat_sheetcell_ids = self.sheetcell_ids
+    cat_sheetcell_ids = sheetcell_ids
     sheetcells_no_match = csv_sheetcell_ids - cat_sheetcell_ids
     unless sheetcells_no_match.empty?
-      errors.add :csv, "sheetcell #{sheetcells_no_match} not found in category" and return false
+      errors.add(:csv, "sheetcell #{sheetcells_no_match} not found in category") && (return false)
     end
   end
 
   def split_sheetcells_category(csv_lines, user)
-    pairs = csv_lines.reject{|l| l[4].blank?}.collect {|l| [l[0].to_i, l[4]]}
-    updates_overview = Array.new
-    altered_cats = Array.new
+    pairs = csv_lines.reject { |l| l[4].blank? }.collect { |l| [l[0].to_i, l[4]] }
+    updates_overview = []
+    altered_cats = []
     pairs.each do |p|
-      existing_cat = Category.where(datagroup_id: self.datagroup_id, short: p[1]).first
+      existing_cat = Category.where(datagroup_id: datagroup_id, short: p[1]).first
       if existing_cat
         if existing_cat == self
           updates_overview << [p[0], 'already', nil, nil]
@@ -118,14 +119,14 @@ private
           updates_overview << [p[0], 'added', existing_cat.id, existing_cat.short]
         end
       else
-        new_category = Category.create(short: p[1], datagroup: self.datagroup)
+        new_category = Category.create(short: p[1], datagroup: datagroup)
         Sheetcell.find(p[0]).update_attributes(category: new_category)
         altered_cats << new_category
         updates_overview << [p[0], 'new', new_category.id, new_category.short]
       end
     end
 
-    comment_string = "Added sheetcells via CVS by #{user.lastname}, #{Time.now.to_s}.".strip
+    comment_string = "Added sheetcells via CVS by #{user.lastname}, #{Time.now}.".strip
     altered_cats.uniq.each do |c|
       c.comment = "#{c.comment} #{comment_string}".strip
       c.save

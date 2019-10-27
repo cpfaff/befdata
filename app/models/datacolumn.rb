@@ -16,44 +16,44 @@
 require 'acl_patch'
 class Datacolumn < ActiveRecord::Base
   include PgSearch
-  acts_as_authorization_object :subject_class_name => 'User', join_table_name: 'roles_users'
+  acts_as_authorization_object subject_class_name: 'User', join_table_name: 'roles_users'
   include AclPatch
 
   acts_as_taggable
 
-  belongs_to :datagroup, :counter_cache => true
-  has_many :categories, :through => :datagroup
-  belongs_to :dataset, :touch => true
+  belongs_to :datagroup, counter_cache: true
+  has_many :categories, through: :datagroup
+  belongs_to :dataset, touch: true
 
-  has_many :sheetcells, :dependent => :delete_all
+  has_many :sheetcells, dependent: :delete_all
   has_many :exported_sheetcells
-  has_many :import_categories, :dependent => :delete_all
-  belongs_to :semantic_term, :class_name => 'Vocab', :foreign_key => :term_id
+  has_many :import_categories, dependent: :delete_all
+  belongs_to :semantic_term, class_name: 'Vocab', foreign_key: :term_id
 
   validates_presence_of :dataset_id, :columnheader, :columnnr, :definition
-  validates_uniqueness_of :columnheader, :columnnr, :scope => :dataset_id, :case_sensitive => false
+  validates_uniqueness_of :columnheader, :columnnr, scope: :dataset_id, case_sensitive: false
 
   pg_search_scope :search, against: {
     columnheader: 'A',
     definition: 'B'
   }, associated_against: {
-    tags: {name: 'A'},
-    datagroup: {title: 'A', description: 'B'}
+    tags: { name: 'A' },
+    datagroup: { title: 'A', description: 'B' }
   }, using: {
     tsearch: {
-      dictionary: "english",
+      dictionary: 'english',
       prefix: true
     }
   }
 
   before_validation :fill_missing_definition
   def fill_missing_definition
-    self.definition = self.columnheader if self.definition.blank?
+    self.definition = columnheader if definition.blank?
   end
 
   # Are there data values associated to the measurements of this data column instance?
   def values_stored?
-    self.sheetcells.exists?(status_id: [2,3,4])
+    sheetcells.exists?(status_id: [2, 3, 4])
   end
 
   def predefined?
@@ -62,7 +62,7 @@ class Datacolumn < ActiveRecord::Base
 
     # To be predefined, a column must belongs to a datagroup
     # Furthermore, the datacolumn approval process must not have already started.
-    self.datagroup_id && self.untouched?
+    datagroup_id && untouched?
   end
 
   # override the datagroup method.
@@ -75,18 +75,18 @@ class Datacolumn < ActiveRecord::Base
 
   # returns the first 'count' number unique imported values
   def imported_values(count)
-    values = self.sheetcells.all( :order => "import_value",
-                                 :limit => count,
-                                 :group => "import_value",
-                                 :select => "import_value")
-    return values
+    values = sheetcells.all(order: 'import_value',
+                            limit: count,
+                            group: 'import_value',
+                            select: 'import_value')
+    values
   end
 
   # returns the first 'count' number unique accepted values
   def accepted_values(count)
-    self.sheetcells.select("case when category_id >0 then (select short from categories where id = sheetcells.category_id) else accepted_value end AS accepted_value")
-                   .where(status_id: [2,3,4])
-                   .limit(count).uniq.order("accepted_value")
+    sheetcells.select('case when category_id >0 then (select short from categories where id = sheetcells.category_id) else accepted_value end AS accepted_value')
+              .where(status_id: [2, 3, 4])
+              .limit(count).uniq.order('accepted_value')
   end
 
   # saves the accepted values for each "Sheetcell" in the column
@@ -96,22 +96,19 @@ class Datacolumn < ActiveRecord::Base
   # NB: all of the business logic is in functions within the database
   # found in db/non_schema_sql.sql
   def add_data_values
-
     # remove any previous accepted values so that we can keep a track of what has been updated
     sqlclean = "select clear_datacolumn_accepted_values(#{id})"
 
-    datatype = Datatypehelper.find_by_name(self.import_data_type)
+    datatype = Datatypehelper.find_by_name(import_data_type)
 
     # I would like to change this so that the SQL is in one function but it wasn't working
     # TODO: I will look at this again - SR
-    if(datatype.name == "text") then
+    if datatype.name == 'text'
       sql = "select accept_text_datacolumn_values(#{id})"
     else
-      dataset = Dataset.find(self.dataset_id)
-      comment = ""
-      unless dataset.nil?
-        comment = dataset.title
-      end
+      dataset = Dataset.find(dataset_id)
+      comment = ''
+      comment = dataset.title unless dataset.nil?
       sql = "select accept_datacolumn_values(#{datatype.id}, #{id}, #{datagroup_id}, '#{comment}')"
     end
 
@@ -126,7 +123,6 @@ class Datacolumn < ActiveRecord::Base
       connection.rollback_db_transaction
       raise
     end
-
   end
 
   def approve_datagroup(datagroup)
@@ -134,21 +130,21 @@ class Datacolumn < ActiveRecord::Base
     self.datagroup_approved = true
     self.datatype_approved = false
     self.finished = false
-    self.save
+    save
   end
 
-  def approve_datatype(datatype, user)
+  def approve_datatype(datatype, _user)
     # selecting a datatype means that the imported values can validated against the datatype.
     self.import_data_type = datatype
-    self.add_data_values
+    add_data_values
 
     self.datatype_approved = true
     self.finished = false
-    self.save
+    save
   end
 
   def has_invalid_values?
-    self.sheetcells.where(status_id: Sheetcellstatus::INVALID).exists?
+    sheetcells.where(status_id: Sheetcellstatus::INVALID).exists?
   end
 
   # returns the unique invalid uploaded sheetcells
@@ -158,32 +154,32 @@ class Datacolumn < ActiveRecord::Base
 
   # returns any invalid sheetcells with the given value
   def invalid_sheetcells_by_value(value)
-    self.sheetcells.where(status_id: Sheetcellstatus::INVALID, import_value: value)
+    sheetcells.where(status_id: Sheetcellstatus::INVALID, import_value: value)
   end
 
   # creates a category for the invalid value and assigns the category to all matching sheetcells
   def update_invalid_value(original_value, short, long, description, dataset)
     # firstly check that the category doesn't already exist in the datagroup
-    cat = self.datagroup.categories.where(short: short).first_or_create do |c|
+    cat = datagroup.categories.where(short: short).first_or_create do |c|
       c.long = long
       c.description = description
-      c.datagroup = self.datagroup
+      c.datagroup = datagroup
       c.comment = dataset.title
     end
 
     # update all invalid sheetcells with the same original value with the new category id
-    if(cat.valid?)
-      self.invalid_sheetcells_by_value(original_value).update_all(
-        :category_id => cat.id,
-        :status_id => Sheetcellstatus::VALID,
-        :accepted_value => nil,
-        :datatype_id => Datatypehelper.find_by_name("category").id
+    if cat.valid?
+      invalid_sheetcells_by_value(original_value).update_all(
+        category_id: cat.id,
+        status_id: Sheetcellstatus::VALID,
+        accepted_value: nil,
+        datatype_id: Datatypehelper.find_by_name('category').id
       )
     end
     self.finished = false
   end
 
-  def batch_approve_invalid_values(user)
+  def batch_approve_invalid_values(_user)
     sql = "select accept_invalid_values(#{id}, #{datagroup_id}, '#{dataset.title}')"
     connection = ActiveRecord::Base.connection()
     connection.execute(sql)
@@ -192,14 +188,14 @@ class Datacolumn < ActiveRecord::Base
   # this should not be happen but we thought it might be a good last step before we can
   # confirm the dataset as completely approved
   def final_check_for_valid_sheetcells
-    if self.has_invalid_values?
+    if has_invalid_values?
       self.finished = false
-      self.save
+      save
       return false
     end
 
     self.finished = true
-    self.save
+    save
     true
   end
 
@@ -209,10 +205,10 @@ class Datacolumn < ActiveRecord::Base
 
   def approval_stage
     stage = 0
-    stage = 1 if self.datagroup_approved
-    stage = 2 if self.datagroup_approved && self.datatype_approved
-    stage = 3 if self.datagroup_approved && self.datatype_approved && !self.has_invalid_values?
-    stage = 4 if self.datagroup_approved && self.datatype_approved && !self.has_invalid_values? && self.finished
+    stage = 1 if datagroup_approved
+    stage = 2 if datagroup_approved && datatype_approved
+    stage = 3 if datagroup_approved && datatype_approved && !has_invalid_values?
+    stage = 4 if datagroup_approved && datatype_approved && !has_invalid_values? && finished
     stage
   end
 
@@ -223,12 +219,12 @@ class Datacolumn < ActiveRecord::Base
   def split_me?
     # This method returns true for a column when it requires splitting.
     return false unless datagroup_approved && datatype_approved
-    return false if %w{category text}.include? self.import_data_type
-    self.sheetcells.where("category_id is not null").exists?
+    return false if %w(category text).include? import_data_type
+    sheetcells.where('category_id is not null').exists?
   end
 
   # users of a datacolumn are those who are responsible for it
-  def users= (people)
-    self.set_user_with_role(:responsible, people)
+  def users=(people)
+    set_user_with_role(:responsible, people)
   end
 end

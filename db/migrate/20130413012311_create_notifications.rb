@@ -4,7 +4,7 @@ class CreateNotifications < ActiveRecord::Migration
       t.integer :user_id
       t.text :subject
       t.text :message
-      t.boolean :read, :default => false
+      t.boolean :read, default: false
 
       t.timestamps
     end

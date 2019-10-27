@@ -1,14 +1,14 @@
 class Datafile < ActiveRecord::Base
-  belongs_to :dataset, :counter_cache => true
+  belongs_to :dataset, counter_cache: true
 
-  has_attached_file :file, :basename => "basename", :path => ":rails_root/files/uploaded/:id_:filename", validate_media_type: false
+  has_attached_file :file, basename: 'basename', path: ':rails_root/files/uploaded/:id_:filename', validate_media_type: false
   # validates_attachment_content_type :file, :content_type => ["text/csv", "application/vnd.ms-excel"]
   do_not_validate_attachment_file_type :file
 
   validates_attachment_presence :file
 
   def basename
-    return File.basename(self.file.original_filename, File.extname(self.file.original_filename))
+    File.basename(file.original_filename, File.extname(file.original_filename))
   end
 
   def path
@@ -19,20 +19,19 @@ class Datafile < ActiveRecord::Base
     return nil unless file.present?
     return @spreadsheet if defined? @spreadsheet
     @spreadsheet = case File.extname(path)
-      when '.xls' then Workbook.new(self)
-      when '.csv' then CsvData.new(self)
-      else nil
-    end
+                   when '.xls' then Workbook.new(self)
+                   when '.csv' then CsvData.new(self)
+      end
   end
-  delegate :import_data, :general_metadata_hash, :authors_list, :projects_list, :to => :spreadsheet, :allow_nil => true
+  delegate :import_data, :general_metadata_hash, :authors_list, :projects_list, to: :spreadsheet, allow_nil: true
 
   # TODO: that might be deprecated with the paperclip validation
-  validate :check_spreadsheet, :if => Proc.new {file.present?}
+  validate :check_spreadsheet, if: proc { file.present? }
   def check_spreadsheet
-    self.errors[:base] = 'We currently only support Excel-2003 and CSV files.' and return unless spreadsheet
+    errors[:base] = 'We currently only support Excel-2003 and CSV files.' && return unless spreadsheet
     unless spreadsheet.valid?
       spreadsheet.errors.to_hash.each do |k, v|
-        self.errors.add k, v
+        errors.add k, v
       end
     end
   end

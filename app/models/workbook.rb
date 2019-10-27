@@ -6,7 +6,7 @@
 ## Column headers are case-sensitive, 'CSP' is considered different from 'csp'
 ## Column headers can't be a number
 
-require "dataworkbook_format"
+require 'dataworkbook_format'
 class Workbook
   include DataworkbookFormat
 
@@ -17,7 +17,11 @@ class Workbook
 
   def initialize(datafile)
     @dataset = datafile.dataset
-    @book = Spreadsheet.open datafile.path rescue nil
+    begin
+      @book = Spreadsheet.open datafile.path
+    rescue
+      nil
+    end
     @book.io.close if @book
   end
 
@@ -25,7 +29,7 @@ class Workbook
     @wb_version ||= metadata_sheet[*WBF[:meta_version_pos]]
   end
 
-  delegate :sheet_count, :to => :book
+  delegate :sheet_count, to: :book
 
   # this method return an array of column headers in raw data sheet.
   def headers
@@ -69,7 +73,7 @@ class Workbook
   # A hash with two keys are returned: found_users and unfound_users
   def authors_list
     given_names = metadata_sheet.row(WBF[:meta_owners_start_row]).drop(1)
-    surnames  = metadata_sheet.row(WBF[:meta_owners_start_row]+1).drop(1)
+    surnames = metadata_sheet.row(WBF[:meta_owners_start_row] + 1).drop(1)
     # TODO: emails are not used right now.
     # TODO: store unfound_users into database
     # emails = metadata_sheet.row(WBF[:meta_owners_start_row]+2).drop(1)
@@ -103,7 +107,8 @@ class Workbook
     import_sheetcells
   end
 
-private
+  private
+
   # Returns the object representing the general metadata sheet.
   def metadata_sheet
     @book.worksheet(WBF[:metadata_sheet])
@@ -124,9 +129,9 @@ private
     return @columns if defined? @columns
     @columns = []
     data_description_sheet.each(1) do |row|
-      @columns << row.take(9).collect{|c| c.to_s.squish } unless row[0].blank?
+      @columns << row.take(9).collect { |c| c.to_s.squish } unless row[0].blank?
     end
-    return @columns
+    @columns
   end
 
   # Returns the object representing the categories sheet.
@@ -160,7 +165,7 @@ private
   # then, this hash becomes {header: [columnnr, datacolumn_id, data_type_id]}
   def header_info_lookup
     @header_info_lookup ||= begin
-      hash = Hash.new
+      hash = {}
       raw_data_sheet.row(0).each_with_index do |header, columnr|
         hash[header.squish] = columnr unless header.blank?
       end
@@ -205,10 +210,10 @@ private
     if datagroup[:description_not_equal]
       # if the datagroup description is not exactly same with that on portal, then append it
       # to column's definition field.
-      column[:definition] += "; Datagroup description: " + column_attr[WBF[:group_description_col]]
+      column[:definition] += '; Datagroup description: ' + column_attr[WBF[:group_description_col]]
     end
 
-    return column
+    column
   end
 
   # This method queries against existing datagroups on the portal.
@@ -218,15 +223,15 @@ private
   # id. When the datagroup description is not same with that existing on the
   # portal, a key :description_not_equal is also returned.
   def fetch_or_create_datagroup(column_attr)
-    result = {id: nil}
+    result = { id: nil }
     return result if column_attr[WBF[:group_title_col]].blank?
 
     dg_hash = {
       title: column_attr[WBF[:group_title_col]],
-      description: column_attr[WBF[:group_description_col]],
+      description: column_attr[WBF[:group_description_col]]
     }
 
-    datagroup = Datagroup.where(["title iLike ?", dg_hash[:title]]).first
+    datagroup = Datagroup.where(['title iLike ?', dg_hash[:title]]).first
     if datagroup
       result[:description_not_equal] = true if not_same?(datagroup.description, dg_hash[:description])
     else
@@ -234,17 +239,17 @@ private
     end
     result[:id] = datagroup.id
 
-    return result
+    result
   end
 
   # This method imports content in 'categories' sheet into import_categories table
   def import_categories
-    fields = %w{short long description datacolumn_id}
+    fields = %w(short long description datacolumn_id)
     import_categories_in_queue = []
     counter = 0
 
     categories_sheet.each(1) do |row|
-      row = row.take(4).collect {|c| convert_to_string(c) }
+      row = row.take(4).collect { |c| convert_to_string(c) }
 
       header = row[WBF[:category_columnheader_col]]
       short = row[WBF[:category_short_col]]
@@ -254,29 +259,28 @@ private
       long = row[WBF[:category_long_col]].blank? ? short : row[WBF[:category_long_col]]
       description = row[WBF[:category_description_col]].blank? ? long : row[WBF[:category_description_col]]
 
-      import_categories_in_queue << [ short, long, description, @header_info_lookup[header][1] ]
+      import_categories_in_queue << [short, long, description, @header_info_lookup[header][1]]
       counter += 1
 
       # import categories in batch of about 1000.
-      if counter >= 1000
-        ImportCategory.import fields, import_categories_in_queue, :validate => false
-        import_categories_in_queue.clear
-        counter = 0
-      end
+      next unless counter >= 1000
+      ImportCategory.import fields, import_categories_in_queue, validate: false
+      import_categories_in_queue.clear
+      counter = 0
     end
-    ImportCategory.import fields, import_categories_in_queue, :validate => false
+    ImportCategory.import fields, import_categories_in_queue, validate: false
   end
 
   def add_acknowledged_people
     rows = []
     data_responsible_person_sheet.each(1) do |row|
-      rows << row.take(3).collect {|c| c.try(:squish)} unless row[0].blank?
+      rows << row.take(3).collect { |c| c.try(:squish) } unless row[0].blank?
     end
 
-    rows.group_by{|r| r[0].downcase }.each do |header, row|
+    rows.group_by { |r| r[0].downcase }.each do |header, row|
       next unless @header_info_lookup[header]
 
-      users = row.collect{|r| r.drop(1)}
+      users = row.collect { |r| r.drop(1) }
       ppl = find_users(users)
       datacolumn = Datacolumn.find @header_info_lookup[header][1]
       ppl[:found_users].each do |user|
@@ -297,47 +301,45 @@ private
     1.upto(raw_data_sheet.row_count - 1).each do |rownr|
       raw_data_sheet.row(rownr).each_with_index do |cell, columnnr|
         cell = convert_to_string(cell)
-        next if cell.blank? || !column_info_lookup.assoc(columnnr)  # Skip columns with blank headers
+        next if cell.blank? || !column_info_lookup.assoc(columnnr) # Skip columns with blank headers
 
-        sheetcells_in_queue << [column_info_lookup.assoc(columnnr)[1], cell, rownr+1, column_info_lookup.assoc(columnnr)[2]]
+        sheetcells_in_queue << [column_info_lookup.assoc(columnnr)[1], cell, rownr + 1, column_info_lookup.assoc(columnnr)[2]]
         counter += 1
       end
 
-      if counter >= 1000
-        save_data_into_database(sheetcells_in_queue, rownr)
-        counter = 0
-        sheetcells_in_queue.clear
-      end
+      next unless counter >= 1000
+      save_data_into_database(sheetcells_in_queue, rownr)
+      counter = 0
+      sheetcells_in_queue.clear
     end
-    save_data_into_database(sheetcells_in_queue, raw_data_sheet.row_count-1)
+    save_data_into_database(sheetcells_in_queue, raw_data_sheet.row_count - 1)
   end
 
   def save_data_into_database(sheetcells, rownr)
     columns = [:datacolumn_id, :import_value, :row_number, :datatype_id]
-    Sheetcell.import columns, sheetcells, :validate => false
-    @dataset.update_attribute(:import_status, "Imported #{rownr} of #{raw_data_sheet.row_count-1} rows")
+    Sheetcell.import columns, sheetcells, validate: false
+    @dataset.update_attribute(:import_status, "Imported #{rownr} of #{raw_data_sheet.row_count - 1} rows")
   end
 
   # gives found and unfound users
   # usernames must be an array af the formm [[firstname_1, lastname_1], [firstname_2, lastname_2]]
   def find_users(usernames = [])
-    result = {found_users: [], unfound_usernames: []}
+    result = { found_users: [], unfound_usernames: [] }
 
     usernames.each do |un|
       first = clean_string(un[0])
       last = clean_string(un[1])
-      unless first.blank? && last.blank?
-        u = User.where(['firstname iLike :first AND lastname iLike :last', first: first, last: last]).first
-        if u
-          result[:found_users] << u
-        else
-          result[:unfound_usernames] << "#{first} #{last}"
-        end
+      next if first.blank? && last.blank?
+      u = User.where(['firstname iLike :first AND lastname iLike :last', first: first, last: last]).first
+      if u
+        result[:found_users] << u
+      else
+        result[:unfound_usernames] << "#{first} #{last}"
       end
     end
-    result.each {|k, v| v.uniq! }
+    result.each { |_k, v| v.uniq! }
 
-    return result
+    result
   end
 
   # this method is used to process values in raw data sheet and categories sheet.
@@ -347,11 +349,11 @@ private
     return input if input.nil?
 
     if input.class == Spreadsheet::Formula
-      input = input.value.is_a?(Spreadsheet::Excel::Error) ? "< Error in Excel Formula >" : input.value
+      input = input.value.is_a?(Spreadsheet::Excel::Error) ? '< Error in Excel Formula >' : input.value
     end
     # Excel sometimes appends a decimal digit to integer values, here we try to trim it off.
-    return input.to_s.sub(/\.0$/,'') if input.is_a? Numeric
-    return input.to_s(:db) if input.is_a?(Date) or input.is_a?(DateTime)
+    return input.to_s.sub(/\.0$/, '') if input.is_a? Numeric
+    return input.to_s(:db) if input.is_a?(Date) || input.is_a?(DateTime)
 
     input.to_s.squish
   end
@@ -366,6 +368,6 @@ private
     # blank test_string represents that it uses the info on the portal.
     # this allows users to omit datagroup description to avoid unconscious typo.
     return false if test_string.blank?
-    return datagroup_string.squish.downcase != test_string.squish.downcase
+    !datagroup_string.squish.casecmp(test_string.squish.downcase).zero?
   end
 end

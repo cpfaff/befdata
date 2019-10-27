@@ -5,7 +5,7 @@ class RemoveUserIdAndStatusIdFromCategories < ActiveRecord::Migration
   end
 
   def down
-    change_table :categories, :bulk => true do |t|
+    change_table :categories, bulk: true do |t|
       t.integer :user_id
       t.integer :status_id
     end

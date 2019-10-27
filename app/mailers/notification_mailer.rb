@@ -1,9 +1,8 @@
 class NotificationMailer < ActionMailer::Base
-
-  default :from => self.smtp_settings[:default_from]
+  default from: smtp_settings[:default_from]
 
   def data_request_rejected(paperproposal)
-    set_host #before action and filter only will work in rails 4
+    set_host # before action and filter only will work in rails 4
 
     @paperproposal = paperproposal
     user = @paperproposal.author
@@ -15,7 +14,7 @@ class NotificationMailer < ActionMailer::Base
   end
 
   def auto_accept_for_free_datasets(user, paperproposal)
-    set_host #before action and filter only will work in rails 4
+    set_host # before action and filter only will work in rails 4
 
     @user = user
     @paperproposal = paperproposal
@@ -27,7 +26,7 @@ class NotificationMailer < ActionMailer::Base
   end
 
   def dataset_edit(user, dataset_edit, user_function)
-    set_host #before action and filter only will work in rails 4
+    set_host # before action and filter only will work in rails 4
 
     @user = user
     @dataset_edit = dataset_edit
@@ -40,24 +39,23 @@ class NotificationMailer < ActionMailer::Base
     send_mail(user, subject)
   end
 
-private
+  private
 
   def create_notification(user, subject, message)
-    user.notifications.create(:subject => subject, :message => message)
+    user.notifications.create(subject: subject, message: message)
   end
 
   def send_mail(user, subject)
     return unless user.receive_emails
 
-    recipient = Rails.env == 'development' ? self.smtp_settings[:default_from] : user.email # dev mode sends maisl to notification address
+    recipient = Rails.env == 'development' ? smtp_settings[:default_from] : user.email # dev mode sends maisl to notification address
 
-    mail(:to => recipient, :subject => subject) do |format|
-      format.html {render :layout => 'notification_mail'}
+    mail(to: recipient, subject: subject) do |format|
+      format.html { render layout: 'notification_mail' }
     end
   end
 
   def set_host
-    @host = self.smtp_settings[:application_host]
+    @host = smtp_settings[:application_host]
   end
-
 end

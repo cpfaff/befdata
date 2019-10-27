@@ -4,9 +4,9 @@ class RemoveDatatype < ActiveRecord::Migration
   end
 
   def down
-    create_table "datatypes" do |t|
-      t.string "name"
-      t.string "format"
+    create_table 'datatypes' do |t|
+      t.string 'name'
+      t.string 'format'
     end
   end
 end

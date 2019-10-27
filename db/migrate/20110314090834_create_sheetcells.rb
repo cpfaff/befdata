@@ -1,13 +1,13 @@
 class CreateSheetcells < ActiveRecord::Migration
   def self.up
     create_table :sheetcells do |t|
-      t.integer  "datacolumn_id"
-      t.integer  "value_id"
-      t.string   "value_type"
-      t.integer  "rownr"
-      t.text     "comment"
-      t.integer  "observation_id"
-      t.string   "import_value"
+      t.integer  'datacolumn_id'
+      t.integer  'value_id'
+      t.string   'value_type'
+      t.integer  'rownr'
+      t.text     'comment'
+      t.integer  'observation_id'
+      t.string   'import_value'
       t.timestamps
     end
   end

@@ -9,7 +9,7 @@ class AddIndexes3 < ActiveRecord::Migration
     remove_index :datagroups, [:id]
 
     # datasets_projects
-    add_index :dataset_projects, [:dataset_id,:project_id]
+    add_index :dataset_projects, [:dataset_id, :project_id]
 
     # dataset
     add_index :datasets, [:upload_spreadsheet_id]
@@ -35,7 +35,7 @@ class AddIndexes3 < ActiveRecord::Migration
     add_index :datagroups, [:id]
 
     # datasets_projects
-    remove_index :dataset_projects, [:dataset_id,:project_id]
+    remove_index :dataset_projects, [:dataset_id, :project_id]
 
     # dataset
     remove_index :datasets, [:upload_spreadsheet_id]

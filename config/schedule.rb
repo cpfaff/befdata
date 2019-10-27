@@ -5,7 +5,6 @@
 # whenever --write-crontab --set 'environment=production'
 # ------------------------------------------------------
 
-
 # For cron scheduled tasks to play along with rvm on ubuntu it is necessary to uncomment
 # # If not running interactively, don't do anything
 # [ -z "$PS1" ] && return
@@ -19,11 +18,11 @@ every 3.minutes do
   runner 'ExportedFile.regenerate_downloads_for_outdated_files'
 end
 
-every 1.day, :at => '0:10 am' do
-  runner "Paperproposal.revoke_old_download_rights"
+every 1.day, at: '0:10 am' do
+  runner 'Paperproposal.revoke_old_download_rights'
 end
 
 # cleanup orphan datagroups and categories
-#every :day, :at => '1:00 am' do
+# every :day, :at => '1:00 am' do
 #  rake 'cleanup:all'
-#end
+# end

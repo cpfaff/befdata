@@ -1,11 +1,10 @@
 class DatafilesController < ApplicationController
-
   skip_before_filter :deny_access_to_all
   before_filter :load_dataset_and_datafile
   access_control do
     action :download, :destroy do
       allow :admin
-      allow :owner, :of => :dataset
+      allow :owner, of: :dataset
     end
   end
 
@@ -18,7 +17,8 @@ class DatafilesController < ApplicationController
     redirect_to :back
   end
 
-private
+  private
+
   def load_dataset_and_datafile
     @dataset = Dataset.find(params[:dataset_id])
     @datafile = @dataset.datafiles.find(params[:id])

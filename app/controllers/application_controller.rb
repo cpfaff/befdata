@@ -1,25 +1,25 @@
 class ::ApplicationController < ActionController::Base
   protect_from_forgery
   helper_method :current_user_session, :current_user, :get_all_paperproposal_years
-  #layout :layout_from_config
+  # layout :layout_from_config
 
   access_control :deny_access_to_all do
     deny all
   end
-  rescue_from "Acl9::AccessDenied", :with => :access_denied
+  rescue_from 'Acl9::AccessDenied', with: :access_denied
 
   def dataset_is_free_for_members
-    return true if @dataset.free_for_members? unless @dataset.blank?
+    return true unless @dataset.blank? || !@dataset.free_for_members?
     false
   end
 
   def dataset_is_free_for_public
-    return true if @dataset.free_for_public? unless @dataset.blank?
+    return true unless @dataset.blank? || !@dataset.free_for_public?
     false
   end
 
-  def dataset_is_free_for_project_of_user (user = current_user)
-    return true if (@dataset.free_within_projects? && !(user.projects & @dataset.projects).empty?) unless @dataset.blank?
+  def dataset_is_free_for_project_of_user(user = current_user)
+    return true unless @dataset.blank? || !(@dataset.free_within_projects? && !(user.projects & @dataset.projects).empty?)
     false
   end
 
@@ -28,13 +28,13 @@ class ::ApplicationController < ActionController::Base
     years.uniq.sort.reverse
   end
 
-protected
+  protected
 
   def layout_from_config
     LayoutHelper::BEF_LAYOUT
   end
 
-private
+  private
 
   def current_user_session
     return @current_user_session if defined?(@current_user_session)
@@ -48,17 +48,17 @@ private
 
   def require_no_user
     if current_user
-      flash[:error] = "You must be logged out to access this page"
+      flash[:error] = 'You must be logged out to access this page'
       redirect_back_or_default root_url
       return false
     end
   end
 
-  def redirect_back_or_default (default = root_url)
-    unless request.env['HTTP_REFERER'].blank?
-      redirect_to :back
-    else
+  def redirect_back_or_default(default = root_url)
+    if request.env['HTTP_REFERER'].blank?
       redirect_to default
+    else
+      redirect_to :back
     end
   end
 
@@ -79,7 +79,7 @@ private
     raise 'A collection of allowed sorting options should be specified!' unless options[:collection].present?
     options[:default] ||= options[:collection].first
     params[:sort] = options[:default] unless options[:collection].include?(params[:sort])
-    params[:direction] = 'asc' unless ["desc", "asc"].include?(params[:direction])
+    params[:direction] = 'asc' unless %w(desc asc).include?(params[:direction])
   end
 
   def access_denied

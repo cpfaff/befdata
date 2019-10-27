@@ -1,7 +1,7 @@
 class RenameDatasetProjectJoinTableAndRemovePrimaryKeyAndComment < ActiveRecord::Migration
   def self.up
     rename_table :dataset_projects, :datasets_projects
-    remove_column :datasets_projects,  :id
+    remove_column :datasets_projects, :id
     remove_column :datasets_projects, :comment
   end
 

@@ -5,7 +5,7 @@ class RemoveObsoleteFields < ActiveRecord::Migration
   end
 
   def down
-    add_column :datasets, :student_file, :boolean, :default => false
+    add_column :datasets, :student_file, :boolean, default: false
     add_index :datasets, :filename
   end
 end

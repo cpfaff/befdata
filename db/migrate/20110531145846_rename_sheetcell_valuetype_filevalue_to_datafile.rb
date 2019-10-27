@@ -1,8 +1,8 @@
 class RenameSheetcellValuetypeFilevalueToDatafile < ActiveRecord::Migration
   def self.up
-    filevalue_sheetcells = Sheetcell.all.select{|cl| cl.value_type == "Filevalue"}
+    filevalue_sheetcells = Sheetcell.all.select { |cl| cl.value_type == 'Filevalue' }
     filevalue_sheetcells.each do |cl|
-      cl.update_attributes(:value_type => "Datafile")
+      cl.update_attributes(value_type: 'Datafile')
     end # sheetcell renaming
   end
 

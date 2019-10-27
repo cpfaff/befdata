@@ -52,7 +52,8 @@ Befchina::Application.configure do
   # config.action_mailer.raise_delivery_errors = false
   config.action_mailer.delivery_method = :smtp
   ActionMailer::Base.smtp_settings = YAML.load_file(
-      Rails.root.join('config', 'mailers.yml')).try(:to_options)
+    Rails.root.join('config', 'mailers.yml')
+  ).try(:to_options)
 
   # Enable threaded mode
   # config.threadsafe!
@@ -68,10 +69,9 @@ Befchina::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
-  Paperclip.options[:command_path] = "/usr/bin"
+  Paperclip.options[:command_path] = '/usr/bin'
   Paperclip.options[:log] = false
 
   # Configures Party-Fould exception handling middleware (needs to be on last position)
   # config.middleware.use('PartyFoul::Middleware')
-
 end

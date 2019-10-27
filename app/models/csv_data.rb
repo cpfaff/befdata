@@ -3,8 +3,8 @@ class CsvData
   validate :check_csvfile
 
   # define 'strip' converter
-  CSV::Converters[:strip] = lambda {|f| f.try(:squish) }
-  CSV::HeaderConverters[:strip] = lambda {|f| f.try(:squish) }
+  CSV::Converters[:strip] = ->(f) { f.try(:squish) }
+  CSV::HeaderConverters[:strip] = ->(f) { f.try(:squish) }
 
   OPTS = {
     headers: true,
@@ -12,7 +12,7 @@ class CsvData
     skip_blanks: true,
     converters: :strip,
     header_converters: :strip
-  }
+  }.freeze
 
   def initialize(datafile)
     @dataset = datafile.dataset
@@ -21,9 +21,9 @@ class CsvData
   end
 
   def general_metadata_hash
-    {} 
+    {}
   end
-  
+
   def authors_list
     {
       found_users: [],
@@ -40,7 +40,7 @@ class CsvData
     CSV.open @path, OPTS.merge(col_sep: @delimitor) do |csv|
       @headers = csv.first.headers
     end
-    return @headers
+    @headers
   end
 
   def import_data
@@ -48,25 +48,29 @@ class CsvData
     import_sheetcells
   end
 
-private
+  private
 
   def detect_separator # TODO: this rule is not strict
-    first_row = File.open(@path) {|f| f.readline }
+    first_row = File.open(@path, &:readline)
     # because TAB is rarely part of data, if tabs are detected in the header,
     # it's very possible that it's the delimitor.
-    first_row.count("\t") > 0 ? "\t" : "," rescue nil
+    begin
+      first_row.count("\t") > 0 ? "\t" : ','
+    rescue
+      nil
+    end
   end
 
   def check_csvfile
     begin
       headers
     rescue CSV::MalformedCSVError => e
-      errors.add :file, "is not valid CSV file." and return
+      errors.add(:file, 'is not valid CSV file.') && (return)
     rescue ArgumentError => e
-      errors.add :base, "File with non-english characters should be in UTF-8 encoding" and return if e.message =~ /invalid byte sequence in UTF-8/
+      errors.add(:base, 'File with non-english characters should be in UTF-8 encoding') && return if e.message =~ /invalid byte sequence in UTF-8/
     end
-    errors.add :base, 'Failed to find data in your file' and return unless headers.present?
-    errors.add :base, 'It seems one or more columns do not have a header' and return if headers.any? {|h| h.blank? }
+    errors.add(:base, 'Failed to find data in your file') && return unless headers.present?
+    errors.add(:base, 'It seems one or more columns do not have a header') && return if headers.any?(&:blank?)
     errors.add :file, 'column headers must be uniq' unless headers_unique?
   end
 
@@ -111,13 +115,12 @@ private
     columns.each do |dc|
       hash[dc.columnheader] = dc.id
     end
-    return hash
+    hash
   end
 
   def save_data_into_database(sheetcells)
     columns = [:datacolumn_id, :import_value, :row_number, :datatype_id]
-    Sheetcell.import columns, sheetcells, :validate => false
-    @dataset.update_attribute(:import_status, "Imported #{$INPUT_LINE_NUMBER-1} rows")
+    Sheetcell.import columns, sheetcells, validate: false
+    @dataset.update_attribute(:import_status, "Imported #{$INPUT_LINE_NUMBER - 1} rows")
   end
-
 end

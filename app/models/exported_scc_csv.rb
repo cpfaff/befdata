@@ -1,6 +1,5 @@
 class ExportedSccCsv < ExportedFile
-
-  has_attached_file :file, :path => ":rails_root/files/generated/:dataset_id_generated-download_scc.csv", validate_media_type: false
+  has_attached_file :file, path: ':rails_root/files/generated/:dataset_id_generated-download_scc.csv', validate_media_type: false
   # validates_attachment_content_type :file, :content_type => ["text/csv"]
   do_not_validate_attachment_file_type :file
 
@@ -9,13 +8,13 @@ class ExportedSccCsv < ExportedFile
   end
 
   def export
-    self.update_attribute(:status, STARTED)
+    update_attribute(:status, STARTED)
 
     tf = Tempfile.new("scc-csv-#{dataset_id}-temp")
 
     # gather columns and values
     all_columns = []
-    dataset.datacolumns.order("columnnr ASC").each do |dc|
+    dataset.datacolumns.order('columnnr ASC').each do |dc|
       column = []
       category_column = []
       column[0] = dc.columnheader
@@ -35,12 +34,12 @@ class ExportedSccCsv < ExportedFile
     end
 
     # bring to same length to transpose
-    max_length = all_columns.map{|c| c.length}.max
-    all_columns.each{|c|   c[max_length-1] = nil unless c.length == max_length}
-    all_columns  = all_columns.transpose
+    max_length = all_columns.map(&:length).max
+    all_columns.each { |c| c[max_length - 1] = nil unless c.length == max_length }
+    all_columns = all_columns.transpose
 
-    CSV.open tf, mode='w' do |csv|
-      all_columns.each {|c| csv << c}
+    CSV.open tf, mode = 'w' do |csv|
+      all_columns.each { |c| csv << c }
     end
 
     self.file = tf

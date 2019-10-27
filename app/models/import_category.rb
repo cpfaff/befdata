@@ -9,8 +9,8 @@ class ImportCategory < ActiveRecord::Base
   before_validation :try_filling_missing_values
 
   def try_filling_missing_values
-    if self.short then
-      self.long ||= self.short
+    if short
+      self.long ||= short
       self.description ||= self.long
     end
   end
