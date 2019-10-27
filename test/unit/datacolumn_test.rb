@@ -1,45 +1,45 @@
 require 'test_helper'
- 
+
 class DatacolumnTest < ActiveSupport::TestCase
   self.use_transactional_fixtures = false
 
   # uploaded_values should return the first n unique uploaded values for the datacolumn.
-  test "imported_values_test_number_returned" do
+  test 'imported_values_test_number_returned' do
     n = 2
     datacolumn = Datacolumn.find(33)
     firstN = datacolumn.imported_values(n)
-    assert(firstN.length==n)
+    assert(firstN.length == n)
   end
 
-   test "imported_values_test_uniqueness" do
+  test 'imported_values_test_uniqueness' do
     n = 3
     datacolumn = Datacolumn.find(36)
     firstN = datacolumn.imported_values(n)
-    array = firstN.collect{ |f| f[:import_value] }
-    assert(array.uniq.length==n)
-   end
+    array = firstN.collect { |f| f[:import_value] }
+    assert(array.uniq.length == n)
+  end
 
-  test "accepted_values_test_number_returned" do
+  test 'accepted_values_test_number_returned' do
     n = 2
     datacolumn = Datacolumn.find(33)
     firstN = datacolumn.accepted_values(n)
-    assert(firstN.length==n)
+    assert(firstN.length == n)
   end
 
-  test "accepted_values_test_uniqueness" do
+  test 'accepted_values_test_uniqueness' do
     n = 3
     datacolumn = Datacolumn.find(36)
     firstN = datacolumn.accepted_values(n)
-    array = firstN.collect{ |f| f[:accepted_value] }
-    assert(array.uniq.length==n)
+    array = firstN.collect { |f| f[:accepted_value] }
+    assert(array.uniq.length == n)
   end
 
-  test "values_stored" do
+  test 'values_stored' do
     datacolumn = Datacolumn.find(34)
     assert(datacolumn.values_stored?)
   end
 
-  test "accept_text_datacolumn_values" do
+  test 'accept_text_datacolumn_values' do
     datacolumn = Datacolumn.find(41)
     datacolumn.add_data_values
 
@@ -49,13 +49,13 @@ class DatacolumnTest < ActiveSupport::TestCase
     end
   end
 
-  test "accept_number_datacolumn_values" do
+  test 'accept_number_datacolumn_values' do
     datacolumn = Datacolumn.find(42)
     datacolumn.add_data_values
 
-    valid_numbers=0
+    valid_numbers = 0
     datacolumn.sheetcells.each do |cell|
-      if cell.import_value == cell.accepted_value then
+      if cell.import_value == cell.accepted_value
         # check that the data type is still a number
         assert(cell.datatype_id == 7)
         assert(cell.status_id == Sheetcellstatus::VALID)
@@ -71,13 +71,13 @@ class DatacolumnTest < ActiveSupport::TestCase
     assert(valid_numbers == 6)
   end
 
-  test "accept_numbers_with_decimals_datacolumn_values" do
+  test 'accept_numbers_with_decimals_datacolumn_values' do
     datacolumn = Datacolumn.find(55)
     datacolumn.add_data_values
 
-    valid_numbers=0
+    valid_numbers = 0
     datacolumn.sheetcells.each do |cell|
-      if cell.import_value == cell.accepted_value then
+      if cell.import_value == cell.accepted_value
         # check that the data type is still a number
         assert(cell.datatype_id == 7)
         assert(cell.status_id == Sheetcellstatus::VALID)
@@ -93,13 +93,13 @@ class DatacolumnTest < ActiveSupport::TestCase
     assert(valid_numbers == 26)
   end
 
-  test "accept_date_1_datacolumn_values" do
+  test 'accept_date_1_datacolumn_values' do
     datacolumn = Datacolumn.find(43)
     datacolumn.add_data_values
 
-    valid_dates=0
+    valid_dates = 0
     datacolumn.sheetcells.each do |cell|
-      if cell.import_value == cell.accepted_value then
+      if cell.import_value == cell.accepted_value
         # check that the data type is still a date
         assert(cell.datatype_id == 3)
         valid_dates += 1
@@ -115,13 +115,13 @@ class DatacolumnTest < ActiveSupport::TestCase
     assert(valid_dates == 6)
   end
 
-  test "accept_year_datacolumn_values" do
+  test 'accept_year_datacolumn_values' do
     datacolumn = Datacolumn.find(44)
     datacolumn.add_data_values
 
-    valid_years=0
+    valid_years = 0
     datacolumn.sheetcells.each do |cell|
-      if cell.import_value == cell.accepted_value then
+      if cell.import_value == cell.accepted_value
         # check that the data type is still a year
         assert(cell.datatype_id == 2)
         valid_years += 1
@@ -137,18 +137,18 @@ class DatacolumnTest < ActiveSupport::TestCase
     assert(valid_years == 6)
   end
 
-  test "accept_sheet_match_category_datacolumn_values" do
+  test 'accept_sheet_match_category_datacolumn_values' do
     datacolumn = Datacolumn.find(45)
     datacolumn.add_data_values
 
     sheet_match_count = 0
     invalid_count = 0
     datacolumn.sheetcells.each do |cell|
-      if(cell.status_id == Sheetcellstatus::SHEET_MATCH) then
-        assert(cell.category_id > 0, "A category id has not been set")
+      if cell.status_id == Sheetcellstatus::SHEET_MATCH
+        assert(cell.category_id > 0, 'A category id has not been set')
         sheet_match_count += 1
-      elsif(cell.status_id == Sheetcellstatus::INVALID) then
-        assert(cell.category_id.nil?, "A category id has been set for an invalid value")
+      elsif cell.status_id == Sheetcellstatus::INVALID
+        assert(cell.category_id.nil?, 'A category id has been set for an invalid value')
         invalid_count += 1
       end
     end
@@ -157,23 +157,23 @@ class DatacolumnTest < ActiveSupport::TestCase
     assert(datacolumn.invalid_values.count == invalid_count)
   end
 
-  test "accept_category_datacolumn_values" do
+  test 'accept_category_datacolumn_values' do
     datacolumn = Datacolumn.find(46)
     datacolumn.add_data_values
 
     sheet_match_count = 0
     invalid_count = 0
-    portal_match_count=0
+    portal_match_count = 0
     datacolumn.sheetcells.each do |cell|
-      if(cell.status_id == Sheetcellstatus::SHEET_MATCH) then
-        assert(cell.category_id > 0, "A category id has not been set")
+      if cell.status_id == Sheetcellstatus::SHEET_MATCH
+        assert(cell.category_id > 0, 'A category id has not been set')
         sheet_match_count += 1
-      elsif(cell.status_id == Sheetcellstatus::INVALID) then
-        assert(cell.category_id.nil?, "A category id has been set for an invalid value")
+      elsif cell.status_id == Sheetcellstatus::INVALID
+        assert(cell.category_id.nil?, 'A category id has been set for an invalid value')
         assert(cell.accepted_value.nil?)
         invalid_count += 1
-      elsif(cell.status_id == Sheetcellstatus::PORTAL_MATCH) then
-        assert(cell.category_id > 0, "A category id has not been set")
+      elsif cell.status_id == Sheetcellstatus::PORTAL_MATCH
+        assert(cell.category_id > 0, 'A category id has not been set')
         invalid_count += 1
       end
     end
@@ -183,31 +183,31 @@ class DatacolumnTest < ActiveSupport::TestCase
     assert(portal_match_count == 0, "Portal match count doesn't equal 0")
   end
 
-  test "not_accept_dmy_date_format_any_more" do
+  test 'not_accept_dmy_date_format_any_more' do
     datacolumn = Datacolumn.find(47)
     datacolumn.add_data_values
 
     invalid_count = 0
     datacolumn.sheetcells.each do |cell|
-      #check that all date(d.m.y) is considered as "unknown"
+      # check that all date(d.m.y) is considered as "unknown"
       assert(cell.datatype_id == 8)
       assert(cell.accepted_value.nil?)
       assert(cell.status_id == Sheetcellstatus::INVALID)
       invalid_count += 1
     end
     # there should be 7 valid dates
-    assert invalid_count==8
+    assert invalid_count == 8
     assert(datacolumn.invalid_values.count == invalid_count)
   end
 
-  test "accept_number_2_datacolumn_values" do
+  test 'accept_number_2_datacolumn_values' do
     datacolumn = Datacolumn.find(48)
     datacolumn.add_data_values
 
-    valid_numbers=0
+    valid_numbers = 0
     invalid_count = 0
     datacolumn.sheetcells.each do |cell|
-      if cell.import_value == cell.accepted_value then
+      if cell.import_value == cell.accepted_value
         # check that the data type is still a number
         assert(cell.datatype_id == 7)
         assert(cell.status_id == Sheetcellstatus::VALID)
@@ -221,11 +221,11 @@ class DatacolumnTest < ActiveSupport::TestCase
       end
     end
     # there should be 6 valid numbers
-    assert(valid_numbers == 6, "There are not 6 valid numbers")
+    assert(valid_numbers == 6, 'There are not 6 valid numbers')
     assert(datacolumn.invalid_values.count == invalid_count)
   end
 
-  test "approve_invalid_values" do
+  test 'approve_invalid_values' do
     datacolumn = Datacolumn.find(49)
     user = User.find(1)
     assert(datacolumn.invalid_values.count == 1)
@@ -239,7 +239,7 @@ class DatacolumnTest < ActiveSupport::TestCase
     assert(datacolumn.invalid_values.count == 0)
   end
 
-  test "approve_invalid_values_2" do
+  test 'approve_invalid_values_2' do
     datacolumn = Datacolumn.find(56)
     user = User.find(1)
     assert(datacolumn.invalid_values.count == 1)

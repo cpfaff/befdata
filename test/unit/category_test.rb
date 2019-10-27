@@ -1,13 +1,12 @@
 require 'test_helper'
 
 class CategoryTest < ActiveSupport::TestCase
-
-  test "creating category without short should not work" do
+  test 'creating category without short should not work' do
     c = Category.new
     assert !c.save
   end
 
-  test "autofill missing long and description" do
+  test 'autofill missing long and description' do
     c = Category.new
     c.short = 'testshort'
     assert c.save
@@ -20,11 +19,9 @@ class CategoryTest < ActiveSupport::TestCase
     orig_invalidated_at_excel = dataset.exported_excel.invalidated_at
     orig_invalidated_at_csv = dataset.exported_csv.invalidated_at
 
-    Category.find(category_id).update_attributes(:comment => "test triggers")
+    Category.find(category_id).update_attributes(comment: 'test triggers')
 
     assert dataset.exported_excel(true).invalidated_at > orig_invalidated_at_excel
     assert dataset.exported_csv(true).invalidated_at > orig_invalidated_at_csv
-
   end
-
 end

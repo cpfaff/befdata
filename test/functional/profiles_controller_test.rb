@@ -9,46 +9,46 @@ class ProfilesControllerTest < ActionController::TestCase
     get :edit
     assert_not_nil flash[:error]
   end
-  test "logged-in user can visit profile page" do
+  test 'logged-in user can visit profile page' do
     login_nadrowski
     get :show
     assert_success_no_error
   end
 
-  test "one can edit his/her own profile" do
+  test 'one can edit his/her own profile' do
     login_nadrowski
     get :edit
     assert_success_no_error
   end
-  test "one can update the profile" do
+  test 'one can update the profile' do
     login_nadrowski
-    post :update, :user => {:city => 'testcity'}
-    assert_redirected_to "/profile"
-    assert_equal 'testcity', User.find_by_login("nadrowski").city
+    post :update, user: { city: 'testcity' }
+    assert_redirected_to '/profile'
+    assert_equal 'testcity', User.find_by_login('nadrowski').city
   end
-  test "updating should ignore restrictive parameters" do
-    login_user "Phdstudentnutrientcycling"
-    post :update, :user => {:city => 'testcity', :admin => "1", :project_board => "1"}
+  test 'updating should ignore restrictive parameters' do
+    login_user 'Phdstudentnutrientcycling'
+    post :update, user: { city: 'testcity', admin: '1', project_board: '1' }
     assert_success_no_error
-    u = User.find_by_login("Phdstudentnutrientcycling")
+    u = User.find_by_login('Phdstudentnutrientcycling')
     assert !u.admin?
     assert !u.project_board
   end
-  test "user can update its api login credentials" do
+  test 'user can update its api login credentials' do
     login_nadrowski
-    old_user_credentials = User.find_by_login("nadrowski").single_access_token
+    old_user_credentials = User.find_by_login('nadrowski').single_access_token
     get :update_credentials
-    new_user_credentials = User.find_by_login("nadrowski").single_access_token
+    new_user_credentials = User.find_by_login('nadrowski').single_access_token
     assert_not_equal(old_user_credentials, new_user_credentials)
   end
 
-  test "show open votes" do
+  test 'show open votes' do
     login_nadrowski
     get :votes
     assert_success_no_error
   end
 
-  test "show voting history" do
+  test 'show voting history' do
     login_nadrowski
     get :votes_history
     assert_success_no_error

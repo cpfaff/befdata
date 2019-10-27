@@ -2,7 +2,6 @@ require 'test_helper'
 require 'spreadsheet'
 
 class WorkbookTest < ActiveSupport::TestCase
-
   def setup
     @dataset = Dataset.find(5)
     @workbook = Workbook.new(@dataset.current_datafile)
@@ -12,19 +11,19 @@ class WorkbookTest < ActiveSupport::TestCase
     assert @workbook.valid?
   end
 
-  test "workbook should have four column headers" do
+  test 'workbook should have four column headers' do
     assert_equal 4, @workbook.headers.length
   end
 
-  test "Authors should be recognized correcty" do
+  test 'Authors should be recognized correcty' do
     assert_equal 1, @workbook.authors_list[:found_users].length
     assert_equal 1, @workbook.authors_list[:unfound_usernames].length
 
-    assert_equal "Karin", @workbook.authors_list[:found_users].first.firstname
-    assert_match "Verena", @workbook.authors_list[:unfound_usernames].first
+    assert_equal 'Karin', @workbook.authors_list[:found_users].first.firstname
+    assert_match 'Verena', @workbook.authors_list[:unfound_usernames].first
   end
 
-  test "general metadata hash should fill up correctly" do
+  test 'general metadata hash should fill up correctly' do
     assert_equal 'Test species name import', @workbook.general_metadata_hash[:title]
     assert_match /Comparative Study Plots/,  @workbook.general_metadata_hash[:abstract]
     assert_match /National Forest Reserve/, @workbook.general_metadata_hash[:spatialextent]
