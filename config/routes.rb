@@ -1,17 +1,16 @@
 Befchina::Application.routes.draw do
+  root to: 'pages#home'
 
-  root :to => "pages#home"
-
-  resource :user_session, :only => [:create]
+  resource :user_session, only: [:create]
   match 'logout' => 'user_sessions#destroy', :as => :logout
 
   resources :users
-  resource :profile, :only => [:show, :edit, :update] do
+  resource :profile, only: [:show, :edit, :update] do
     member do
       get :votes, :votes_history
       post :update_credentials
-      resources :notifications, :only => [:index, :destroy] do
-        get :mark_as_read, :on => :member
+      resources :notifications, only: [:index, :destroy] do
+        get :mark_as_read, on: :member
       end
     end
   end
@@ -23,12 +22,12 @@ Befchina::Application.routes.draw do
 
   # resources :datasets, :except => [:index] do
   resources :datasets do
-    post :create_with_datafile, :on => :collection
-    resources :datafiles, :only => [:destroy] do
-      get :download, :on => :member
+    post :create_with_datafile, on: :collection
+    resources :datafiles, only: [:destroy] do
+      get :download, on: :member
     end
-    resources :dataset_edits, :only => [:index] do
-      post :submit, :on => :member
+    resources :dataset_edits, only: [:index] do
+      post :submit, on: :member
     end
     member do
       post :update_workbook, :approve_predefined, :batch_update_columns
@@ -37,13 +36,13 @@ Befchina::Application.routes.draw do
     end
   end
 
-  scope :path => "/files" do
-    resources :freeformats, :only => [:create, :update, :destroy] do
-      get :download, :on => :member
+  scope path: '/files' do
+    resources :freeformats, only: [:create, :update, :destroy] do
+      get :download, on: :member
     end
   end
 
-  resources :keywords, :controller => 'tags', :only => [:index, :show] do
+  resources :keywords, controller: 'tags', only: [:index, :show] do
     collection do
       get :manage
       post :delete, :pre_rename, :pre_merge, :rename, :merge
@@ -76,24 +75,23 @@ Befchina::Application.routes.draw do
   match 'cart' => 'carts#show', :as => 'current_cart'
 
   resources :datagroups do
-    resources :categories, :only => [:index, :create, :new]
+    resources :categories, only: [:index, :create, :new]
     member do
       get :upload_categories, :datacolumns
       post :update_categories, :import_categories
     end
   end
 
-  resources :categories, :only => [:show, :destroy] do
+  resources :categories, only: [:show, :destroy] do
     member do
       get :upload_sheetcells
       post :update_sheetcells
     end
   end
 
-  resources :exported_files, :only => [] do
-    get :regenerate_download, :on => :member
+  resources :exported_files, only: [] do
+    get :regenerate_download, on: :member
   end
-
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
