@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# the framework
+# the rails framework: September 14, 2016 
 gem 'rails', '3.2.22.5'
 
 # the postgres db connector
@@ -70,7 +70,7 @@ group :test, :development do
   # gem 'ruby-prof'
 
   # bindings for the GNOME Libxml2
-  gem 'libxml-ruby', '~> 2.4.0'
+  gem 'libxml-ruby', '~> 2.9.0'
 
   # wrapper for Linux inotify
   gem 'rb-inotify', '~> 0.9.1'
