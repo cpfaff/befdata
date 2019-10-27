@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.22.5'
 
 # the postgres db connector
-gem 'pg', '~> 0.14.1'
+gem 'pg', '~> 0.18.0'
 
 # a templating engine for html
 gem 'haml', '~> 3.1.7'

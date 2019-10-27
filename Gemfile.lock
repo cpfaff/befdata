@@ -130,7 +130,7 @@ GEM
       mime-types
     parser (2.4.0.2)
       ast (~> 2.3)
-    pg (0.14.1)
+    pg (0.18.4)
     pg_search (0.5.7)
       activerecord (>= 3)
       activesupport (>= 3)
@@ -253,7 +253,7 @@ DEPENDENCIES
   jquery-ui-rails (~> 3.0.1)
   libxml-ruby (~> 2.4.0)
   paperclip (~> 4.2.2)
-  pg (~> 0.14.1)
+  pg (~> 0.18.0)
   pg_search (~> 0.5.7)
   rails (= 3.2.22.5)
   rb-inotify (~> 0.9.1)
