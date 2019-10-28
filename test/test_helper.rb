@@ -1,11 +1,6 @@
 # Adds code coverage analysis on test runs - and produces the nice README badge
-# require 'coveralls'
-# Coveralls.wear!('rails')
-require 'simplecov'
-SimpleCov.start 'rails'
-
-require 'codecov'
-SimpleCov.formatter = SimpleCov::Formatter::Codecov
+require 'coveralls'
+Coveralls.wear!('rails')
 
 ENV['RAILS_ENV'] = 'test'
 require File.expand_path('../../config/environment', __FILE__)

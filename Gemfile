@@ -85,8 +85,8 @@ group :test, :development do
   gem 'binding_of_caller', '~> 0.8.0'
 
   # hosted test coverage service (badge)
-  # gem 'coveralls', '~> 0.6.7', require: false
-  gem 'codecov', :require => false, :group => :test
+  gem 'coveralls', '~> 0.8.23', require: false
+  # gem 'codecov', :require => false, :group => :test
 end
 
 group :assets do
