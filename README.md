@@ -8,7 +8,7 @@ data collection and analysis workflow. It provides a secure environment
 for your data during an on-going data collection or analysis. Other project
 members can only access your data after a data access request.
 
-[![Build Status](https://travis-ci.org/cpfaff/befdata.svg?branch=master)](https://travis-ci.org/cpfaff/befdata)
+[![Build Status](https://travis-ci.org/cpfaff/befdata.svg?branch=master)](https://travis-ci.org/cpfaff/befdata)[![Coverage Status](https://coveralls.io/repos/github/cpfaff/befdata/badge.svg?branch=master)](https://coveralls.io/github/cpfaff/befdata?branch=master)
 
 ## Main features
 
