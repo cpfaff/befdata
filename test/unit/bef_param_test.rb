@@ -33,6 +33,13 @@ class BefParamTest < Test::Unit::TestCase
     assert_equal p[:f], 'a'
   end
 
+  test '[] should work' do
+    p = BefParam.new('access_code:0|1,f:a|w', radio: :f, checkbox: :access_code)
+    p.set_param!(access_code: '0', f: 'a')
+    assert_equal p[:access_code], '0'
+    assert_equal p[:f], 'a'
+  end
+
   test 'toggle_param! should work' do
     p = BefParam.new('access_code:0,f:w', radio: :f, checkbox: :access_code)
     p.toggle_param!(:access_code, '0')
