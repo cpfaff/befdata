@@ -1,9 +1,6 @@
 language: ruby
 services:
   - postgresql
-env:
-  global:
-    - COVERALLS_PARALLEL=true
 rvm:
   - 1.9.3
 script:
@@ -16,5 +13,3 @@ before_script:
   - cp config/application.yml.dist config/application.yml
   - cp config/mailers.yml.dist config/mailers.yml 
   - psql -c 'create database befdata_test;' -U postgres
-notifications:
-  webhooks: https://coveralls.io/webhook
