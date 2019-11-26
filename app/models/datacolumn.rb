@@ -75,10 +75,7 @@ class Datacolumn < ActiveRecord::Base
 
   # returns the first 'count' number unique imported values
   def imported_values(count)
-    values = sheetcells.all(order: 'import_value',
-                            limit: count,
-                            group: 'import_value',
-                            select: 'import_value')
+    values = sheetcells.order('import_value').limit(2).group('import_value').select('import_value').to_a
     values
   end
 
@@ -219,7 +216,7 @@ class Datacolumn < ActiveRecord::Base
   def split_me?
     # This method returns true for a column when it requires splitting.
     return false unless datagroup_approved && datatype_approved
-    return false if %w(category text).include? import_data_type
+    return false if %w[category text].include? import_data_type
     sheetcells.where('category_id is not null').exists?
   end
 
