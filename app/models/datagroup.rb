@@ -44,11 +44,12 @@ class Datagroup < ActiveRecord::Base
     rescue
       errors.add(:file, 'can not be read') && (return)
     end
-    lines.headers.map(&:upcase!) # so that headers can be case-insensitive
+
     return unless validate_categories_csv?(lines)
 
     merges = collect_merges(lines)
     updates = collect_updates(lines, user)
+
     # categories that are to be merged don't need to be updated
     merge_sources = merges.collect { |m| m['ID'].to_i }
     updates.reject! { |c| merge_sources.include?(c.id) }
@@ -71,7 +72,6 @@ class Datagroup < ActiveRecord::Base
     rescue
       errors.add(:file, "can't be read!") && (return false)
     end
-    lines.headers.map(&:downcase!) # so that headers can be case-insensitive
 
     return false unless validate_categories_csv_for_import?(lines)
 
@@ -86,7 +86,7 @@ class Datagroup < ActiveRecord::Base
     if q
       where('title iLike :q OR description iLike :q', q: "%#{q}%")
     else
-      scoped
+      all
     end
   end
 
@@ -125,7 +125,7 @@ class Datagroup < ActiveRecord::Base
   end
 
   def collect_updates(lines, user)
-    cats = categories.select([:id, :short, :long, :description, :comment])
+    cats = categories.select(%i[id short long description comment])
     comment_string = "Updated via CVS by #{user.lastname}, #{Time.now}."
     changes = []
 
@@ -158,13 +158,15 @@ class Datagroup < ActiveRecord::Base
 
   def execute_updates(updates)
     ActiveRecord::Base.transaction do
-      updates.each(&:save)
+      updates.each do |update|
+        update.save
+      end
     end
   end
 
   def validate_categories_csv_for_import?(csv_lines)
     errors.add(:file, 'is empty') && (return false) if csv_lines.empty?
-    unless (%w(short long description) - csv_lines.headers).empty?
+    unless (%w[short long description] - csv_lines.headers).empty?
       errors.add(:csv, 'header does not match') && (return false)
     end
     errors.add(:base, "category short can't be empty") && (return false) if csv_lines['short'].any?(&:blank?)
