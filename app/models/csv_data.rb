@@ -2,17 +2,18 @@ class CsvData
   include ActiveModel::Validations
   validate :check_csvfile
 
-  # define 'strip' converter
+  # define 'strip' and 'upcase' converters
   CSV::Converters[:strip] = ->(f) { f.try(:squish) }
   CSV::HeaderConverters[:strip] = ->(f) { f.try(:squish) }
+  CSV::HeaderConverters[:upcase] = ->(f) { f.try(:upcase) }
 
   OPTS = {
     headers: true,
     return_headers: false,
     skip_blanks: true,
     converters: :strip,
-    header_converters: :strip
-  }.freeze
+    header_converters: [:strip, :upcase]
+  }
 
   def initialize(datafile)
     @dataset = datafile.dataset
@@ -75,7 +76,7 @@ class CsvData
   end
 
   def headers_unique?
-    headers.uniq_by(&:downcase).length == headers.length
+    headers.uniq.map(&:upcase).length == headers.length
   end
 
   def save_datacolumns
@@ -119,7 +120,7 @@ class CsvData
   end
 
   def save_data_into_database(sheetcells)
-    columns = [:datacolumn_id, :import_value, :row_number, :datatype_id]
+    columns = %i[datacolumn_id import_value row_number datatype_id]
     Sheetcell.import columns, sheetcells, validate: false
     @dataset.update_attribute(:import_status, "Imported #{$INPUT_LINE_NUMBER - 1} rows")
   end
