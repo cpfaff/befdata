@@ -46,7 +46,7 @@ module PaperproposalsHelper
   end
 
   def votes_choices_for_select
-    vote_choices = %w(accept reject)
+    vote_choices = %w[accept reject]
     vote_choices << 'none' if current_user.has_role?(:admin)
     vote_choices
   end
