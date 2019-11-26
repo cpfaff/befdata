@@ -190,7 +190,7 @@ class ExportedExcel < ExportedFile
     if column_selection
       column_selection
     else
-      Datacolumn.all(conditions: ['dataset_id = ?', dataset.id], order: 'columnnr ASC').uniq
+      Datacolumn.where(dataset_id: dataset.id).order('columnnr ASC').uniq
     end
   end
 end
