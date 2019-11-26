@@ -42,7 +42,7 @@ class Category < ActiveRecord::Base
     if search
       where('short iLIKE :q OR long iLIKE :q OR description iLIKE :q', q: "%#{search}%")
     else
-      scoped
+      all
     end
   end
 
