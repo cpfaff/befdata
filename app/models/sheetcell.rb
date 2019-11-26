@@ -10,11 +10,7 @@ class Sheetcell < ActiveRecord::Base
   # Datatypes are defined in config/initializers/datatype_load.rb and the valitation procedures are
   # stored in https://github.com/befdata/befdata/blob/master/db/non_schema_sql.sql
   def datatype
-    if !datatype_id.nil?
-      return Datatypehelper.find_by_id(datatype_id)
-    else
-      return nil
-    end
+    Datatypehelper.find_by_id(datatype_id) unless datatype_id.nil?
   end
 
   def same_entry_cells
@@ -26,10 +22,10 @@ class Sheetcell < ActiveRecord::Base
   def show_value
     unless datatype.nil?
       if datatype.is_category? && !category.nil?
-        return category.show_value
+        category.show_value
       else
         # TODO: we should format the field based on the datatype
-        return accepted_value
+        accepted_value
       end
     end
   end
