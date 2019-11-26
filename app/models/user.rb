@@ -154,7 +154,7 @@ class User < ActiveRecord::Base
   def check_destroyable
     unless destroyable?
       errors.add(:base, "#{full_name} still owns some resources, thus can not be deleted!")
-      return false
+      false
     end
   end
 end
