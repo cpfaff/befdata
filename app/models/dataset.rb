@@ -32,32 +32,39 @@ class Dataset < ActiveRecord::Base
   attr_writer :owner_ids
   acts_as_taggable
 
-  has_many :datafiles, class_name: 'Datafile', order: 'id DESC', dependent: :destroy
-  has_one  :current_datafile, class_name: 'Datafile', order: 'id DESC'
+  has_many :datafiles, -> { order 'id DESC'}, dependent: :destroy, class_name: 'Datafile'
+
+  has_one  :current_datafile, -> { order 'id DESC'}, class_name: 'Datafile'
 
   has_many :exported_files, dependent: :destroy
   has_one  :exported_excel   # exported Excel workbook
   has_one  :exported_csv     # exported regular csv
   has_one  :exported_scc_csv # exported csv with separate coategory columns
 
-  has_many :datacolumns, dependent: :destroy, order: 'columnnr'
+  # has_many :datacolumns, dependent: :destroy, order: 'columnnr'
+  has_many :datacolumns, -> { order 'columnnr' }, dependent: :destroy
+
   has_many :sheetcells, through: :datacolumns
-  has_many :datagroups, through: :datacolumns, include: :categories
+  has_many :datagroups, -> { includes :categories }, through: :datacolumns
   has_many :freeformats, as: :freeformattable, dependent: :destroy
 
   has_many :dataset_downloads
-  has_many :downloaders, through: :dataset_downloads, source: :user, uniq: true
+  has_many :downloaders, -> { uniq }, through: :dataset_downloads, source: :user
 
-  has_many :dataset_edits, order: 'updated_at DESC', dependent: :destroy
-  has_one :unsubmitted_edit, class_name: 'DatasetEdit', conditions: ['submitted=?', false]
+  # has_many :dataset_edits, order: 'updated_at DESC', dependent: :destroy
+  has_many :dataset_edits, -> { order 'updated_at DESC' }, dependent: :destroy
+
+  # has_one :unsubmitted_edit, class_name: 'DatasetEdit', conditions: ['submitted=?', false]
+  has_one :unsubmitted_edit, -> { where submitted: false }, class_name: 'DatasetEdit'
 
   has_and_belongs_to_many :projects
   has_many :dataset_paperproposals
   has_many :paperproposals, through: :dataset_paperproposals
-  has_many :proposers, through: :paperproposals, source: :author, uniq: true
+  has_many :proposers, -> { uniq }, through: :paperproposals, source: :author
 
   has_many :dataset_tags
-  has_many :all_tags, through: :dataset_tags, source: :tag, order: 'lower(name)'
+  # has_many :all_tags, through: :dataset_tags, source: :tag, order: 'lower(name)'
+  has_many :all_tags, -> { order 'lower(name)' }, through: :dataset_tags, source: :tag
 
   validates :title, presence: true, uniqueness: { case_sensitive: false }
 
@@ -66,7 +73,7 @@ class Dataset < ActiveRecord::Base
     free_within_projects: 1,
     free_for_members: 2,
     free_for_public: 3
-  }.freeze
+  }
   validates_inclusion_of :access_code, in: ACCESS_CODES.values,
                                        message: 'is invalid! Access Rights is out of Range.'
 
@@ -109,7 +116,7 @@ class Dataset < ActiveRecord::Base
     ACCESS_CODES.invert[access_code].to_s.humanize
   end
 
-  %w(free_within_projects free_for_members free_for_public).each do |right|
+  %w[free_within_projects free_for_members free_for_public].each do |right|
     define_method("#{right}?") do
       access_code >= ACCESS_CODES[right.to_sym]
     end
@@ -190,7 +197,7 @@ class Dataset < ActiveRecord::Base
 
   def being_imported? # TODO: this is prone to be out of sync if new status added
     return false unless has_research_data?
-    %w(new finished).exclude?(import_status) && !import_status.start_with?('error')
+    %w[new finished].exclude?(import_status) && !import_status.start_with?('error')
   end
 
   def refresh_paperproposal_authors
@@ -266,7 +273,7 @@ class Dataset < ActiveRecord::Base
     if paperproposals.count > 0
       errors.add(:dataset,
                  "can not be deleted while linked paperproposals exist [ids: #{paperproposals.map(&:id).join(', ')}]")
-      return false
+      false
     end
   end
 
