@@ -81,7 +81,7 @@ class BefParam
     bef_param_str.split(',').each do |pairs|
       next unless pairs.include? ':'
       k, v = pairs.split(':')
-      parsed_params[k] = (v =~ /\|/) ? v.split('|') : v
+      parsed_params[k] = v =~ /\|/ ? v.split('|') : v
     end
     parsed_params
   end
@@ -89,7 +89,7 @@ class BefParam
   def self.parse_config(config)
     parsed_config = HashWithIndifferentAccess.new('radio')
     config.each do |k, v|
-      if %w(radio checkbox).include?(k.to_s)
+      if %w[radio checkbox].include?(k.to_s)
         [v].flatten.each do |x|
           parsed_config[x] = k.to_s
         end
