@@ -21,7 +21,7 @@ class FreeformatsController < ApplicationController
   end
 
   def create
-    freeformat = @freeformattable.freeformats.build(params[:freeformat])
+    freeformat = @freeformattable.freeformats.build(freeformat_params)
     if freeformat.save
       redirect_to :back
     else
@@ -31,7 +31,7 @@ class FreeformatsController < ApplicationController
   end
 
   def update
-    if @freeformat.update_attributes(params[:freeformat])
+    if @freeformat.update_attributes(freeformat_params)
       redirect_to :back
     else
       flash[:error] = @freeformat.errors.to_a.first.capitalize.to_s
@@ -81,5 +81,9 @@ class FreeformatsController < ApplicationController
 
   def dataset_edit_message
     @freeformattable.log_edit('Files changed') if @freeformattable.is_a? Dataset
+  end
+
+  def freeformat_params
+    params.require(:freeformat).permit(:file, :description, :is_essential, :uri)
   end
 end

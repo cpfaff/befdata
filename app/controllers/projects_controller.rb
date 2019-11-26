@@ -1,9 +1,9 @@
 class ProjectsController < ApplicationController
-  before_filter :load_project, only: [:show, :edit, :update, :destroy]
+  before_filter :load_project, only: %i[show edit update destroy]
   skip_before_filter :deny_access_to_all
   access_control do
-    allow all, to: [:index, :show]
-    allow :admin, to: [:new, :create, :edit, :update, :destroy]
+    allow all, to: %i[index show]
+    allow :admin, to: %i[new create edit update destroy]
   end
 
   def index
@@ -20,10 +20,10 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    @project = Project.new(params[:project])
+    @project = Project.new(params.require(:project).permit(:name, :shortname, :description, :comment))
     if @project.save
-      unless params[:roles].blank?
-        params[:roles].each do |role|
+      unless params.fetch(:roles, {}).blank?
+        params.fetch(:roles, {}).each do |role|
           @project.set_user_with_role(role[:type], User.find(role[:value] || []))
         end
       end
@@ -38,8 +38,8 @@ class ProjectsController < ApplicationController
   end
 
   def update
-    if @project.update_attributes(params[:project])
-      roles_config = params[:roles].blank? ? [] : params[:roles]
+    if @project.update_attributes(params.require(:project).permit(:name, :shortname, :description, :comment))
+      roles_config = params.fetch(:roles, {}).blank? ? [] : params.fetch(:roles, {})
       to_be_delete = @project.accepted_roles.map(&:name) - roles_config.map { |r| r['type'] }
       to_be_delete.each do |role|
         @project.set_user_with_role(role, [])
@@ -65,6 +65,6 @@ class ProjectsController < ApplicationController
   private
 
   def load_project
-    @project = Project.find(params[:id])
+    @project = Project.find_by_id(params[:id])
   end
 end

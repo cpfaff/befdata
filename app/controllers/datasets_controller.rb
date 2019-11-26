@@ -1,18 +1,28 @@
 class DatasetsController < ApplicationController
   skip_before_filter :deny_access_to_all
-  before_filter :load_dataset, except: [:new, :create, :create_with_datafile, :importing, :index, :download_excel_template]
 
-  before_filter :redirect_if_without_workbook, only: [:download, :download_page,
-                                                      :approve, :approve_predefined, :batch_update_columns, :approval_quick]
-  before_filter :redirect_unless_import_succeed, only: [:download_page, :download,
-                                                        :approve, :approve_predefined, :approval_quick, :batch_update_columns]
-  before_filter :redirect_while_importing, only: [:edit_files, :update_workbook, :destroy]
-  after_filter :edit_message_datacolumns, only: [:batch_update_columns, :approve_predefined]
+  before_filter :load_dataset,
+    except: %i[new create create_with_datafile importing index download_excel_template]
+
+  before_filter :redirect_if_without_workbook,
+    only: %i[download download_page approve approve_predefined batch_update_columns approval_quick]
+
+  before_filter :redirect_unless_import_succeed,
+    only: %i[download_page download approve approve_predefined approval_quick batch_update_columns]
+
+  before_filter :redirect_while_importing,
+    only: %i[edit_files update_workbook destroy]
+
+  after_filter :edit_message_datacolumns,
+    only: %i[batch_update_columns approve_predefined]
 
   access_control do
-    allow all, to: [:show, :index, :download_excel_template, :importing, :keywords, :download_status]
+    allow all,
+      to: %i[show index download_excel_template importing keywords download_status]
 
-    actions :edit, :update, :destroy, :edit_files, :update_workbook, :approve, :approve_predefined,
+    actions :edit, :update, :destroy,
+            :edit_files, :update_workbook,
+            :approve, :approve_predefined,
             :approval_quick, :batch_update_columns do
       allow :admin, :data_admin
       allow :owner, of: :dataset
@@ -31,8 +41,9 @@ class DatasetsController < ApplicationController
     end
   end
 
-  def create # create dataset with only a title
-    @dataset = Dataset.new(title: params[:dataset][:title].squish)
+  # create dataset with only a title
+  def create
+    @dataset = Dataset.new(title: params.require(:dataset)[:title].squish)
     if @dataset.save
       current_user.has_role! :owner, @dataset
     else
@@ -41,20 +52,22 @@ class DatasetsController < ApplicationController
     end
   end
 
+  # create a dataset with a csv file
   def create_with_datafile
-    unless params[:datafile]
+    unless params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers')
       flash[:error] = 'No data file given for upload'
       redirect_back_or_default(root_url) && return
     end
 
-    datafile = Datafile.new(params[:datafile])
+    datafile = Datafile.new(params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers'))
     unless datafile.save
       flash[:error] = datafile.errors.full_messages.to_sentence
       redirect_back_or_default(root_url) && return
     end
 
     attributes = datafile.general_metadata_hash
-    attributes[:title] = params[:title].squish if params[:title]
+    attributes[:title] = params.slice(:title)[:title].squish if params[:title]
+
     @dataset = Dataset.new(attributes)
     if @dataset.save
       @dataset.add_datafile(datafile)
@@ -69,9 +82,12 @@ class DatasetsController < ApplicationController
     end
   end
 
+  # update the metatadata of a file
   def update
-    if @dataset.update_attributes(params[:dataset])
-      @dataset.refresh_paperproposal_authors if params[:dataset][:owner_ids].present?
+    if @dataset.update_attributes(params.require(:dataset).permit(:authenticity_token, :title, :access_code, :usagerights, :tag_list,
+        :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)', :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)',
+        :temporalextent, :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [], project_ids: []))
+      @dataset.refresh_paperproposal_authors if params.require(:dataset)[:owner_ids].present?
       # TODO: should not refresh all authors of the pp
       @dataset.log_edit('Metadata updated')
 
@@ -85,9 +101,9 @@ class DatasetsController < ApplicationController
     end
   end
 
-  # to be used by the ajax import status query
+  # note: this funciton is used by the ajax import status query
   def importing
-    @dataset = Dataset.find(params[:id], select: %w(id import_status))
+    @dataset = Dataset.where(id: params.fetch(:id)).first
     render text: @dataset.import_status
   end
 
@@ -103,7 +119,7 @@ class DatasetsController < ApplicationController
   end
 
   def batch_update_columns
-    datacolumns = params[:datacolumn]
+    datacolumns = params.permit(:utf8, :authenticity_token, datacolumn: [ :id, :datagroup, :import_data_type]).require(:datacolumn)
     changes = 0
     datacolumns.each do |hash|
       datacolumn = Datacolumn.find hash[:id]
@@ -225,11 +241,11 @@ class DatasetsController < ApplicationController
   end
 
   def update_workbook
-    unless params[:datafile]
+    unless params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers')
       flash[:error] = 'No filename given'
       redirect_to(:back) && return
     end
-    new_datafile = Datafile.new(params[:datafile])
+    new_datafile = Datafile.new(params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers'))
     if new_datafile.save
       @dataset.delete_imported_research_data
       @dataset.add_datafile(new_datafile)
@@ -262,7 +278,7 @@ class DatasetsController < ApplicationController
 
   def generate_freeformats_csv(_user)
     CSV.generate do |csv|
-      csv << %w(Filename URL Description)
+      csv << %w[Filename URL Description]
       @dataset.freeformats.each do |ff|
         csv << [
           ff.file_file_name, download_freeformat_url(ff, user_credentials: current_user.try(:single_access_token)), ff.description

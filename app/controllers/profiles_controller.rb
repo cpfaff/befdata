@@ -31,7 +31,7 @@ class ProfilesController < ApplicationController
 
   def votes
     @project_board_votes = @user.project_board_votes.includes(:paperproposal).pending.select do |vote|
-      %w(submit re_prep).include? vote.paperproposal.board_state
+      %w[submit re_prep].include? vote.paperproposal.board_state
     end
     @project_board_votes.sort_by!(&:paperproposal)
 
@@ -52,7 +52,7 @@ class ProfilesController < ApplicationController
   end
 
   def user_params
-    params[:user].slice(:login, :password, :password_confirmation, :firstname,
+    params.require(:user).permit(:login, :password, :password_confirmation, :firstname,
                         :middlenames, :lastname, :email, :salutation, :institution_name,
                         :institution_url, :institution_phone, :institution_fax, :url, :country,
                         :city, :street, :comment, :avatar, :receive_emails)

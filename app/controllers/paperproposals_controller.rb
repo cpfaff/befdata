@@ -1,7 +1,7 @@
 class PaperproposalsController < ApplicationController
   include PaperproposalsHelper
 
-  before_filter :load_proposal, except: [:index, :index_csv, :new, :create, :update_vote]
+  before_filter :load_proposal, except: %i[index index_csv new create update_vote]
   before_filter :load_vote, only: [:update_vote]
 
   skip_before_filter :deny_access_to_all
@@ -55,10 +55,10 @@ class PaperproposalsController < ApplicationController
   end
 
   def create
-    @paperproposal = Paperproposal.new(params[:paperproposal])
-    @temp_proponents = User.where(id: params[:people]) # doesn't save it - workaround so they don't get lost when form is not filled correctly
+    @paperproposal = Paperproposal.new(params.require(:paperproposal).permit(:title, :rationale, :author_id))
+    @temp_proponents = User.where(id: params.permit(:people)) # doesn't save it - workaround so they don't get lost when form is not filled correctly
     if @paperproposal.save
-      @paperproposal.proponents = User.where(id: params[:people])
+      @paperproposal.proponents = User.where(id: params.permit(:people))
       redirect_to edit_datasets_paperproposal_path(@paperproposal)
     else
       render action: :new
@@ -83,9 +83,9 @@ class PaperproposalsController < ApplicationController
   end
 
   def update
-    @temp_proponents = User.where(id: params[:people]) # doesn't save it - workaround so they don't get lost when form is not filled correctly
-    if @paperproposal.update_attributes(params[:paperproposal])
-      @paperproposal.proponents = User.where(id: params[:people])
+    @temp_proponents = User.where(id: params.require(:people)) # doesn't save it - workaround so they don't get lost when form is not filled correctly
+    if @paperproposal.update_attributes(paperproposal_params)
+      @paperproposal.proponents = User.where(id: params.require(:people))
       redirect_to paperproposal_path(@paperproposal)
     else
       render action: :edit
@@ -99,11 +99,11 @@ class PaperproposalsController < ApplicationController
   def edit_datasets
     @datasets = @paperproposal.includes_datasets? ? @paperproposal.datasets : current_cart.datasets
     @datasets = @datasets.sort_by(&:title)
-    @all_datasets = Dataset.all order: 'title'
+    @all_datasets = Dataset.order(:title)
   end
 
   def update_datasets
-    msg = @paperproposal.update_datasets params[:datasets] || []
+    msg = @paperproposal.update_datasets params.permit(datasets: [ :id, :aspect ]) || [datasets: []]
     flash[:notice] = 'Datasets have been updated. ' + msg.to_s
     redirect_to @paperproposal
   end
@@ -150,7 +150,7 @@ class PaperproposalsController < ApplicationController
 
   # handles a vote
   def update_vote
-    @vote.update_attributes(params[:paperproposal_vote])
+    @vote.update_attributes(params.require(:paperproposal_vote).permit(:vote, :id))
     if @vote.save
       @vote.paperproposal.check_votes
       flash[:notice] = 'Your vote was submitted'
@@ -221,10 +221,16 @@ class PaperproposalsController < ApplicationController
   end
 
   def load_proposal
-    @paperproposal = Paperproposal.find(params[:id])
+    @paperproposal = Paperproposal.where(paperproposal_params).first
   end
 
   def load_vote
-    @vote = PaperproposalVote.find(params[:id])
+    @vote = PaperproposalVote.where(paperproposal_params).first
+  end
+
+  def paperproposal_params
+    params.permit(:paperproposal, :paperproposal_vote, :id, :title, :initial_title, :rationale, :envisaged_journal,
+                                          :state, :envisaged_date, :external_data, :comment, :author_id,
+                                          :project_id, :board_state, :vote)
   end
 end

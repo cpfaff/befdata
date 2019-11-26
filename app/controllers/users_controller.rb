@@ -1,7 +1,7 @@
 # This controller handles all calls for staff information.
 
 class UsersController < ApplicationController
-  before_filter :load_user, only: [:show, :edit, :destroy, :update]
+  before_filter :load_user, only: %i[show edit destroy update]
   skip_before_filter :deny_access_to_all
   access_control do
     actions :index, :show do
@@ -33,9 +33,21 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(params.require(:user).permit(:login,
+                                                  :password,
+                                                  :password_confirmation,
+                                                  :firstname,
+                                                  :middlenames,
+                                                  :lastname,
+                                                  :salutation,
+                                                  :email,
+                                                  :project_board,
+                                                  :admin,
+                                                  :data_admin,
+                                                  :alumni,
+                                                  :avatar))
     if @user.save
-      @user.projectroles = params[:roles]
+      @user.projectroles = params.fetch(:roles, {})
       redirect_to user_path(@user), notice: "Successfully Created user #{@user.to_label}"
     else
       render action: :new
@@ -47,8 +59,20 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @user.update_attributes(params[:user])
-      @user.projectroles = params[:roles]
+    if @user.update_attributes(params.require(:user).permit(:login,
+                                                  :password,
+                                                  :password_confirmation,
+                                                  :firstname,
+                                                  :middlenames,
+                                                  :lastname,
+                                                  :salutation,
+                                                  :email,
+                                                  :project_board,
+                                                  :admin,
+                                                  :data_admin,
+                                                  :alumni,
+                                                  :avatar))
+      @user.projectroles = params.fetch(:roles, {})
       redirect_to user_path(@user), notice: 'Saved successfully'
     else
       render :edit

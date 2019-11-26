@@ -1,9 +1,9 @@
 class DatacolumnsController < ApplicationController
   before_filter :load_datacolumn_and_dataset
-  before_filter :redirect_if_datagroup_unapproved, only: [:update_invalid_values, :update_invalid_values_with_csv, :autofill_and_update_invalid_values]
+  before_filter :redirect_if_datagroup_unapproved, only: %i[update_invalid_values update_invalid_values_with_csv autofill_and_update_invalid_values]
   after_filter  :dataset_edit_message,
-                only: [:create_and_update_datagroup, :update_datagroup, :update_datatype, :update_metadata,
-                       :update_invalid_values, :update_invalid_values_with_csv, :autofill_and_update_invalid_values]
+                only: %i[create_and_update_datagroup update_datagroup update_datatype update_metadata
+                         update_invalid_values update_invalid_values_with_csv autofill_and_update_invalid_values]
 
   skip_before_filter :deny_access_to_all
   access_control do
@@ -20,7 +20,7 @@ class DatacolumnsController < ApplicationController
 
   def update
     respond_to do |format|
-      if @datacolumn.update_attributes(params[:datacolumn])
+      if @datacolumn.update_attributes(params.require(:datacolumn).permit(:columnheader, :definition))
         expire_type = @datacolumn.previous_changes.keys.include?('columnheader') ? :all : :xls
         ExportedFile.invalidate(@dataset.id, expire_type)
 
@@ -33,8 +33,7 @@ class DatacolumnsController < ApplicationController
     end
   end
 
-  def approval_overview
-  end
+  def approval_overview; end
 
   def next_approval_step
     unless @datacolumn.datagroup_approved?
@@ -83,12 +82,12 @@ class DatacolumnsController < ApplicationController
   end
 
   def approve_metadata
-    @methods_short_list = Datagroup.all(order: 'title').collect { |m| [m.title, m.id] }
+    @methods_short_list = Datagroup.order('title').collect { |m| [m.title, m.id] }
     @ppl = @datacolumn.users
   end
 
   def create_and_update_datagroup
-    @datagroup = Datagroup.new(params[:new_datagroup])
+    @datagroup = Datagroup.new(params.require(:new_datagroup).permit(:title, :description))
 
     if @datagroup.save
       @datacolumn.approve_datagroup(@datagroup)
@@ -140,7 +139,7 @@ class DatacolumnsController < ApplicationController
   # The meta data of this Data Column is saved. The people submitted via form are assigned
   # to the Data Column or their assignation is revoked.
   def update_metadata
-    unless @datacolumn.update_attributes(params[:datacolumn])
+    unless @datacolumn.update_attributes(params.require(:datacolumn).permit(:definition))
       flash[:error] = @datacolumn.errors.to_a.first.capitalize
       redirect_to(:back) && return
     end
@@ -163,7 +162,7 @@ class DatacolumnsController < ApplicationController
 
   # creates categories for all invalid values completed in the form and assigns the category to the sheetcell
   def update_invalid_values
-    invalid_values = params[:invalid_values]
+    invalid_values = params.permit(invalid_values: [ :import_value, :short, :long, :description ]).require(:invalid_values)
     unless invalid_values.blank?
       invalid_values.each do |h|
         next if h['short'].blank?
@@ -178,7 +177,7 @@ class DatacolumnsController < ApplicationController
 
   def update_invalid_values_with_csv
     redirect_to(:back, error: 'No File given') && return unless params[:csvfile]
-    f = params[:csvfile].path
+    f = params.require(:csvfile).path
     begin
       CSV.foreach(f, headers: true, skip_blanks: true) do |row|
         next if row['import value'].blank? || row['category short'].blank?
@@ -202,14 +201,13 @@ class DatacolumnsController < ApplicationController
     next_approval_step
   end
 
-  def annotate
-  end
+  def annotate; end
 
   def update_annotation
     if params[:new_term].present?
-      term = Vocab.where(['term iLike ?', params[:new_term]]).first || Vocab.create(term: params[:new_term])
+      term = Vocab.where(['term iLike ?', params.require(:new_term).permit(:new_term)]).first || Vocab.create(term: params.require(:new_term))
     elsif params[:term_id].present?
-      term = Vocab.find(params[:term_id])
+      term = Vocab.find(params.require(:term_id).permit(:term_id))
     else
       term = nil
     end
