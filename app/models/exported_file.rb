@@ -1,16 +1,16 @@
 class ExportedFile < ActiveRecord::Base
   belongs_to :dataset
 
-  after_create(&:queued_to_be_exported)
+  after_create :queued_to_be_exported
 
-  STATUS = [NEW = 'new'.freeze, QUEUED = 'queued'.freeze, STARTED = 'started'.freeze, FINISHED = 'finished'.freeze].freeze
+  STATUS = [NEW = 'new', QUEUED = 'queued', STARTED = 'started', FINISHED = 'finished']
   scope :outdated, -> { where('invalidated_at > generated_at and status = ? ', 'finished') }
 
   TYPES = {
     csv: 'ExportedCsv',
     csv2: 'ExportedSccCsv',
     xls: 'ExportedExcel'
-  }.freeze
+  }
 
   scope :with_format, lambda { |type|
     raise 'Invalid format' unless TYPES.key? type.to_sym
