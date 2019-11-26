@@ -16,22 +16,33 @@ class Paperproposal < ActiveRecord::Base
 
   # User roles in a paperproposal: proponents, main aspect dataset owner, side aspect dataset owner, acknowledged.
   # many-to-many association with User model through author_paperproposal joint table.
-  has_many :author_paperproposals, dependent: :destroy, include: [:user]
+  # has_many :author_paperproposals, dependent: :destroy, include: [:user]
+  has_many :author_paperproposals, -> { includes [:user] }, dependent: :destroy
+
   has_many :authors, class_name: 'User', source: :user, through: :author_paperproposals
   # with four conditional association.
-  has_many :proponents, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'user']
-  has_many :main_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'main']
-  has_many :side_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'side']
-  has_many :acknowledgements_from_datasets, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind = ?', 'ack']
+  # has_many :proponents, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'user']
+  has_many :proponents, -> { where "kind = 'user'"}, class_name: 'User', source: :user, through: :author_paperproposals
+
+  # has_many :main_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'main']
+  has_many :main_aspect_dataset_owners, -> { where "kind = 'main'"}, class_name: 'User', source: :user, through: :author_paperproposals
+
+  # has_many :side_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'side']
+  has_many :side_aspect_dataset_owners, -> { where "kind = 'side'"}, class_name: 'User', source: :user, through: :author_paperproposals
+
+  # has_many :acknowledgements_from_datasets, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind = ?', 'ack']
+  has_many :acknowledgements_from_datasets, -> { where "kind = 'ack'"}, class_name: 'User', source: :user, through: :author_paperproposals
 
   # User votes on a paperproposal.
   # has_many association with paperproposal_votes model.
   # two conditional association to differentiate project board vote and dataset request vote.(FIXME: dataset owner's vote?)
   has_many :paperproposal_votes, dependent: :destroy
-  has_many :project_board_votes, class_name: 'PaperproposalVote',
-                                 source: :paperproposal_votes, conditions: { project_board_vote: true }
-  has_many :for_data_request_votes, class_name: 'PaperproposalVote',
-                                    source: :paperproposal_votes, conditions: { project_board_vote: false }
+
+  # has_many :project_board_votes, class_name: 'PaperproposalVote', source: :paperproposal_votes, conditions: { project_board_vote: true }
+  has_many :project_board_votes, -> { where project_board_vote: true }, class_name: 'PaperproposalVote', source: :paperproposal_votes
+
+  # has_many :for_data_request_votes, class_name: 'PaperproposalVote', source: :paperproposal_votes, conditions: { project_board_vote: false }
+  has_many :for_data_request_votes, -> { where project_board_vote: false }, class_name: 'PaperproposalVote', source: :paperproposal_votes
 
   # habtm association with Dataset model.
   before_destroy :reset_download_rights # needs to be before association definition,see https://rails.lighthouseapp.com/projects/8994/tickets/4386
@@ -109,8 +120,8 @@ class Paperproposal < ActiveRecord::Base
     end
     ordered_authors = []
     categorized_authors.each do |cat|
-      cat.sort_by!(&:lastname)
-      cat.each do |user|
+      sorted_category = cat.sort_by(&:lastname)
+      sorted_category.each do |user|
         ordered_authors << user unless ordered_authors.include?(user)
       end
     end
@@ -146,7 +157,7 @@ class Paperproposal < ActiveRecord::Base
   def update_datasets_providers
     all_proponents = calculate_data_providers
     # clear out the old ones
-    author_paperproposals.where(kind: %w(main side ack)).delete_all
+    author_paperproposals.where(kind: %w[main side ack]).delete_all
 
     # reassign
     new_author_paperproposals = []
@@ -212,25 +223,34 @@ class Paperproposal < ActiveRecord::Base
       download_rights_message = reset_download_rights
     end
 
-    self.dataset_paperproposals = datasets_array.collect do |da|
-      DatasetPaperproposal.new(dataset_id: da[:id], aspect: da[:aspect], paperproposal_id: id)
+    if datasets_array[:datasets].present?
+      self.dataset_paperproposals = datasets_array[:datasets].collect do |da|
+        DatasetPaperproposal.new(dataset_id: da[:id], aspect: da[:aspect], paperproposal_id: self.id)
+      end
+    else
+      self.datasets.map(&:delete)
     end
 
     reload
-    update_datasets_providers
 
-    if %w(prep re_prep submit).include?(board_state)
+    if datasets_array[:datasets].present?
+      update_datasets_providers
+    end
+
+    if %w[prep re_prep submit].include?(board_state)
       set_lock_status
       save
     else
-      calculate_votes old_datasets
-      finalize_votes_and_lock
+      if datasets_array[:datasets].present?
+        calculate_votes old_datasets
+        finalize_votes_and_lock
+      end
     end
     download_rights_message || ''
   end
 
   def calculate_votes(old_datasets_array = [])
-    return if %w(prep re_prep submit).include? board_state # there are not data votes right now
+    return if %w[prep re_prep submit].include? board_state # there are no data votes right now
 
     old_data_voters = for_data_request_votes.collect(&:user)
     new_data_voters = datasets.collect(&:owners).flatten.uniq
@@ -256,7 +276,7 @@ class Paperproposal < ActiveRecord::Base
   end
 
   def user_changes_state
-    if %w(prep re_prep).include?(board_state)
+    if %w[prep re_prep].include?(board_state)
       submit_to_board
     elsif board_state == 'data_rejected'
       re_request_data
@@ -407,7 +427,7 @@ class Paperproposal < ActiveRecord::Base
   end
 
   def set_lock_status
-    self.lock = %w(prep re_prep data_rejected final).include?(board_state) ? false : true
+    self.lock = %w[prep re_prep data_rejected final].include?(board_state) ? false : true
   end
 
   def finalize_votes_and_lock
