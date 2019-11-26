@@ -1,6 +1,6 @@
 class FillDatatypeIdField < ActiveRecord::Migration
   def self.up
-    sheetcells = Sheetcell.all.select
+    sheetcells = Sheetcell.all
     sheetcells.each do |sc|
       datatype_id =
         case sc.value_type

@@ -1,6 +1,6 @@
 class FillImportCategoryFieldsFromCategories < ActiveRecord::Migration
   def self.up
-    import_categories = ImportCategory.all.select
+    import_categories = ImportCategory.all
     import_categories.each do |ic|
       ic.update_attributes(short: ic.category.short,
                            long: ic.category.long,

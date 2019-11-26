@@ -2,7 +2,7 @@ class FillOptimisationFieldsInSheetcells < ActiveRecord::Migration
   def self.up
     # take the existing value of the sheetcell and place it in the new accepted_value field
     # unless the data type is categoric value, in this case place the id of the categoric value in the new category_id field
-    sheetcells = Sheetcell.all.select
+    sheetcells = Sheetcell.all
     sheetcells.each do |sc|
       if sc.value_type == 'Categoricvalue'
         sc.update_attributes(category_id: sc.value_id)
