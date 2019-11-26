@@ -1,6 +1,6 @@
 class CategoriesController < ApplicationController
-  before_filter :load_datagroup, only: [:index, :new, :create]
-  before_filter :load_category, only: [:show, :destroy, :upload_sheetcells, :update_sheetcells]
+  before_filter :load_datagroup, only: %i[index new create]
+  before_filter :load_category, only: %i[show destroy upload_sheetcells update_sheetcells]
 
   skip_before_filter :deny_access_to_all
 
@@ -19,7 +19,7 @@ class CategoriesController < ApplicationController
         send_data render_categories_csv, type: 'text/csv', filename: "#{@datagroup.title}_categories.csv", disposition: 'attachment'
       end
       format.js do
-        validate_sort_params(collection: %w(short long description count), default: 'short')
+        validate_sort_params(collection: %w[short long description count], default: 'short')
         @categories = @datagroup.categories
                                 .select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
                                 .search(params[:search])
@@ -43,11 +43,10 @@ class CategoriesController < ApplicationController
     end
   end
 
-  def new
-  end
+  def new; end
 
   def create
-    @category = @datagroup.categories.build(params[:category])
+    @category = @datagroup.categories.build(params.require(:category).permit(:short, :long, :description))
     respond_to do |format|
       format.json do
         if @datagroup.categories.exists?(['short iLike :s OR long iLike :s', s: @category.short])
@@ -72,8 +71,7 @@ class CategoriesController < ApplicationController
     end
   end
 
-  def upload_sheetcells
-  end
+  def upload_sheetcells; end
 
   def update_sheetcells
     unless params[:csvfile]
@@ -108,7 +106,7 @@ class CategoriesController < ApplicationController
   def render_categories_csv
     CSV.generate do |csv|
       csv << ['ID', 'SHORT', 'LONG', 'DESCRIPTION', 'MERGE ID']
-      @datagroup.categories.select([:id, :short, :long, :description]).order(:short).each do |cat|
+      @datagroup.categories.select(%i[id short long description]).order(:short).each do |cat|
         csv << [cat.id, cat.short, cat.long, cat.description]
       end
     end

@@ -14,7 +14,7 @@ class CartsController < ApplicationController
   end
 
   def create_cart_context
-    @dataset = Dataset.find(params[:dataset_id])
+    @dataset = Dataset.find(params.require(:dataset_id))
     @cart_dataset = CartDataset.new(cart: current_cart, dataset: @dataset)
     if @cart_dataset.save
       flash[:notice] = "Added #{@dataset.title} to cart."
@@ -25,7 +25,7 @@ class CartsController < ApplicationController
   end
 
   def delete_cart_context
-    @cart_dataset = CartDataset.find(params[:dataset_id])
+    @cart_dataset = CartDataset.find(params.require(:dataset_id))
     @cart_dataset.destroy
     redirect_to :back
   end
