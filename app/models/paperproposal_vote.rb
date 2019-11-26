@@ -25,11 +25,11 @@ class PaperproposalVote < ActiveRecord::Base
   belongs_to :user
   belongs_to :paperproposal
 
-  validates_uniqueness_of :paperproposal_id, scope: [:user_id, :project_board_vote]
+  validates_uniqueness_of :paperproposal_id, scope: %i[user_id project_board_vote]
 
-  scope :pending, where(vote: 'none')
-  scope :accepted, where(vote: 'accept')
-  scope :rejected, where(vote: 'reject')
+  scope :pending, -> { where(vote: 'none') }
+  scope :accepted, -> { where(vote: 'accept') }
+  scope :rejected, -> { where(vote: 'reject') }
 
   STATE = { accepted: 'accept', rejected: 'reject' }.freeze
   def accepted?
