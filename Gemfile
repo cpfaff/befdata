@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
-# the rails framework: September 14, 2016 
-gem 'rails', '3.2.22.5'
+# the rails framework: September 14, 2016
+gem 'rails', '~> 4.2.0'
 
 # the postgres db connector
 gem 'pg', '~> 0.18.0'
@@ -10,10 +10,24 @@ gem 'pg', '~> 0.18.0'
 gem 'haml', '~> 3.1.7'
 
 # authentication solution
-gem 'authlogic', '~> 3.3.0'
+gem 'authlogic', '~> 3.4.0'
+# gem 'scrypt' authlogic moves on to using
+# script instead of sha in later versions. 
+# Once everything else is running we can move
+# on as well. It requires to edit the user model.
+#acts_as_authentic do |c|
+    # if Rails.env.production?
+      # c.logged_in_timeout = 30.minutes
+    # else
+      # c.logged_in_timeout = 90.minutes
+    # end
+    # c.transition_from_crypto_providers = Authlogic::CryptoProviders::Sha512,
+    # c.crypto_provider = Authlogic::CryptoProviders::SCrypt
+  # end
 
 # role-based authorization system
-gem 'acl9', '~> 0.12.1'
+gem 'acl9', '~> 1.0.0'
+# '~> 0.12.1'
 
 # helper methods for rails 3 models
 gem 'dynamic_form', '~> 1.1.4'
@@ -22,13 +36,16 @@ gem 'dynamic_form', '~> 1.1.4'
 gem 'paperclip', '~> 4.2.2'
 
 # tag a single model on several contexts
-gem 'acts-as-taggable-on', '~> 2.4.1'
+gem 'acts-as-taggable-on'
+# , '3.4.0'
+  # '~> 2.4.1'
 
 # read and write spreadsheet documents
-gem 'spreadsheet', '0.9.7'
+gem 'spreadsheet', '1.2.5'
+  # '0.9.7'
 
 # active record backend for Delayed::Job
-gem 'delayed_job_active_record', '~> 4.0.0'
+gem 'delayed_job_active_record', '~> 4.1.0'
 
 # wrap ruby scripts executed as deamon
 gem 'daemons', '~> 1.1.9'
@@ -59,6 +76,18 @@ gem 'will_paginate', '~> 3.0.5'
 # Profiling toolkit
 # gem 'rack-mini-profiler', :group => :development
 
+# sass adapter
+gem 'sass-rails',   '~> 4.0.0'
+
+# coffee script adapter
+gem 'coffee-rails', '~> 4.0.0'
+
+# call java script code and manipulate java script
+# gem 'therubyracer', :platforms => :ruby
+
+# uglifier minifies java script
+gem 'uglifier', '~> 2.7.2'
+
 group :test, :development do
   # unit testing framework
   gem 'test-unit', '~> 2.5.4'
@@ -70,7 +99,8 @@ group :test, :development do
   # gem 'ruby-prof'
 
   # bindings for the GNOME Libxml2
-  gem 'libxml-ruby', '~> 2.4.0'
+  gem 'libxml-ruby'
+  # , '~> 2.4.0'
 
   # wrapper for Linux inotify
   gem 'rb-inotify', '~> 0.9.1'
@@ -89,20 +119,6 @@ group :test, :development do
   # gem 'codecov', :require => false, :group => :test
 end
 
-group :assets do
-  # sass adapter
-  gem 'sass-rails',   '~> 3.2.3'
-
-  # coffee script adapter
-  gem 'coffee-rails', '~> 3.2.1'
-
-  # call java script code and manipulate java script
-  # gem 'therubyracer', :platforms => :ruby
-
-  # uglifier minifies java script
-  gem 'uglifier', '~> 2.7.2'
-end
-
 group :tools do
   # code formatter
   gem 'rubocop', require: false
@@ -111,10 +127,10 @@ group :tools do
   gem 'gemsurance', '~> 0.9.0'
 
   # handle events on file system modifications
-  gem 'guard', '~> 1.6.1'
+  # gem 'guard', '~> 2.15.1'
 
   # automatically run your tests on file modification
-  gem 'guard-test', '~> 0.7.0'
+  # gem 'guard-test', '~> 2.0.8'
 
   # html parser
   gem 'hpricot', '~> 0.8.6'
