@@ -1,5 +1,9 @@
 class User < ActiveRecord::Base
-  acts_as_authentic
+
+  acts_as_authentic do |c|
+     c.crypto_provider = Authlogic::CryptoProviders::Sha512
+  end
+
   acts_as_authorization_subject association_name: :roles, join_table_name: :roles_users
 
   validates_presence_of :lastname, :firstname
