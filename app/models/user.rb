@@ -6,17 +6,18 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :login
 
   # related paperproposals. Roles include: proponent, main aspect dataset owner, side aspect dataset owner, acknowledged.
-  has_many :author_paperproposals, dependent: :destroy, include: [:paperproposal]
+  has_many :author_paperproposals, -> { includes :paperproposals }, dependent: :destroy
+
   has_many :paperproposals_author_table, through: :author_paperproposals, source: :paperproposal
+
   # paperproposals created by the user
   has_many :owning_paperproposals, class_name: 'Paperproposal', foreign_key: 'author_id'
 
   has_many :paperproposal_votes, dependent: :destroy # Todo really dependent destroy?
 
-  has_many :project_board_votes, class_name: 'PaperproposalVote',
-                                 source: :paperproposal_votes, conditions: { project_board_vote: true }
-  has_many :for_paperproposal_votes, class_name: 'PaperproposalVote',
-                                     source: :paperproposal_votes, conditions: { project_board_vote: false }
+  has_many :project_board_votes, -> { where project_board_vote: true }, class_name: 'PaperproposalVote', source: :paperproposal_votes
+
+  has_many :for_paperproposal_votes, -> { where project_board_vote: false }, class_name: 'PaperproposalVote', source: :paperproposal_votes
 
   has_many :notifications
 
