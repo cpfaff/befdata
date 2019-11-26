@@ -45,7 +45,7 @@ class Project < ActiveRecord::Base
   def check_destroyable
     unless destroyable?
       errors.add(:base, "#{shortname} still owns some resources, thus can not be deleted!")
-      return false
+      false
     end
   end
 end
