@@ -1,6 +1,6 @@
 class DatasetEdit < ActiveRecord::Base
   belongs_to :dataset
-  attr_accessible :description, :submitted
+  # attr_accessible :description, :submitted
 
   validates_presence_of :dataset, :description
   # validate :only_one_unsubmitted_per_dataset
@@ -17,16 +17,20 @@ class DatasetEdit < ActiveRecord::Base
       self.description ||= ''
       self.description = self.description + "\r\n- #{line}"
     end
-    touch
-    save
+
+    unless new_record?
+      touch
+    else
+      save
+    end
   end
 
   def notify(params)
     return unless params
 
     # collect
-    downloaders = params[:downloaders] ? dataset.downloaders : []
-    proposers = params[:proposers] ? dataset.proposers : []
+    downloaders = params.permit(:downloaders) ? dataset.downloaders : []
+    proposers = params.permit(:proposers) ? dataset.proposers : []
 
     # normalize
     [downloaders, proposers].each do |a|
