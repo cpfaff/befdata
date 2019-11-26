@@ -50,7 +50,7 @@ class ::ApplicationController < ActionController::Base
     if current_user
       flash[:error] = 'You must be logged out to access this page'
       redirect_back_or_default root_url
-      return false
+      false
     end
   end
 
@@ -79,7 +79,7 @@ class ::ApplicationController < ActionController::Base
     raise 'A collection of allowed sorting options should be specified!' unless options[:collection].present?
     options[:default] ||= options[:collection].first
     params[:sort] = options[:default] unless options[:collection].include?(params[:sort])
-    params[:direction] = 'asc' unless %w(desc asc).include?(params[:direction])
+    params[:direction] = 'asc' unless %w[desc asc].include?(params[:direction])
   end
 
   def access_denied
