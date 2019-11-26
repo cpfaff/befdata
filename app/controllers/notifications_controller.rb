@@ -2,6 +2,9 @@ class NotificationsController < ApplicationController
   before_filter :load_notification, except: [:index]
 
   skip_before_filter :deny_access_to_all
+  # this has been moved over from the model with strong params it
+  # is not neccessary anymore
+  # attr_accessible :message, :read, :subject, :user_id
 
   access_control do
     actions :index, :mark_as_read, :destroy do
