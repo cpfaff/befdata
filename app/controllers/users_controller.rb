@@ -33,19 +33,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(params.require(:user).permit(:login,
-                                                  :password,
-                                                  :password_confirmation,
-                                                  :firstname,
-                                                  :middlenames,
-                                                  :lastname,
-                                                  :salutation,
-                                                  :email,
-                                                  :project_board,
-                                                  :admin,
-                                                  :data_admin,
-                                                  :alumni,
-                                                  :avatar))
+    @user = User.new(users_param)
     if @user.save
       @user.projectroles = params.fetch(:roles, {})
       redirect_to user_path(@user), notice: "Successfully Created user #{@user.to_label}"
@@ -59,19 +47,7 @@ class UsersController < ApplicationController
   end
 
   def update
-    if @user.update_attributes(params.require(:user).permit(:login,
-                                                  :password,
-                                                  :password_confirmation,
-                                                  :firstname,
-                                                  :middlenames,
-                                                  :lastname,
-                                                  :salutation,
-                                                  :email,
-                                                  :project_board,
-                                                  :admin,
-                                                  :data_admin,
-                                                  :alumni,
-                                                  :avatar))
+    if @user.update_attributes(users_params)
       @user.projectroles = params.fetch(:roles, {})
       redirect_to user_path(@user), notice: 'Saved successfully'
     else
@@ -93,5 +69,21 @@ class UsersController < ApplicationController
 
   def load_user
     @user = User.find(params[:id])
+  end
+
+  def users_params
+    params.require(:user).permit(:login,
+                                 :password,
+                                 :password_confirmation,
+                                 :firstname,
+                                 :middlenames,
+                                 :lastname,
+                                 :salutation,
+                                 :email,
+                                 :project_board,
+                                 :admin,
+                                 :data_admin,
+                                 :alumni,
+                                 :avatar)
   end
 end
