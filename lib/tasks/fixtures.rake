@@ -11,9 +11,8 @@ namespace :db do
         Dir.mkdir("#{Rails.root}/test/fixtures_dump") unless File.exist?("#{Rails.root}/test/fixtures_dump")
         File.open("#{Rails.root}/test/fixtures_dump/#{table_name}.yml", 'w') do |file|
           data = ActiveRecord::Base.connection.select_all(sql % table_name)
-          file.write data.inject({}) { |hash, record|
+          file.write data.each_with_object({}) { |record, hash|
             hash["#{table_name}_#{i.succ!}"] = record
-            hash
           }.to_yaml
         end
       end
