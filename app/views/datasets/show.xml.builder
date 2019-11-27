@@ -1,4 +1,3 @@
-
 xml.instruct!
 xml.dataset(id: @dataset.id, version: 1) do
   if @dataset.visible_for_public || current_user
@@ -8,9 +7,9 @@ xml.dataset(id: @dataset.id, version: 1) do
     xml.spatialextent @dataset.spatialextent
     xml.temporalextent do
       xml.begin @dataset.datemin
-    xml.design @dataset.design
       xml.end @dataset.datemax
     end
+    xml.design @dataset.design
     xml.uploaded_at @dataset.created_at
     xml.authors do
       @contacts.each do |u|
