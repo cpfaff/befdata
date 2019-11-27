@@ -113,10 +113,10 @@ class CategoriesController < ApplicationController
   end
 
   def load_datagroup
-    @datagroup = Datagroup.find(params[:datagroup_id])
+    @datagroup = Datagroup.find_by_id(params[:datagroup_id])
   end
 
   def load_category
-    @category = Category.find(params[:id])
+    @category = Category.find_by_id(params[:id])
   end
 end
