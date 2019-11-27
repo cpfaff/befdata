@@ -3,9 +3,9 @@
   = field_set_tag "Profile" do
     = f.label :login, class: "required"
     = f.text_field :login
-    = f.label :password
+    = f.label :password, class: "required"
     = f.password_field :password
-    = f.label :password_confirmation
+    = f.label :password_confirmation, 'Password confirm', class: "required"
     = f.password_field :password_confirmation
     = f.label :firstname, class: "required"
     = f.text_field :firstname

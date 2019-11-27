@@ -8,9 +8,13 @@
 .edit_user, .new_user {
   width: 640px;
   margin-left: 10px;
-  label {
+  label{
+    display: inline-block;
     float:left;
-    width: 145px;
+    width: 150px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
     margin-right: 20px;
   }
   input, textarea {
