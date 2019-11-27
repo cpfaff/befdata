@@ -19,7 +19,7 @@
           %td= number_to_human_size(datafile.file_file_size)
           %td= datafile.file_updated_at
           %td
-            = link_to_if(index > 0, "delete", dataset_datafile_path(@dataset, datafile), :method => :delete, :confirm => "Are you sure to delete this workbook ?") do
+            = link_to_if(index > 0, "delete", dataset_datafile_path(@dataset, datafile), :method => :delete, data: { confirm: "Are you sure to delete this workbook ?") } do
               protected
 
 %h3 Upload Datafile
@@ -33,7 +33,7 @@
           :html => {:multipart => true} do |f|
   = f.error_messages
   = f.file_field :file
-  = f.submit 'Data set upload', :confirm => "All research data will be replaced by the content of this file!"
+  = f.submit 'Data set upload', data: { confirm: "All research data will be replaced by the content of this file!" }
 
 - unless @freeformats.empty?
   %h3 Change freeformat files

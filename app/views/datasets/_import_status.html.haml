@@ -17,7 +17,7 @@
       = link_to edit_files_dataset_path(@dataset) do
         = image_tag("edit.png")
         Exchange the workbook
-      = link_to dataset_path(@dataset), :method => :delete, :confirm => "Do you really want to delete this dataset?" do
+      = link_to dataset_path(@dataset), method: :delete, data: { confirm: "Do you really want to delete this dataset?" } do
         = image_tag("trash.png")
         Delete
   %noscript
