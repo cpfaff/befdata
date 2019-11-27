@@ -50,7 +50,7 @@ class DatasetsControllerTest < ActionController::TestCase
     timeout_seconds = 60
     exported_file_status = Dataset.first.exported_files.map(&:status).any? {|item| item == "finished"}
 
-    while timeout_seconds > 0 && exported_file_status == false  do
+    while timeout_seconds > 0 && exported_file_status == false do
       timeout_seconds = timeout_seconds - 1
       exported_file_status = Dataset.first.exported_files.map(&:status).any? {|item| item == "finished"}
       sleep(1)
