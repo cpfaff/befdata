@@ -316,7 +316,7 @@ class Workbook
   end
 
   def save_data_into_database(sheetcells, rownr)
-    columns = [:datacolumn_id, :import_value, :row_number, :datatype_id]
+    columns = %i[datacolumn_id import_value row_number datatype_id]
     Sheetcell.import columns, sheetcells, validate: false
     @dataset.update_attribute(:import_status, "Imported #{rownr} of #{raw_data_sheet.row_count - 1} rows")
   end
