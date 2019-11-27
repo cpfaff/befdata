@@ -27,7 +27,7 @@
   %hr
 
   %div#import-form
-    = form_for [@datagroup, Category.new], {:remote => true, 'data-type' => 'json'} do |f|
+    = form_for [@datagroup, Category.new], { :remote => true, 'data-type' => 'json' } do |f|
       %table
         %tr
           %td
