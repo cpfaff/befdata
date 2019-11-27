@@ -57,7 +57,8 @@ gem 'whenever', '~> 0.8.2', require: false
 gem 'activerecord-import', '~> 0.4.1'
 
 # named scoples for postgres fulltext search
-gem 'pg_search', '~> 0.5.7'
+# gem 'pg_search', '~> 0.5.7'
+gem 'pg_search', '~> 2.0.0'
 
 # jQuery and the jQuery-ujs driver for your Rails
 gem 'jquery-rails', '~> 3.1.3'
