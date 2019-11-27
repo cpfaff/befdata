@@ -36,6 +36,7 @@ config/configuration.yml
 config/database.yml
 config/mailers.yml
 config/newrelic.yml
+config/secrets.yml
 
 public/assets/
 public/images/user_avatars/
