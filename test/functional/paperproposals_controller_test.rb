@@ -80,7 +80,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
 
     paperproposal.reload
     assert_equal paperproposal.board_state, 'final'
-    assert_true Notification.count == (old_notification_count + 1)
+    assert Notification.count == (old_notification_count + 1)
   end
 
   test 'rejecting paperproposal data request' do
@@ -95,7 +95,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
 
     paperproposal.reload
     assert_equal 'data_rejected', paperproposal.board_state
-    assert_true Notification.count > old_notifications_count
+    assert Notification.count > old_notifications_count
   end
 
   test 'changing datasets recalculates votes and resets if neccesary' do
@@ -131,14 +131,14 @@ class PaperproposalsControllerTest < ActionController::TestCase
     assert_redirected_to edit_datasets_paperproposal_path(paperproposal)
   end
 
-  test 'should have initital title same as the title after creation process' do
+  test 'should have initial title same as the title after creation process' do
     login_nadrowski
 
     post :create, paperproposal: { title: 'Test', rationale: 'Rational', author_id: 1 }
     assert_success_no_error
     paperproposal = Paperproposal.find_by_title('Test')
 
-    assert_equal 'Test', paperproposal.initial_title
+    assert 'Test' == paperproposal.initial_title
   end
 
   test 'show paperproposal' do
@@ -286,7 +286,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     get :new
 
     assert_select 'div#content' do |element|
-      assert !(element.first =~ /Initial title/)
+      assert element.first !~ /Initial title/
     end
   end
 
@@ -317,7 +317,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
 
     get :update_state, id: @paperproposal.id
     @paperproposal.reload
-    assert_true @paperproposal.lock
+    assert @paperproposal.lock
 
     get :safe_delete, id: @paperproposal.id
 
@@ -327,7 +327,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   end
 
   test 'destroying datasets also deletes dependent objects' do
-    models = %w(Role DatasetPaperproposal Paperproposal PaperproposalVote AuthorPaperproposal)
+    models = %w[Role DatasetPaperproposal Paperproposal PaperproposalVote AuthorPaperproposal]
     before = {}
     models.each do |model|
       before[model] = eval("#{model}.count")

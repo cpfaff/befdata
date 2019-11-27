@@ -79,7 +79,7 @@ class ProjectsControllerTest < ActionController::TestCase
     # membership params hash
     # now i am going to delete the pi, set users(id=5,1) as student, user(id=3) as phd
     roles = [{ type: 'phd student', value: ['3'] },
-             { type: 'student', value: %w(1 5) }]
+             { type: 'student', value: %w[1 5] }]
     # no matter what the member was before, the final membership should honest params from user inputs
     login_nadrowski
     post :update, id: p, project: project, roles: roles

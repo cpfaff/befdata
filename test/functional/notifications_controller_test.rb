@@ -27,6 +27,6 @@ class NotificationsControllerTest < ActionController::TestCase
 
     get :destroy, id: 1
 
-    assert_true Notification.count < old_notification_count
+    assert Notification.count < old_notification_count
   end
 end

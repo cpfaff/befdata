@@ -16,9 +16,9 @@ class BefParamTest < Test::Unit::TestCase
     assert !p.has_param?(:f, 'w')
 
     p1 = BefParam.new('access_code:0|1,f:a|w', radio: :f, checkbox: :access_code)
-    assert p1.has_param?(:access_code, %w(0 1))
+    assert p1.has_param?(:access_code, %w[0 1])
     assert p1.has_param?(:access_code, '1')
-    assert p1.has_param?(:f, %w(a w))
+    assert p1.has_param?(:f, %w[a w])
     assert !p1.has_param?(:f, 'a')
   end
 
@@ -54,9 +54,9 @@ class BefParamTest < Test::Unit::TestCase
 
     p.toggle_param!(:f, 'a')
     assert p.has_param?(:f, 'a')
-    p.toggle_param!(:f, %w(a w))
+    p.toggle_param!(:f, %w[a w])
     assert !p.has_param?(:f, 'a')
-    assert p.has_param?(:f, %w(a w))
+    assert p.has_param?(:f, %w[a w])
   end
 
   test 'dup should work' do

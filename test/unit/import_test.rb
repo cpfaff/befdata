@@ -7,12 +7,12 @@ class ImportTest < ActiveSupport::TestCase
     #========Upload a workbook============#
     datafile = Datafile.create(file: File.new(File.join(fixture_path, 'test_files_for_uploads',
                                                         'UnitTestSpreadsheetForUpload_new.xls')))
-    assert_true datafile.save, datafile.errors
+    assert datafile.save, datafile.errors
 
     dataset = Dataset.create(title: 'just4testing')
     dataset.current_datafile = datafile
 
-    assert_true dataset.save, dataset.errors
+    assert dataset.save, dataset.errors
 
     #========import dataset============#
     book = Workbook.new(dataset.current_datafile)
@@ -74,7 +74,7 @@ class ImportTest < ActiveSupport::TestCase
     importcats = column_category2.import_categories
     assert_equal 6, importcats.count, 'There should be 6 import categories for this column'
 
-    uniquelist = importcats.uniq_by(&:short)
+    uniquelist = importcats.to_a.uniq{|t| t.short }
     assert_equal 3, uniquelist.count, 'There should be 3 unique import categories for this column'
 
     #==============================================================#
@@ -103,7 +103,7 @@ class ImportTest < ActiveSupport::TestCase
     dataset1 = Dataset.create(title: 'just4testing_datagroups_1')
     dataset1.current_datafile = datafile1
 
-    assert_true dataset1.save, dataset1.errors
+    assert dataset1.save, dataset1.errors
 
     book1 = Workbook.new(dataset1.current_datafile)
     book1.import_data
@@ -116,7 +116,7 @@ class ImportTest < ActiveSupport::TestCase
     dataset2 = Dataset.create(title: 'just4testing_datagroups_2')
     dataset2.current_datafile = datafile2
 
-    assert_true dataset2.save, dataset2.errors
+    assert dataset2.save, dataset2.errors
 
     book2 = Workbook.new(dataset2.current_datafile)
     book2.import_data

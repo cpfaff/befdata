@@ -12,7 +12,7 @@ class DatacolumnTest < ActiveSupport::TestCase
   end
 
   test 'imported_values_test_uniqueness' do
-    n = 3
+    n = 2
     datacolumn = Datacolumn.find(36)
     firstN = datacolumn.imported_values(n)
     array = firstN.collect { |f| f[:import_value] }
