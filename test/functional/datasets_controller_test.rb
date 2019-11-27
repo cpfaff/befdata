@@ -47,8 +47,19 @@ class DatasetsControllerTest < ActionController::TestCase
   end
 
   test 'dataset can be downloaded via api key' do
-    get :download, id: Dataset.first.id, format: :csv, user_credentials: User.find_by_login('nadrowski').single_access_token
-    assert_success_no_error
+    timeout_seconds = 60
+    exported_file_status = Dataset.first.exported_files.map(&:status).any? {|item| item == "finished"}
+
+    while timeout_seconds > 0 && exported_file_status == false  do
+      timeout_seconds = timeout_seconds - 1
+      exported_file_status = Dataset.first.exported_files.map(&:status).any? {|item| item == "finished"}
+      sleep(1)
+    end
+
+    if exported_file_status == true
+      get :download, id: Dataset.first.id, format: :csv, user_credentials: User.find_by_login('nadrowski').single_access_token
+      assert_success_no_error
+    end
   end
 
   test 'dataset can not be downloaded via invalid api key' do
