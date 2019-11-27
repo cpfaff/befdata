@@ -31,7 +31,7 @@ class DataSetTest < ActiveSupport::TestCase
   end
 
   test 'delete_imported_research_data should delete not needed datagroups' do
-    pending 'Cleanup of orphan datagroups is not implemented yet'
+    skip 'Cleanup of orphan datagroups is not implemented yet'
     # dataset = datasets("datasets_001")
     # all_datagroups_length = Datagroup.count
     #
@@ -115,7 +115,7 @@ class DataSetTest < ActiveSupport::TestCase
 
     dataset.delete_imported_research_data
 
-    pending 'not working'
+    skip 'not working'
   end
 
   test 'update_column_should_update_dataset_updated_at' do

@@ -245,11 +245,11 @@ class PaperproposalsControllerTest < ActionController::TestCase
   end
 
   test 'for project board member it should be possible to vote' do
-    pending 'Untestable because vote is in view of user controller and action in paperproposal'
+    skip 'Untestable because vote is in view of user controller and action in paperproposal'
   end
 
   test 'project board can reject the paperproposal' do
-    pending 'Untestable because vote is in view of user controller and action in paperproposal'
+    skip 'Untestable because vote is in view of user controller and action in paperproposal'
   end
 
   test 'it should be possible to edit a rejected paperproposal' do
@@ -269,15 +269,15 @@ class PaperproposalsControllerTest < ActionController::TestCase
   end
 
   test 'should show a paperproposal for owner' do
-    pending 'paperproposal is show for everybody.'
+    skip 'paperproposal is show for everybody.'
   end
 
   test 'should show a paperproposal for project board if they can vote for it' do
-    pending 'paperproposal is show for everybody.'
+    skip 'paperproposal is show for everybody.'
   end
 
   test 'should show a paperproposal for dataset owner and responsible if they can vote' do
-    pending 'paperproposal is show for everybody.'
+    skip 'paperproposal is show for everybody.'
   end
 
   test 'should not show the initial title on create page' do
@@ -291,7 +291,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   end
 
   test 'should allow download of datasets to paperproposers if final' do
-    pending 'functionality not jet implemented'
+    skip 'functionality not jet implemented'
   end
 
   test 'should download paperproposal datasets csv' do

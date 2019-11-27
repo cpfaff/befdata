@@ -14,7 +14,7 @@ class PaperproposalTest < ActiveSupport::TestCase
     corresponding = author
     paperproposal_stranger = User.find(5)
 
-    pending "havn't test edited calc_authorship method"
+    skip "havn't test edited calc_authorship method"
   end
 
   test 'expired download rights are removed' do

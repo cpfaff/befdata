@@ -197,7 +197,7 @@ class DatasetsControllerTest < ActionController::TestCase
   # Destroy
 
   test 'destroy should delete a dataset' do
-    pending 'Implement me!'
+    skip 'Implement me!'
   end
 
   test 'replacing original research data with new file' do
