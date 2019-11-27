@@ -4,10 +4,11 @@ services:
 env:
   global:
     - COVERALLS_PARALLEL=true
+    - RAILS_ENV=test
 rvm:
   - 2.3.3
 script:
-  - bundle exec rake db:setup RAILS_ENV=test
+  - bundle exec rake db:setup 
   - bundle exec rake db:fixtures:load
   - RUBYOPT=-W0 bundle exec rake test
 before_script:
