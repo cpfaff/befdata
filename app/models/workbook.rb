@@ -244,7 +244,7 @@ class Workbook
 
   # This method imports content in 'categories' sheet into import_categories table
   def import_categories
-    fields = %w(short long description datacolumn_id)
+    fields = %w[short long description datacolumn_id]
     import_categories_in_queue = []
     counter = 0
 
