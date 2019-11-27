@@ -58,7 +58,7 @@
           %td
             = link_to "Edit", edit_datagroup_path(dg)
             - if dg.datacolumns_count.to_i == 0
-              = link_to 'Delete', datagroup_path(dg), :method => :delete, :confirm => "Are you sure to delete datagroup: #{dg.title} ?"
+              = link_to 'Delete', datagroup_path(dg), :method => :delete,  data: { confirm: "Are you sure to delete datagroup: #{dg.title} ?" }
 
 = will_paginate @datagroups
 

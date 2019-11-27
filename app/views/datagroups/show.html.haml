@@ -6,7 +6,7 @@
       = image_tag "edit.png"
       Edit
     - if @datasets.empty?
-      = link_to datagroup_path(@datagroup), :method => :delete, :confirm => "Are you sure to delete this datagroup ?" do
+      = link_to datagroup_path(@datagroup), :method => :delete, data: { confirm: "Are you sure to delete this datagroup ?" } do
         = image_tag "trash.png"
         Delete
     - else

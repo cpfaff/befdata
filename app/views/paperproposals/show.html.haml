@@ -28,7 +28,7 @@
             Admin
       - if may_administrate_paperproposals? || is_paperproposal_author?
         %li
-          = link_to safe_delete_paperproposal_path(@paperproposal), :confirm => "Do you really want to delete this paperproposal?" do
+          = link_to safe_delete_paperproposal_path(@paperproposal), data: { confirm: "Do you really want to delete this paperproposal?" } do
             = image_tag("trash.png")
             Delete
 
