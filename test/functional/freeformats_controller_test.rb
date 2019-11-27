@@ -14,7 +14,7 @@ class FreeformatsControllerTest < ActionController::TestCase
   test 'add freeformat to dataset and change it and delete it' do
     login_nadrowski
     dataset = Dataset.first
-    f = test_file_for_upload 'empty_test_file.txt'
+    f = fixture_file_upload(File.join('test_files_for_uploads', 'empty_test_file.txt'))
     request.env['HTTP_REFERER'] = edit_dataset_path dataset
 
     post :create, freeformat: { file: f }, freeformattable_id: dataset.id, freeformattable_type: dataset.class.to_s
@@ -24,7 +24,7 @@ class FreeformatsControllerTest < ActionController::TestCase
     assert_equal freeformat.freeformattable, dataset
 
     # and now change it...
-    f = test_file_for_upload 'empty_freeformat_file.ppt'
+    f = fixture_file_upload(File.join('test_files_for_uploads', 'empty_freeformat_file.ppt'))
 
     put :update, id: freeformat.id, freeformat: { file: f }
 
@@ -40,7 +40,7 @@ class FreeformatsControllerTest < ActionController::TestCase
   test 'adding and deleting file on paperproposal' do
     login_and_load_paperproposal 'nadrowski', 'Step 1 Paperproposal'
     request.env['HTTP_REFERER'] = edit_paperproposal_path(@paperproposal)
-    f = test_file_for_upload 'empty_test_file.txt'
+    f = fixture_file_upload(File.join('test_files_for_uploads', 'empty_test_file.txt'))
 
     post :create, freeformat: { file: f },
                   freeformattable_id: @paperproposal.id, freeformattable_type: @paperproposal.class.to_s

@@ -223,7 +223,7 @@ class DatasetsControllerTest < ActionController::TestCase
     post  :update_workbook,
           id: @dataset.id,
           datafile: {
-            file: test_file_for_upload('SP5_TargetSpecies_CN_final_8_target_spec_kn_-_short.xls')
+            file: fixture_file_upload(File.join('test_files_for_uploads', 'SP5_TargetSpecies_CN_final_8_target_spec_kn_-_short.xls'))
           }
 
     assert_redirected_to dataset_path(@dataset)
@@ -243,7 +243,7 @@ class DatasetsControllerTest < ActionController::TestCase
 
   test 'upload a workbook with duplicated column headers should fail' do
     login_nadrowski
-    uploaded_file = test_file_for_upload('problem_workbook-1.xls')
+    uploaded_file = fixture_file_upload(File.join('test_files_for_uploads', 'problem_workbook-1.xls'))
 
     # create a new dataset using this problematic workbook
     @request.env['HTTP_REFERER'] = new_dataset_path

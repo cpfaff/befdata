@@ -30,7 +30,7 @@ class DatagroupsControllerTest < ActionController::TestCase
   test 'upload updated categories cvs' do
     login_nadrowski
     request.env['HTTP_REFERER'] = root_url
-    f = test_file_for_upload 'datagroup_22_categories_update.csv.txt'
+    f = fixture_file_upload(File.join('test_files_for_uploads', 'datagroup_22_categories_update.csv.txt'))
 
     post :update_categories, id: 22, csvfile: { file: f }
 
@@ -40,7 +40,7 @@ class DatagroupsControllerTest < ActionController::TestCase
   test 'dont accept duplicate categories short via cvs' do
     login_nadrowski
     request.env['HTTP_REFERER'] = root_url
-    f = test_file_for_upload 'datagroup_22_categories_faulty.csv.txt'
+    f = fixture_file_upload(File.join('test_files_for_uploads', 'datagroup_22_categories_faulty.csv.txt'))
 
     post :update_categories, id: 22, csvfile: { file: f }
 
@@ -50,7 +50,8 @@ class DatagroupsControllerTest < ActionController::TestCase
 
   test 'merge categories via csv' do
     login_nadrowski
-    f = test_file_for_upload 'datagroup_22_categories_merge.csv.txt'
+    f = fixture_file_upload(File.join('test_files_for_uploads', 'datagroup_22_categories_merge.csv.txt'))
+
     cat_count_old = Datagroup.find(22).categories.count
 
     post :update_categories, id: 22, csvfile: { file: f }

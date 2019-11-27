@@ -37,7 +37,8 @@ class CategoriesControllerTest < ActionController::TestCase
 
   test 'upload sheetcells cvs addes to and creates categories' do
     login_nadrowski
-    f = test_file_for_upload 'category_61_sheetcells_split.csv.txt'
+    f = fixture_file_upload('test_files_for_uploads/category_61_sheetcells_split.csv.txt')
+
     category = Category.find 61
     other_category = Category.find 62
     category_old_sheetcell_count = category.sheetcells.count

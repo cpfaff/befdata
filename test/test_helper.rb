@@ -37,11 +37,11 @@ class ActiveSupport::TestCase
     UserSession.create(user)
   end
 
-  def test_file_for_upload(filename)
-    # please put all files for uploading under 'test_file_for_uploads' directory
-    # used only for uploading files through form in functional or integration test
-    fixture_file_upload(File.join('test_files_for_uploads', filename))
-   end
+  # def test_file_for_upload(filename)
+  # # please put all files for uploading under 'test_file_for_uploads' directory
+  # # used only for uploading files through form in functional or integration test
+  # fixture_file_upload(File.join('test_files_for_uploads', filename))
+  # end
 
   def login_and_load_category(user = 'nadrowski', long = 'Mahonia bealei')
     login_user user
