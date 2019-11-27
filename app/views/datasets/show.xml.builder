@@ -1,72 +1,72 @@
+
 xml.instruct!
-xml.dataset(:id => @dataset.id, :version => 1) {
+xml.dataset(id: @dataset.id, version: 1) do
   if @dataset.visible_for_public || current_user
-    xml.title  @dataset.title
+    xml.title @dataset.title
     xml.abstract @dataset.abstract
     xml.taxonomicextent @dataset.taxonomicextent
     xml.spatialextent @dataset.spatialextent
-    xml.temporalextent {
+    xml.temporalextent do
       xml.begin @dataset.datemin
-      xml.end  @dataset.datemax
-    }
     xml.design @dataset.design
+      xml.end @dataset.datemax
+    end
     xml.uploaded_at @dataset.created_at
-    xml.authors {
+    xml.authors do
       @contacts.each do |u|
-        xml.person(id: u.id) {
+        xml.person(id: u.id) do
           xml.name u.full_name
           xml.email u.email
-        }
+        end
       end
-    }
-    xml.projects {
+    end
+    xml.projects do
       @projects.each do |p|
         xml.name p.shortname, id: p.id
       end
-    }
-    xml.accessRight @dataset.access_rights, :code => @dataset.access_code
-    xml.columns {
+    end
+    xml.accessRight @dataset.access_rights, code: @dataset.access_code
+    xml.columns do
       @datacolumns.each do |dc|
-        xml.column {
+        xml.column do
           xml.header dc.columnheader
           xml.definition dc.definition
           xml.unit dc.unit
           xml.type dc.import_data_type
           xml.instrumentation dc.instrumentation
           xml.reference dc.informationsource
-          xml.datagroup(id: dc.datagroup_id) {
+          xml.datagroup(id: dc.datagroup_id) do
             xml.title dc.datagroup.title
             xml.description dc.datagroup.description
-          }
-          xml.keywordSet {
+          end
+          xml.keywordSet do
             dc.tags.each do |t|
-              xml.keyword t.name, :id => t.id
+              xml.keyword t.name, id: t.id
             end
-          }
+          end
           xml.semanticTagging dc.semantic_term.try(:term)
-        }
-        if params[:separate_category_columns].to_s.downcase.eql?("true")  && dc.split_me?
-          xml.column {
-            xml.header dc.columnheader + "_Categories"
-            xml.definition dc.definition
-            xml.unit dc.unit
-            xml.type "category"
-            xml.instrumentation dc.instrumentation
-            xml.reference dc.informationsource
-            xml.datagroup(id: dc.datagroup_id) {
-              xml.title dc.datagroup.title
-              xml.description dc.datagroup.description
-            }
-            xml.keywordSet {
-              dc.tags.each do |t|
-                xml.keyword t.name, :id => t.id
-              end
-            }
-            xml.semanticTagging dc.semantic_term.try(:term)
-          }
+        end
+        next unless params[:separate_category_columns].to_s.casecmp('true').zero? && dc.split_me?
+        xml.column do
+          xml.header dc.columnheader + '_Categories'
+          xml.definition dc.definition
+          xml.unit dc.unit
+          xml.type 'category'
+          xml.instrumentation dc.instrumentation
+          xml.reference dc.informationsource
+          xml.datagroup(id: dc.datagroup_id) do
+            xml.title dc.datagroup.title
+            xml.description dc.datagroup.description
+          end
+          xml.keywordSet do
+            dc.tags.each do |t|
+              xml.keyword t.name, id: t.id
+            end
+          end
+          xml.semanticTagging dc.semantic_term.try(:term)
         end
       end
-    }
+    end
     xml.files do
       xml.exported_file do
         if @dataset.has_research_data?
@@ -94,15 +94,13 @@ xml.dataset(:id => @dataset.id, :version => 1) {
         end
       end
     end
-    if @dataset.has_research_data?
-      xml.importstatus @dataset.import_status
-    end
-    xml.keywordSet {
+    xml.importstatus @dataset.import_status if @dataset.has_research_data?
+    xml.keywordSet do
       @dataset.tags.each do |t|
-        xml.keyword t.name, :id => t.id
+        xml.keyword t.name, id: t.id
       end
-    }
+    end
   else
-    xml.error "The meta data is not visibile for unlogged-in users"
+    xml.error 'The meta data is not visibile for unlogged-in users'
   end
-}
+end
