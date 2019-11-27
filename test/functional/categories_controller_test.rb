@@ -14,7 +14,7 @@ class CategoriesControllerTest < ActionController::TestCase
   test 'download categories csv' do
     login_nadrowski
 
-    get :index, datagroup_id: 22, format: :cvs
+    get :index, datagroup_id: 22, format: :csv
 
     assert_success_no_error
   end
@@ -30,7 +30,7 @@ class CategoriesControllerTest < ActionController::TestCase
   test 'download sheetcell cvs' do
     login_nadrowski
 
-    get :show, id: 61, format: :cvs
+    get :show, id: 61, format: :csv
 
     assert_success_no_error
   end
