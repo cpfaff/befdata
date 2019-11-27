@@ -33,7 +33,7 @@ gem 'acl9', '~> 1.0.0'
 gem 'dynamic_form', '~> 1.1.4'
 
 # upload management for active record
-gem 'paperclip', '~> 4.2.2'
+gem 'paperclip', '~> 5.2.0'
 
 # tag a single model on several contexts
 gem 'acts-as-taggable-on'
@@ -122,9 +122,6 @@ end
 group :tools do
   # code formatter
   gem 'rubocop', require: false
-
-  # report vulnerable gems
-  gem 'gemsurance', '~> 0.9.0'
 
   # handle events on file system modifications
   # gem 'guard', '~> 2.15.1'
