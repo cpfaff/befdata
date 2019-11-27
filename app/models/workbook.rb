@@ -37,7 +37,7 @@ class Workbook
   end
 
   def headers_unique?
-    headers.uniq_by(&:downcase).length == headers.length
+    headers.uniq(&:downcase).length == headers.length
   end
 
   # every column should have a header
