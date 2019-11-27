@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# the rails framework: September 14, 2016
+# the rails framework: 
 gem 'rails', '~> 4.2.0'
 
 # the postgres db connector
