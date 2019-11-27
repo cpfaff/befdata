@@ -126,7 +126,7 @@ class DatacolumnsControllerTest < ActionController::TestCase
     assert_success_no_error
     cat = Category.find_by_short('x')
     sc_cats = Datacolumn.find(datacolumn_id).sheetcells.map(&:category)
-    assert_include sc_cats, cat
+    assert_includes sc_cats, cat
 
     assert dataset.exported_excel(true).invalidated_at > last_invalidated_at_of_excel
     assert dataset.exported_csv(true).invalidated_at > last_invalidated_at_of_csv
