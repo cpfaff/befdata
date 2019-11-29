@@ -40,6 +40,6 @@ class UserLoginTest < ActionDispatch::IntegrationTest
     post logout_path, method: :delete
     assert_redirected_to root_url
     follow_redirect!
-    assert_select 'h2', /Welcome/
+    assert_select 'h2', /BEFdata/
   end
 end
