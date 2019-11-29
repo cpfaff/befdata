@@ -7,14 +7,18 @@ class PaperproposalTest < ActiveSupport::TestCase
   end
 
   test 'calculating authorship works' do
-    # moved from specs here (was only one anyway)
     paperproposal = Paperproposal.find(2)
     author = User.find(6)
     senior = User.find(4)
-    corresponding = author
-    paperproposal_stranger = User.find(5)
+    data_provider = User.find(5)
+    acknowledged = User.find(1)
+    foreign = User.find(2)
 
-    skip "havn't test edited calc_authorship method"
+    assert paperproposal.calc_authorship(author) == "Author, Proponent, and Main aspect data provider"
+    assert paperproposal.calc_authorship(senior) == "Proponent"
+    assert paperproposal.calc_authorship(data_provider) == "Main aspect data provider"
+    assert paperproposal.calc_authorship(acknowledged) == "Acknowledged"
+    assert paperproposal.calc_authorship(foreign) == ""
   end
 
   test 'expired download rights are removed' do
