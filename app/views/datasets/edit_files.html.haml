@@ -19,7 +19,7 @@
           %td= number_to_human_size(datafile.file_file_size)
           %td= datafile.file_updated_at
           %td
-            = link_to_if(index > 0, "delete", dataset_datafile_path(@dataset, datafile), :method => :delete, data: { confirm: "Are you sure to delete this workbook ?") } do
+            = link_to_if(index > 0, "delete", dataset_datafile_path(@dataset, datafile), :method => :delete, data: { confirm: "Are you sure to delete this workbook ?" }) do
               protected
 
 %h3 Upload Datafile
