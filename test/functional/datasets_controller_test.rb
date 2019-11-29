@@ -206,10 +206,11 @@ class DatasetsControllerTest < ActionController::TestCase
     assert_not_equal Datacolumn.find(datacolumn_id).import_data_type, 'text'
   end
 
-  # Destroy
-
   test 'destroy should delete a dataset' do
-    skip 'Implement me!'
+    dataset = Dataset.new(title: "test")
+    dataset.save
+    dataset.destroy
+    assert dataset.destroyed? == true
   end
 
   test 'replacing original research data with new file' do
