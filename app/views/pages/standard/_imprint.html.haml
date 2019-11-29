@@ -1,0 +1,36 @@
+%h2
+  Impressum
+%p
+  = link_to("Site of institution", "http://my.institution.com")
+  Faculty of Biology, University of XYZ
+%p
+  Responsible for the contents of this website is
+  = link_to "Prof. Dr. Test", {:controller => :users, :action => :show, :id => 1}
+%p
+  Questions should be addressed to
+  = link_to "Dr.Test Person", {:controller => :users, :action => :show, :id => 1}
+
+%hr
+
+%p
+  %strong
+    Angaben gemäß § 5 TMG:
+  %br
+    Universität XYZ
+  %br
+    Street 21-23
+  %br
+    Postal Code
+%strong
+  Represented by
+%p
+  %strong
+    = link_to "Prof. Dr. Test", {:controller => :users, :action => :show, :id => 1}
+  %br
+  Telefon: 1234
+  %br
+  Telefax: 1234
+  %br
+  E-Mail:
+  = mail_to("mymail@mail_uni_xyz.de", nil, :encode => :javascript)
+

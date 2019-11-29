@@ -202,7 +202,7 @@ body {
   font-family: "Trebuchet MS", "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei", 'WenQuanYi Micro Hei', sans-serif;
   line-height: 1.8em;
 	color: #000;
-  background: image-url("bg-stripes-grey-grey.png") repeat;
+  // background: image-url("bg-stripes-grey-grey.png") repeat;
 }
 
 input, textarea, select {
@@ -553,7 +553,7 @@ form .required:after {
 }
 
 #logo {
-	background: image-url("header-logo.png") no-repeat left top;
+	// background: image-url("header-logo.png") no-repeat left top;
     width: 928px;
     height: 43px;
     margin-top: 30px;
@@ -854,7 +854,7 @@ div#actions ~ div#info{
 /* --- Footer ------------------------------------------------ */
 
 #footer {
-    background: image-url("bg-footer.png") repeat-x top left;
+    // background: image-url("bg-footer.png") repeat-x top left;
     clear: both;
     display: block;
     margin-top: 20px;

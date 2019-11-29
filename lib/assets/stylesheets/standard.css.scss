@@ -3,14 +3,13 @@ body {
 }
 
 #header div#logo {
-    background: image-url("header-logo-fundiv.png") top no-repeat;
-    height: 148px;
+    background: white; 
+    border-bottom: 1px solid #ccc;
 }
 
 #footer {
     border-top: 1px solid #ccc;
     background: white;
-    height: 64px;
 }
 
 #footer ul#page-associates {

@@ -2,7 +2,7 @@ module ApplicationHelper
   include Acl9Helpers
 
   def with_customized_layout?
-    LayoutHelper::BEF_LAYOUT != 'application'
+    LayoutHelper::BEF_LAYOUT != 'default'
   end
 
   def tag_cloud(tag_counts, classes)
