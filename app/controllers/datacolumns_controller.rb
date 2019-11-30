@@ -66,7 +66,7 @@ class DatacolumnsController < ApplicationController
   def approve_invalid_values
     respond_to do |format|
       format.html do
-        @invalid_values = @datacolumn.invalid_values.paginate(page: params[:page], per_page: 50)
+        @invalid_values = @datacolumn.invalid_values.paginate(page: params.require(:page), per_page: 50)
         @count_of_all_invalid_values = @datacolumn.invalid_values.count
       end
       format.csv do
@@ -107,7 +107,8 @@ class DatacolumnsController < ApplicationController
       flash[:error] = 'You need to choose a datagroup.'
       redirect_to(:back) && return
     else
-      @datagroup = Datagroup.find(params[:datagroup])
+
+  @datagroup = Datagroup.find(params.require(:datagroup))
       @datacolumn.approve_datagroup(@datagroup)
       ExportedFile.invalidate(@dataset.id, :xls)
       flash[:notice] = 'Data group successfully saved.'
@@ -126,7 +127,8 @@ class DatacolumnsController < ApplicationController
     end
 
     begin
-      @datacolumn.approve_datatype(params[:import_data_type], current_user)
+
+    @datacolumn.approve_datatype(params.require(:import_data_type), current_user)
       ExportedFile.invalidate(@dataset.id, :all)
       flash[:notice] = 'Successfully updated Datatype'
       next_approval_step
@@ -139,7 +141,10 @@ class DatacolumnsController < ApplicationController
   # The meta data of this Data Column is saved. The people submitted via form are assigned
   # to the Data Column or their assignation is revoked.
   def update_metadata
-    unless @datacolumn.update_attributes(params.require(:datacolumn).permit(:definition))
+    unless @datacolumn.update_attributes(params.require(:datacolumn).permit(:id, :utf8, :authenticity_token, :columnheader,
+                                                                            :definition, :unit,
+                                                                            :tag_list, :instrumentation,
+                                                                            :informationsource, :comment, :person_id, people: []))
       flash[:error] = @datacolumn.errors.to_a.first.capitalize
       redirect_to(:back) && return
     end
@@ -147,7 +152,7 @@ class DatacolumnsController < ApplicationController
     ExportedFile.invalidate(@dataset.id, expire_type)
 
     # Retrieve the new list of people from the form params.
-    new_people = params[:people].blank? ? [] : User.find(params[:people])
+    new_people = params.fetch(:people, {}).blank? ? [] : User.find(params.fetch(:people, {}))
     @datacolumn.users = new_people
 
     @datacolumn.dataset.refresh_paperproposal_authors
@@ -205,9 +210,9 @@ class DatacolumnsController < ApplicationController
 
   def update_annotation
     if params[:new_term].present?
-      term = Vocab.where(['term iLike ?', params.require(:new_term).permit(:new_term)]).first || Vocab.create(term: params.require(:new_term))
+      term = Vocab.where(['term iLike ?', params.require(:new_term)]).first || Vocab.create(term: params.require(:new_term))
     elsif params[:term_id].present?
-      term = Vocab.find(params.require(:term_id).permit(:term_id))
+      term = Vocab.find(params.require(:term_id))
     else
       term = nil
     end
