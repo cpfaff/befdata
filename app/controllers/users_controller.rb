@@ -33,7 +33,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(users_param)
+    @user = User.new(users_params)
     if @user.save
       @user.projectroles = params.fetch(:roles, {})
       redirect_to user_path(@user), notice: "Successfully Created user #{@user.to_label}"
