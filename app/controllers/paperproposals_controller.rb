@@ -55,10 +55,11 @@ class PaperproposalsController < ApplicationController
   end
 
   def create
-    @paperproposal = Paperproposal.new(params.require(:paperproposal).permit(:title, :rationale, :author_id))
-    @temp_proponents = User.where(id: params.permit(:people)) # doesn't save it - workaround so they don't get lost when form is not filled correctly
+    @paperproposal = Paperproposal.new(paperproposal_params)
+
+    @temp_proponents = User.where(id: params.fetch(:people, [])) # doesn't save it - workaround so they don't get lost when form is not filled correctly
     if @paperproposal.save
-      @paperproposal.proponents = User.where(id: params.permit(:people))
+      @paperproposal.proponents = User.where(id: params.fetch(:people, []))
       redirect_to edit_datasets_paperproposal_path(@paperproposal)
     else
       render action: :new
@@ -83,9 +84,9 @@ class PaperproposalsController < ApplicationController
   end
 
   def update
-    @temp_proponents = User.where(id: params.require(:people)) # doesn't save it - workaround so they don't get lost when form is not filled correctly
+    @temp_proponents = User.where(id: params.fetch(:people, [])) # doesn't save it - workaround so they don't get lost when form is not filled correctly
     if @paperproposal.update_attributes(paperproposal_params)
-      @paperproposal.proponents = User.where(id: params.require(:people))
+      @paperproposal.proponents = User.where(id: params.fetch(:people, []))
       redirect_to paperproposal_path(@paperproposal)
     else
       render action: :edit
@@ -150,7 +151,7 @@ class PaperproposalsController < ApplicationController
 
   # handles a vote
   def update_vote
-    @vote.update_attributes(params.require(:paperproposal_vote).permit(:vote, :id))
+    @vote.update_attributes(params.require(:paperproposal_vote).permit(:utf8, :authenticity_token, :vote, :comment, :id))
     if @vote.save
       @vote.paperproposal.check_votes
       flash[:notice] = 'Your vote was submitted'
@@ -221,16 +222,26 @@ class PaperproposalsController < ApplicationController
   end
 
   def load_proposal
-    @paperproposal = Paperproposal.where(paperproposal_params).first
+    @paperproposal = Paperproposal.find(params.fetch(:id))
   end
 
   def load_vote
-    @vote = PaperproposalVote.where(paperproposal_params).first
+    @vote = PaperproposalVote.find(params.fetch(:id))
   end
 
   def paperproposal_params
-    params.permit(:paperproposal, :paperproposal_vote, :id, :title, :initial_title, :rationale, :envisaged_journal,
-                                          :state, :envisaged_date, :external_data, :comment, :author_id,
-                                          :project_id, :board_state, :vote)
+    params.require(:paperproposal).permit(:utf8, :authenticity_token,
+                                          :title, :rationale,
+                                          :envisaged_journal,
+                                          :state,
+                                          :'envisaged_date(1i)',
+                                          :'envisaged_date(2i)',
+                                          :'envisaged_date(3i)',
+                                          :external_data,
+                                          :comment,
+                                          :author_id,
+                                          :project_id,
+                                          not_needed: [ :param ],
+                                          people: [])
   end
 end
