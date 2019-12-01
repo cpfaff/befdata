@@ -66,7 +66,7 @@ class DatacolumnsController < ApplicationController
   def approve_invalid_values
     respond_to do |format|
       format.html do
-        @invalid_values = @datacolumn.invalid_values.paginate(page: params.fetch(:page, 1), per_page: 2)
+        @invalid_values = @datacolumn.invalid_values.paginate(page: params.fetch(:page, 1), per_page: 50)
         @count_of_all_invalid_values = @datacolumn.invalid_values.count
       end
       format.csv do
