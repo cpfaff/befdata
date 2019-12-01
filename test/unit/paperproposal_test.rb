@@ -14,11 +14,11 @@ class PaperproposalTest < ActiveSupport::TestCase
     acknowledged = User.find(1)
     foreign = User.find(2)
 
-    assert paperproposal.calc_authorship(author) == "Author, Proponent, and Main aspect data provider"
-    assert paperproposal.calc_authorship(senior) == "Proponent"
-    assert paperproposal.calc_authorship(data_provider) == "Main aspect data provider"
-    assert paperproposal.calc_authorship(acknowledged) == "Acknowledged"
-    assert paperproposal.calc_authorship(foreign) == ""
+    assert paperproposal.calc_authorship(author) == 'Author, Main aspect data provider, and Proponent'
+    assert paperproposal.calc_authorship(senior) == 'Proponent'
+    assert paperproposal.calc_authorship(data_provider) == 'Main aspect data provider'
+    assert paperproposal.calc_authorship(acknowledged) == 'Acknowledged'
+    assert paperproposal.calc_authorship(foreign) == ''
   end
 
   test 'expired download rights are removed' do
@@ -28,3 +28,4 @@ class PaperproposalTest < ActiveSupport::TestCase
     assert old_roles_count > Role.count
   end
 end
+
