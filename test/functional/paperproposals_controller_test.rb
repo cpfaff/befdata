@@ -183,7 +183,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     get :update_vote, id: vote.id, paperproposal_vote: { vote: 'accept' }
     get :show, id: paperproposal.id
     assert_success_no_error
-    assert_select 'img[alt="Arrow_right_accept"]'
+    assert_select 'img[alt="Arrow right accept"]'
   end
 
   test 'should be able to remove all datasets' do
