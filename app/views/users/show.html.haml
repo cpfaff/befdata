@@ -6,7 +6,7 @@
       = image_tag "edit.png"
       Edit User
     -if @user.destroyable?
-      = link_to user_path(@user), :method => :delete, :confirm => "Are you sure to delete #{@user.to_label}" do
+      = link_to user_path(@user), :method => :delete, data: { confirm: "Are you sure to delete #{@user.to_label}" } do
         = image_tag "trash.png"
         Delete User
 - unless @project_roles.blank?

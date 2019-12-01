@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDatabaseLevelColumnDefaults < ActiveRecord::Migration
   def up
     change_column_default :datacolumns, :datagroup_approved, false

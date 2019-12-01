@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AclPatch
   def get_user_with_role(rolename)
     User.joins('join roles_users on roles_users.user_id = users.id join roles on roles.id = roles_users.role_id')

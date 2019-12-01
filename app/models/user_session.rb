@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserSession < Authlogic::Session::Base
   single_access_allowed_request_types :any
 

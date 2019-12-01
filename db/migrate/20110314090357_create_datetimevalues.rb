@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDatetimevalues < ActiveRecord::Migration
   def self.up
     create_table :datetimevalues do |t|

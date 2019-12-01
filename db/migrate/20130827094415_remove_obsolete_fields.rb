@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveObsoleteFields < ActiveRecord::Migration
   def up
     remove_column :datasets, :student_file

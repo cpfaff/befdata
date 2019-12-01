@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :cleanup do
   desc 'cleanup categories without associated sheetcells'
   task categories: :environment do

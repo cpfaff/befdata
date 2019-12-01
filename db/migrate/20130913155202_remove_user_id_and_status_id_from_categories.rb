@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveUserIdAndStatusIdFromCategories < ActiveRecord::Migration
   def up
     remove_index :categories, :status_id

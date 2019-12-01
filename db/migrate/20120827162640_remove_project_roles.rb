@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveProjectRoles < ActiveRecord::Migration
   def self.up
     drop_table :projects_roles
@@ -11,6 +13,6 @@ class RemoveProjectRoles < ActiveRecord::Migration
       t.datetime 'updated_at'
     end
 
-    add_index 'projects_roles', %w(project_id role_id), name: 'index_projects_roles_on_project_id_and_role_id'
+    add_index 'projects_roles', %w[project_id role_id], name: 'index_projects_roles_on_project_id_and_role_id'
   end
 end

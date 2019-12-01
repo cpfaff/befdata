@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangePaperproposalEnvisagedJournalToText < ActiveRecord::Migration
   def up
     change_column :paperproposals, :envisaged_journal, :text

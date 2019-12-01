@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ::ApplicationController < ActionController::Base
   protect_from_forgery
   helper_method :current_user_session, :current_user, :get_all_paperproposal_years
@@ -10,16 +12,21 @@ class ::ApplicationController < ActionController::Base
 
   def dataset_is_free_for_members
     return true unless @dataset.blank? || !@dataset.free_for_members?
+
     false
   end
 
   def dataset_is_free_for_public
     return true unless @dataset.blank? || !@dataset.free_for_public?
+
     false
   end
 
   def dataset_is_free_for_project_of_user(user = current_user)
-    return true unless @dataset.blank? || !(@dataset.free_within_projects? && !(user.projects & @dataset.projects).empty?)
+    unless @dataset.blank? || !(@dataset.free_within_projects? && !(user.projects & @dataset.projects).empty?)
+      return true
+    end
+
     false
   end
 
@@ -38,12 +45,14 @@ class ::ApplicationController < ActionController::Base
 
   def current_user_session
     return @current_user_session if defined?(@current_user_session)
+
     @current_user_session = UserSession.find
   end
 
   def current_user
     return @current_user if defined?(@current_user)
-    @current_user = current_user_session && current_user_session.user
+
+    @current_user = current_user_session&.user
   end
 
   def require_no_user
@@ -66,7 +75,7 @@ class ::ApplicationController < ActionController::Base
     cookies[:cart_id] ||= Cart.create!.id
     begin
       @current_cart ||= Cart.find(cookies[:cart_id])
-    rescue
+    rescue StandardError
       cookies[:cart_id] = Cart.create!.id
       @current_cart ||= Cart.find(cookies[:cart_id])
     end
@@ -76,9 +85,14 @@ class ::ApplicationController < ActionController::Base
   # eg: validate_sort_params(collection: ['a', 'b'], default: 'a')
   def validate_sort_params(*options)
     options = options.extract_options!
-    raise 'A collection of allowed sorting options should be specified!' unless options[:collection].present?
+    unless options[:collection].present?
+      raise 'A collection of allowed sorting options should be specified!'
+    end
+
     options[:default] ||= options[:collection].first
-    params[:sort] = options[:default] unless options[:collection].include?(params[:sort])
+    unless options[:collection].include?(params[:sort])
+      params[:sort] = options[:default]
+    end
     params[:direction] = 'asc' unless %w[desc asc].include?(params[:direction])
   end
 

@@ -1,4 +1,6 @@
-require File.expand_path('../boot', __FILE__)
+# frozen_string_literal: true
+
+require File.expand_path('boot', __dir__)
 
 require 'rails/all'
 require 'csv'
@@ -8,7 +10,7 @@ require 'csv'
 Bundler.require(*Rails.groups)
 
 # Configure environment variables
-CONFIG = YAML.load(File.read(File.expand_path('../application.yml', __FILE__)))
+CONFIG = YAML.safe_load(File.read(File.expand_path('application.yml', __dir__)))
 CONFIG.merge! CONFIG.fetch(Rails.env, {})
 CONFIG.symbolize_keys!
 
@@ -46,6 +48,5 @@ module Befchina
 
     ActsAsTaggableOn.remove_unused_tags = true
     config.action_view.sanitized_allowed_tags = %w[strong em i b sup sub]
-
   end
 end

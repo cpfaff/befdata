@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameSheetcellValuetypeFilevalueToDatafile < ActiveRecord::Migration
   def self.up
     filevalue_sheetcells = Sheetcell.all.select { |cl| cl.value_type == 'Filevalue' }

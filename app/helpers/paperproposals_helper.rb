@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PaperproposalsHelper
   def paperproposal_state_to_i(paperproposal = @paperproposal)
     case paperproposal.board_state
@@ -20,11 +22,13 @@ module PaperproposalsHelper
 
   def proposal_is_accepted?
     return false unless @paperproposal
+
     @paperproposal.state == 'accepted'
   end
 
   def is_paperproposal_author?
     return false unless @paperproposal && current_user
+
     @paperproposal.author == current_user
   end
 
@@ -38,6 +42,7 @@ module PaperproposalsHelper
 
   def may_administrate_paperproposals?
     return false unless current_user
+
     current_user.has_role?(:admin) || current_user.has_role?(:data_admin)
   end
 

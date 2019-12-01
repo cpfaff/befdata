@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FillDatatypeIdField < ActiveRecord::Migration
   def self.up
     sheetcells = Sheetcell.all

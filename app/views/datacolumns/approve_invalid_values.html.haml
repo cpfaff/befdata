@@ -13,7 +13,7 @@
       invalid values. If you think of them as self-explanatory, ie. Category information should
       be copied from original imported value, we can auto-fill &amp; approve all of them for you.
       = form_tag autofill_and_update_invalid_values_datacolumn_path(@datacolumn) do
-        = submit_tag "Yes, do it for me!", confirm: "Are you sure?"
+        = submit_tag "Yes, do it for me!", data: { confirm: "Are you sure?" }
         = link_to "No, thanks", "#", id: 'close-too-many-alert'
 
   .info

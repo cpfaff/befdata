@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DatasetHasManyDatafiles < ActiveRecord::Migration
   def up
     add_column :datafiles, :dataset_id, :integer

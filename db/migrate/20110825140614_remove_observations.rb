@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveObservations < ActiveRecord::Migration
   def self.up
     drop_table :observations
@@ -25,7 +27,7 @@ class RemoveObservations < ActiveRecord::Migration
     end
 
     add_column :sheetcells, :observation_id, :integer
-    add_index 'observation_sheetcells', %w(observation_id sheetcell_id),
+    add_index 'observation_sheetcells', %w[observation_id sheetcell_id],
               name: 'index_observation_sheetcells_on_observation_id_and_sheetcell_id'
     add_index 'sheetcells', ['observation_id'], name: 'index_sheetcells_on_observation_id'
   end

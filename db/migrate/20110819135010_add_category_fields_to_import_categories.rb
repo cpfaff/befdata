@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCategoryFieldsToImportCategories < ActiveRecord::Migration
   def self.up
     add_column :import_categories, :short, :string, limit: 255

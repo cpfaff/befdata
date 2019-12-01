@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MoveGeneratedDownloadToExportedFiles < ActiveRecord::Migration
   def up
     execute <<-SQL
@@ -6,16 +8,15 @@ class MoveGeneratedDownloadToExportedFiles < ActiveRecord::Migration
       from datasets
       where download_generation_status is not null;
     SQL
-    remove_columns :datasets, [
-      :download_generated_at,
-      :download_generation_status,
-      :generated_spreadsheet_file_name,
-      :generated_spreadsheet_content_type,
-      :generated_spreadsheet_file_size,
-      :generated_spreadsheet_updated_at
+    remove_columns :datasets, %i[
+      download_generated_at
+      download_generation_status
+      generated_spreadsheet_file_name
+      generated_spreadsheet_content_type
+      generated_spreadsheet_file_size
+      generated_spreadsheet_updated_at
     ]
   end
 
-  def down
-  end
+  def down; end
 end

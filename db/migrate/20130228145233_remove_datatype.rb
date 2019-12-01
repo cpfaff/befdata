@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveDatatype < ActiveRecord::Migration
   def up
     drop_table :datatypes if table_exists?(:datatypes)

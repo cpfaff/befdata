@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateTags < ActiveRecord::Migration
   def self.up
     create_table :tags do |t|

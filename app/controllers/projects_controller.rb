@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProjectsController < ApplicationController
   before_filter :load_project, only: %i[show edit update destroy]
   skip_before_filter :deny_access_to_all

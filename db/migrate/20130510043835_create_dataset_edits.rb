@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDatasetEdits < ActiveRecord::Migration
   def change
     create_table :dataset_edits do |t|

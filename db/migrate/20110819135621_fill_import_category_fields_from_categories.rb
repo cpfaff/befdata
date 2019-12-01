@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FillImportCategoryFieldsFromCategories < ActiveRecord::Migration
   def self.up
     import_categories = ImportCategory.all

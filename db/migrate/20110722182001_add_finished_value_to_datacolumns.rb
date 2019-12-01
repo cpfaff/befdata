@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddFinishedValueToDatacolumns < ActiveRecord::Migration
   def self.up
     add_column :datacolumns, :finished, :boolean

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NotificationMailer < ActionMailer::Base
   default from: smtp_settings[:default_from]
 

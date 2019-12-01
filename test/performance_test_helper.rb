@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # START : HAX HAX HAX
 # Load Rails environment in 'test' mode
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 xml.instruct!
 xml.paperproposal(id: @paperproposal.id) do
   xml.title @paperproposal.title

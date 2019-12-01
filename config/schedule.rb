@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Whenever provides a nice dsl to write cronjobs.
 # Of course this is only available on Platforms which support cron (i.e. NOT on Windows)
 # On deployment the cronjobs have to be set up by executing whenever from the applications directory
@@ -23,11 +25,11 @@ every 1.day, at: '0:10 am' do
 end
 
 every :reboot do
- rake 'start_delayed_jobs'
+  rake 'start_delayed_jobs'
 end
 
 every 1.day do
- rake 'restart_delayed_jobs'
+  rake 'restart_delayed_jobs'
 end
 
 # cleanup orphan datagroups and categories

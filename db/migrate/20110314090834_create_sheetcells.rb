@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateSheetcells < ActiveRecord::Migration
   def self.up
     create_table :sheetcells do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## Datagroups define the type of data that has been recorded in terms of what was measured
 ## They can be reused across multiple "Datacolumn"s and "Dataset"s.
 ## A Helper (system) "Datagroup" is the default "Datagroup" when no specific measurement information is included in the "Workbook".
@@ -18,8 +20,12 @@ class Datagroup < ActiveRecord::Base
   after_update :expire_exported_files
 
   def check_if_destroyable
-    errors.add(:base, "'#{title}' is a system datagroup, thus can't be deleted") && (return false) if is_system_datagroup
-    errors.add(:base, "'#{title}' has associated datacolumns, thus can't be deleted") && (return false) if datacolumns(true).present?
+    if is_system_datagroup
+      errors.add(:base, "'#{title}' is a system datagroup, thus can't be deleted") && (return false)
+    end
+    if datacolumns(true).present?
+      errors.add(:base, "'#{title}' has associated datacolumns, thus can't be deleted") && (return false)
+    end
     true
   end
 
@@ -34,14 +40,16 @@ class Datagroup < ActiveRecord::Base
   def self.delete_orphan_datagroups
     # delete non-system orphan datagroups that has no associated datacolumns
     to_be_deleted = Datagroup.where(datacolumns_count: 0, type_id: Datagrouptype::DEFAULT)
-    puts "#{to_be_deleted.count} datagroups is deleted at #{Time.now.utc}" unless to_be_deleted.empty?
+    unless to_be_deleted.empty?
+      puts "#{to_be_deleted.count} datagroups is deleted at #{Time.now.utc}"
+    end
     Datagroup.delete(to_be_deleted)
   end
 
   def update_and_merge_categories_with_csv(file, user)
     begin
       lines = CSV.read(file, CsvData::OPTS)
-    rescue
+    rescue StandardError
       errors.add(:file, 'can not be read') && (return)
     end
 
@@ -69,7 +77,7 @@ class Datagroup < ActiveRecord::Base
   def import_categories_with_csv(file)
     begin
       lines = CSV.read file, CsvData::OPTS
-    rescue
+    rescue StandardError
       errors.add(:file, "can't be read!") && (return false)
     end
 
@@ -97,9 +105,15 @@ class Datagroup < ActiveRecord::Base
     unless (['ID', 'SHORT', 'LONG', 'DESCRIPTION', 'MERGE ID'] - csv_lines.headers).empty?
       errors.add(:csv, 'header does not match') && (return false)
     end
-    errors.add(:csv, 'ID must not be empty') && (return false) if csv_lines['ID'].any?(&:blank?)
-    errors.add(:csv, 'IDs must be unique') && (return false) unless csv_lines['ID'].uniq!.nil?
-    errors.add(:csv, 'SHORT must not be empty') && (return false) if csv_lines['SHORT'].any?(&:blank?)
+    if csv_lines['ID'].any?(&:blank?)
+      errors.add(:csv, 'ID must not be empty') && (return false)
+    end
+    unless csv_lines['ID'].uniq!.nil?
+      errors.add(:csv, 'IDs must be unique') && (return false)
+    end
+    if csv_lines['SHORT'].any?(&:blank?)
+      errors.add(:csv, 'SHORT must not be empty') && (return false)
+    end
 
     dg_cats_ids = category_ids
 
@@ -115,7 +129,9 @@ class Datagroup < ActiveRecord::Base
     merges = collect_merges(csv_lines)
     merge_source_ids = merges.map { |l| l['ID'] }
     merge_target_ids = merges.map { |l| l['MERGE ID'] }
-    errors.add(:csv, 'Recursive merges are not allowed') && (return false) unless (merge_source_ids & merge_target_ids).empty?
+    unless (merge_source_ids & merge_target_ids).empty?
+      errors.add(:csv, 'Recursive merges are not allowed') && (return false)
+    end
 
     true
   end
@@ -131,7 +147,10 @@ class Datagroup < ActiveRecord::Base
 
     lines.each do |l|
       c = cats.detect { |c| c.id == l['ID'].to_i }
-      next unless c.short != l['SHORT'] || c.long != l['LONG'] || c.description != l['DESCRIPTION']
+      unless c.short != l['SHORT'] || c.long != l['LONG'] || c.description != l['DESCRIPTION']
+        next
+      end
+
       c.short = l['SHORT']
       c.long = l['LONG']
       c.description = l['DESCRIPTION']
@@ -158,9 +177,7 @@ class Datagroup < ActiveRecord::Base
 
   def execute_updates(updates)
     ActiveRecord::Base.transaction do
-      updates.each do |update|
-        update.save
-      end
+      updates.each(&:save)
     end
   end
 
@@ -169,7 +186,9 @@ class Datagroup < ActiveRecord::Base
     unless (%w[short long description] - csv_lines.headers).empty?
       errors.add(:csv, 'header does not match') && (return false)
     end
-    errors.add(:base, "category short can't be empty") && (return false) if csv_lines['short'].any?(&:blank?)
+    if csv_lines['short'].any?(&:blank?)
+      errors.add(:base, "category short can't be empty") && (return false)
+    end
 
     short = csv_lines['short'].collect(&:downcase)
     existing_short = categories.pluck('lower(short)')

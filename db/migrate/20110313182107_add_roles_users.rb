@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddRolesUsers < ActiveRecord::Migration
   def self.up
     create_table 'roles_users', id: false, force: true do |t|

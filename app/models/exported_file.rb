@@ -1,19 +1,22 @@
+# frozen_string_literal: true
+
 class ExportedFile < ActiveRecord::Base
   belongs_to :dataset
 
   after_create :queued_to_be_exported
 
-  STATUS = [NEW = 'new', QUEUED = 'queued', STARTED = 'started', FINISHED = 'finished']
+  STATUS = [NEW = 'new', QUEUED = 'queued', STARTED = 'started', FINISHED = 'finished'].freeze
   scope :outdated, -> { where('invalidated_at > generated_at and status = ? ', 'finished') }
 
   TYPES = {
     csv: 'ExportedCsv',
     csv2: 'ExportedSccCsv',
     xls: 'ExportedExcel'
-  }
+  }.freeze
 
   scope :with_format, lambda { |type|
     raise 'Invalid format' unless TYPES.key? type.to_sym
+
     where(type: TYPES[type.to_sym])
   }
 
@@ -30,6 +33,7 @@ class ExportedFile < ActiveRecord::Base
   # creates 3 exported files(csv, csv2, xls) for a given dataset
   def self.initialize_export(dataset)
     return false unless dataset.has_research_data? && dataset.finished_import?
+
     TYPES.each do |_name, type|
       type.classify.constantize.where(dataset_id: dataset.id).first_or_create
     end
@@ -73,7 +77,10 @@ class ExportedFile < ActiveRecord::Base
   # redefine the getter method of status field
   def status
     stored_status = read_attribute(:status)
-    return 'outdated'.inquiry if stored_status == 'finished' && invalidated_at > generated_at
+    if stored_status == 'finished' && invalidated_at > generated_at
+      return 'outdated'.inquiry
+    end
+
     stored_status.inquiry
   end
 

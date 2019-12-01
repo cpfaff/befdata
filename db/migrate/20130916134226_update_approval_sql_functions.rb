@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateApprovalSqlFunctions < ActiveRecord::Migration
   def up
     execute <<-SQL

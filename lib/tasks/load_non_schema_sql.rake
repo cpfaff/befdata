@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :db do
   desc 'Add plpgsql functions to your database which are not included in our schema.rb
         Set RAILS_ENV to override environment'

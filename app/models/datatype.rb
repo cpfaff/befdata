@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## The Datatype class is the validated data type for the "Sheetcell" accepted_value. Datatypes are initialised at application start up by the "Datatypehelper" class.
 ##
 ## See config/initializers/datatype_load.rb ( DatattypeLoad ) for initializing datatypes

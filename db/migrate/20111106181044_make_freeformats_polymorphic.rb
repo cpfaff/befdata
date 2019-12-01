@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MakeFreeformatsPolymorphic < ActiveRecord::Migration
   def self.up
     add_column :freeformats, :freeformattable_id, :integer
@@ -19,7 +21,7 @@ class MakeFreeformatsPolymorphic < ActiveRecord::Migration
   end
 
   def self.make_old_dataset_freefromats_polymorpic
-    Freeformat.select { |ff| !ff.dataset_id.blank? }.each do |ff|
+    Freeformat.reject { |ff| ff.dataset_id.blank? }.each do |ff|
       ff.update_attribute :freeformattable_id, ff.dataset_id
       ff.update_attribute :freeformattable_type, 'Dataset'
     end

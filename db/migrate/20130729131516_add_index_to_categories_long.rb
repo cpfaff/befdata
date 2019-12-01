@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddIndexToCategoriesLong < ActiveRecord::Migration
   def change
     add_index :categories, :long

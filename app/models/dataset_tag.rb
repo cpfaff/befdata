@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This is a view-based model
 # The view is defined in migration file: 20131116163151_create_dataset_tags_view.rb
 # More info about view-based model can be found in Chapter 11 in book 'Enterprise Rails'.

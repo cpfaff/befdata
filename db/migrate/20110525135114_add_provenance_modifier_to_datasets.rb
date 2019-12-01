@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddProvenanceModifierToDatasets < ActiveRecord::Migration
   def self.up
     add_column :datasets, :free_for_members, :boolean, default: false

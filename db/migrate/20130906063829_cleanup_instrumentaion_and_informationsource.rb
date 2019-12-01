@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CleanupInstrumentaionAndInformationsource < ActiveRecord::Migration
   def up
     change_table :datacolumns, bulk: true do |t|

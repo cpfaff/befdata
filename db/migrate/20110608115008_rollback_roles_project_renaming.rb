@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RollbackRolesProjectRenaming < ActiveRecord::Migration
   def self.up
     rename_table('roles_projects', 'projects_roles')

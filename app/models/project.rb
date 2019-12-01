@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A project is actually a sub-project of the whole BEF project.
 require 'acl_patch'
 class Project < ActiveRecord::Base

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MigrateOldTagsToNewTags < ActiveRecord::Migration
   def self.up
     OldTag.all.each do |old_tag|
@@ -18,6 +20,5 @@ class MigrateOldTagsToNewTags < ActiveRecord::Migration
     end
   end
 
-  def self.down
-  end
+  def self.down; end
 end

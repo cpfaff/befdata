@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDatatypeTable < ActiveRecord::Migration
   def self.up
     create_table :datatypes do |t|

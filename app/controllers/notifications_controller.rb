@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NotificationsController < ApplicationController
   before_filter :load_notification, except: [:index]
 

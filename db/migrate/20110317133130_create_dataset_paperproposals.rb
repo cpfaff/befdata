@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDatasetPaperproposals < ActiveRecord::Migration
   def self.up
     create_table :dataset_paperproposals, id: false do |t|

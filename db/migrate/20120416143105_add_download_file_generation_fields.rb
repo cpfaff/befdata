@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDownloadFileGenerationFields < ActiveRecord::Migration
   def self.up
     add_column :datasets, :download_generated_at, :datetime

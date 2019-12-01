@@ -45,7 +45,7 @@
             %p.datatype-description.reset-old-datatype-value{:class => !c.datatype_approved? ? 'unapproved' : ''}
               = c.import_data_type
 
-  = submit_tag 'Approve all columns'#, {:confirm => 'Are you sure?'}
+  = submit_tag 'Approve all columns'#, data: { confirm: 'Are you sure?' }
 
 :javascript
   jQuery(document).ready(function(){

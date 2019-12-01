@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CounterCacheForDownloads < ActiveRecord::Migration
   def up
     rename_column :datasets, :downloads, :dataset_downloads_count

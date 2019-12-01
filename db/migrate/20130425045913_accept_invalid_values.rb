@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AcceptInvalidValues < ActiveRecord::Migration
   def up
     execute <<-SQL
@@ -35,6 +37,5 @@ class AcceptInvalidValues < ActiveRecord::Migration
     SQL
   end
 
-  def down
-  end
+  def down; end
 end

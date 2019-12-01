@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 xml.instruct!
 xml.keywords do
   @tags.each do |t|

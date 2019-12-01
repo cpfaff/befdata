@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExportedCsv < ExportedFile
   has_attached_file :file, path: ':rails_root/files/generated/:dataset_id_generated-download.csv', validate_media_type: false
   # validates_attachment_content_type :file, :content_type => ["text/csv"]

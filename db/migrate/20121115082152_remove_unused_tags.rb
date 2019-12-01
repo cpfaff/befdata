@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveUnusedTags < ActiveRecord::Migration
   def self.up
     all_tags = ActsAsTaggableOn::Tag.all.map(&:id)

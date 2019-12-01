@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TagsControllerTest < ActionController::TestCase
@@ -15,7 +17,7 @@ class TagsControllerTest < ActionController::TestCase
     activate_authlogic
     login_nadrowski
 
-    taggables = Datacolumn.tagged_with(%w(KEY_1 KEY_2), any: true)
+    taggables = Datacolumn.tagged_with(%w[KEY_1 KEY_2], any: true)
 
     post :merge, keywords: [21, 31], new_keyword: 'key'
     assert_success_no_error
@@ -26,14 +28,14 @@ class TagsControllerTest < ActionController::TestCase
     assert ActsAsTaggableOn::Tag.find_by_name('KEY_1').taggings_count, -1
     assert ActsAsTaggableOn::Tag.find_by_name('KEY_2').taggings_count, -1
 
-    assert taggables.all? { |tg| tg.tag_list.include?('key') && (tag.tag_list & %w(KEY_1 KEY_2)).empty? }
+    assert taggables.all? { |tg| tg.tag_list.include?('key') && (tag.tag_list & %w[KEY_1 KEY_2]).empty? }
   end
 
   test 'merge keywords into an existing one' do
     activate_authlogic
     login_nadrowski
 
-    taggables = Datacolumn.tagged_with(%w(KEY_1 KEY_2), any: true)
+    taggables = Datacolumn.tagged_with(%w[KEY_1 KEY_2], any: true)
 
     post :merge, keywords: [21, 31], merge_to: '21' # merge to KEY_1
     assert_success_no_error

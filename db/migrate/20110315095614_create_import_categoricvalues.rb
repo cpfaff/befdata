@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateImportCategoricvalues < ActiveRecord::Migration
   def self.up
     create_table :import_categoricvalues do |t|

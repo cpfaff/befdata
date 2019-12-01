@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameImportcategoricvaluesToImportcategories < ActiveRecord::Migration
   def self.up
     rename_table :import_categoricvalues, :import_categories

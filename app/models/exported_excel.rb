@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'dataworkbook_format'
 
 class ExportedExcel < ExportedFile
@@ -101,8 +103,12 @@ class ExportedExcel < ExportedFile
       keywords = datacolumn.tag_list.join(', ')
       sheet[row, WBF[:column_keywords_col]] = keywords unless keywords.blank?
 
-      sheet[row, WBF[:group_title_col]] = datacolumn.datagroup.title if datacolumn.datagroup.present?
-      sheet[row, WBF[:group_description_col]] = datacolumn.datagroup.description if datacolumn.datagroup.present?
+      if datacolumn.datagroup.present?
+        sheet[row, WBF[:group_title_col]] = datacolumn.datagroup.title
+      end
+      if datacolumn.datagroup.present?
+        sheet[row, WBF[:group_description_col]] = datacolumn.datagroup.description
+      end
     end
   end
 
@@ -113,7 +119,9 @@ class ExportedExcel < ExportedFile
     row = 1
     datacolumns.each do |datacolumn|
       datacolumn.users.each do |pr|
-        sheet[row, WBF[:people_columnheader_col]] = datacolumn.columnheader if datacolumn.columnheader
+        if datacolumn.columnheader
+          sheet[row, WBF[:people_columnheader_col]] = datacolumn.columnheader
+        end
         sheet[row, WBF[:people_firstname_col]] = pr.firstname if pr.firstname
         sheet[row, WBF[:people_lastname_col]] = pr.lastname if pr.lastname
         row += 1
@@ -187,10 +195,6 @@ class ExportedExcel < ExportedFile
   end
 
   def query_datacolumns(dataset = nil, column_selection = nil)
-    if column_selection
-      column_selection
-    else
-      Datacolumn.where(dataset_id: dataset.id).order('columnnr ASC').uniq
-    end
+    column_selection || Datacolumn.where(dataset_id: dataset.id).order('columnnr ASC').uniq
   end
 end

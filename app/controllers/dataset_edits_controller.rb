@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DatasetEditsController < ApplicationController
   before_filter :load_dataset_and_its_edit, only: [:submit]
 

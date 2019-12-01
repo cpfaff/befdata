@@ -1,24 +1,26 @@
+# frozen_string_literal: true
+
 class DatasetsController < ApplicationController
   skip_before_filter :deny_access_to_all
 
   before_filter :load_dataset,
-    except: %i[new create create_with_datafile importing index download_excel_template]
+                except: %i[new create create_with_datafile importing index download_excel_template]
 
   before_filter :redirect_if_without_workbook,
-    only: %i[download download_page approve approve_predefined batch_update_columns approval_quick]
+                only: %i[download download_page approve approve_predefined batch_update_columns approval_quick]
 
   before_filter :redirect_unless_import_succeed,
-    only: %i[download_page download approve approve_predefined approval_quick batch_update_columns]
+                only: %i[download_page download approve approve_predefined approval_quick batch_update_columns]
 
   before_filter :redirect_while_importing,
-    only: %i[edit_files update_workbook destroy]
+                only: %i[edit_files update_workbook destroy]
 
   after_filter :edit_message_datacolumns,
-    only: %i[batch_update_columns approve_predefined]
+               only: %i[batch_update_columns approve_predefined]
 
   access_control do
     allow all,
-      to: %i[show index download_excel_template importing keywords download_status]
+          to: %i[show index download_excel_template importing keywords download_status]
 
     actions :edit, :update, :destroy,
             :edit_files, :update_workbook,
@@ -85,9 +87,11 @@ class DatasetsController < ApplicationController
   # update the metatadata of a file
   def update
     if @dataset.update_attributes(params.require(:dataset).permit(:authenticity_token, :title, :access_code, :usagerights, :tag_list,
-        :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)', :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)',
-        :temporalextent, :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [], project_ids: []))
-      @dataset.refresh_paperproposal_authors if params.require(:dataset)[:owner_ids].present?
+                                                                  :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)', :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)',
+                                                                  :temporalextent, :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [], project_ids: []))
+      if params.require(:dataset)[:owner_ids].present?
+        @dataset.refresh_paperproposal_authors
+      end
       # TODO: should not refresh all authors of the pp
       @dataset.log_edit('Metadata updated')
 
@@ -119,7 +123,7 @@ class DatasetsController < ApplicationController
   end
 
   def batch_update_columns
-    datacolumns = params.permit(:utf8, :authenticity_token, datacolumn: [ :id, :datagroup, :import_data_type]).require(:datacolumn)
+    datacolumns = params.permit(:utf8, :authenticity_token, datacolumn: %i[id datagroup import_data_type]).require(:datacolumn)
     changes = 0
     datacolumns.each do |hash|
       datacolumn = Datacolumn.find hash[:id]
@@ -134,7 +138,10 @@ class DatasetsController < ApplicationController
         changes += 1
       end
 
-      next unless datacolumn.datagroup_approved && hash[:import_data_type].present?
+      unless datacolumn.datagroup_approved && hash[:import_data_type].present?
+        next
+      end
+
       datatype = hash[:import_data_type]
       datacolumn.approve_datatype datatype, current_user
       changes += 1
@@ -324,7 +331,7 @@ class DatasetsController < ApplicationController
   end
 
   def send_file_if_exists(file, options = {})
-    if file && file.path && File.file?(file.path)
+    if file&.path && File.file?(file.path)
       send_file file.path, options
     else
       flash[:error] = "The file is not found on the server. Maybe it's being generated, Please wait till it's finished."

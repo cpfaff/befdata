@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveDestroyMeMarkers < ActiveRecord::Migration
   def self.up
     Dataset.find_all_by_destroy_me(true).each do |dataset|

@@ -25,6 +25,6 @@
     @all_datasets.map{|ds| [ds.title, ds.id]}, {:prompt => 'Select Dataset'}, {:onchange => 'selectDatasets(this)'}
 
   - if @paperproposal.board_state == 'final'
-    %p= submit_tag 'Submit', :confirm => 'This will revoke all download rights. Are you sure?'
+    %p= submit_tag 'Submit', data: { confirm: 'This will revoke all download rights. Are you sure?' }
   - else
     %p= submit_tag 'Submit'

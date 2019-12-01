@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddFieldsToCategoriesTable < ActiveRecord::Migration
   def self.up
     # categories

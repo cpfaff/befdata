@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -7,7 +9,7 @@ Rails.application.routes.draw do
   root to: 'pages#home'
 
   resource :user_session, only: [:create]
-  match 'logout' => 'user_sessions#destroy', :as => :logout, via: [:get, :post]
+  match 'logout' => 'user_sessions#destroy', :as => :logout, via: %i[get post]
 
   resources :users
   resource :profile, only: %i[show edit update] do
@@ -20,10 +22,10 @@ Rails.application.routes.draw do
     end
   end
 
-  match 'imprint' => 'pages#imprint', :as => :imprint, via: [:get, :post]
+  match 'imprint' => 'pages#imprint', :as => :imprint, via: %i[get post]
   get 'help' => redirect('https://github.com/befdata/befdata/wiki'), :as => :help
-  match 'data' => 'pages#data', :as => :data, via: [:get, :post]
-  match 'search' => 'pages#search', via: [:get, :post]
+  match 'data' => 'pages#data', :as => :data, via: %i[get post]
+  match 'search' => 'pages#search', via: %i[get post]
 
   # resources :datasets, :except => [:index] do
   resources :datasets do
@@ -72,12 +74,12 @@ Rails.application.routes.draw do
       post :update_datasets
     end
   end
-  match 'paperproposals/update_vote/:id' => 'paperproposals#update_vote', :as => :update_vote, via: [:get, :post, :patch]
-  match 'paperproposals/update_state/:id' => 'paperproposals#update_state', :as => :paperproposal_update_state, via: [:get, :post, :patch]
+  match 'paperproposals/update_vote/:id' => 'paperproposals#update_vote', :as => :update_vote, via: %i[get post patch]
+  match 'paperproposals/update_state/:id' => 'paperproposals#update_state', :as => :paperproposal_update_state, via: %i[get post patch]
 
-  match 'create_cart_context/:dataset_id' => 'carts#create_cart_context', :as => :create_cart_context, via: [:get, :post]
-  match 'delete_cart_context/:dataset_id' => 'carts#delete_cart_context', :as => :delete_cart_context, via: [:get, :post, :patch, :delete]
-  match 'cart' => 'carts#show', :as => 'current_cart', via: [:get, :post]
+  match 'create_cart_context/:dataset_id' => 'carts#create_cart_context', :as => :create_cart_context, via: %i[get post]
+  match 'delete_cart_context/:dataset_id' => 'carts#delete_cart_context', :as => :delete_cart_context, via: %i[get post patch delete]
+  match 'cart' => 'carts#show', :as => 'current_cart', via: %i[get post]
 
   resources :datagroups do
     resources :categories, only: %i[index create new]

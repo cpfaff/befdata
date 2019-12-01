@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetExpiryDateOnFinalPaperproposals < ActiveRecord::Migration
   def up
     in_two_years = Date.today + 2.years

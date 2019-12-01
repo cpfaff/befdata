@@ -1,7 +1,8 @@
-class User < ActiveRecord::Base
+# frozen_string_literal: true
 
+class User < ActiveRecord::Base
   acts_as_authentic do |c|
-     c.crypto_provider = Authlogic::CryptoProviders::Sha512
+    c.crypto_provider = Authlogic::CryptoProviders::Sha512
   end
 
   acts_as_authorization_subject association_name: :roles, join_table_name: :roles_users
@@ -71,7 +72,7 @@ class User < ActiveRecord::Base
     "#{full_name} <#{email}>"
   end
 
-  %w(admin data_admin project_board).each do |role|
+  %w[admin data_admin project_board].each do |role|
     define_method(role + '?') do
       has_role? role.to_sym
     end
@@ -125,8 +126,11 @@ class User < ActiveRecord::Base
     # roles_config is an array of hashes like {role_name: "pi", project_id: 3}
     has_no_roles_for!(Project)
     return if roles_config.blank?
+
     roles_config.each do |role|
-      has_role!(role[:role_name], Project.find(role[:project_id])) unless role[:project_id].blank?
+      unless role[:project_id].blank?
+        has_role!(role[:role_name], Project.find(role[:project_id]))
+      end
     end
   end
 

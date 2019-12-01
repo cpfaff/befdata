@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DatafilesController < ApplicationController
   skip_before_filter :deny_access_to_all
   before_filter :load_dataset_and_datafile
@@ -13,7 +15,9 @@ class DatafilesController < ApplicationController
   end
 
   def destroy
-    flash[:error] = @datafile.errors.full_messages.to_sentence unless @datafile.destroy
+    unless @datafile.destroy
+      flash[:error] = @datafile.errors.full_messages.to_sentence
+    end
     redirect_to :back
   end
 

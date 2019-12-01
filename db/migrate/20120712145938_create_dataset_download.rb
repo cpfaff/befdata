@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDatasetDownload < ActiveRecord::Migration
   def self.up
     create_table :dataset_downloads do |t|

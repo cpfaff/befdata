@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DatacolumnsController < ApplicationController
   before_filter :load_datacolumn_and_dataset
   before_filter :redirect_if_datagroup_unapproved, only: %i[update_invalid_values update_invalid_values_with_csv autofill_and_update_invalid_values]
@@ -108,7 +110,7 @@ class DatacolumnsController < ApplicationController
       redirect_to(:back) && return
     else
 
-  @datagroup = Datagroup.find(params.require(:datagroup))
+      @datagroup = Datagroup.find(params.require(:datagroup))
       @datacolumn.approve_datagroup(@datagroup)
       ExportedFile.invalidate(@dataset.id, :xls)
       flash[:notice] = 'Data group successfully saved.'
@@ -127,12 +129,11 @@ class DatacolumnsController < ApplicationController
     end
 
     begin
-
-    @datacolumn.approve_datatype(params.require(:import_data_type), current_user)
+      @datacolumn.approve_datatype(params.require(:import_data_type), current_user)
       ExportedFile.invalidate(@dataset.id, :all)
       flash[:notice] = 'Successfully updated Datatype'
       next_approval_step
-    rescue
+    rescue StandardError
       flash[:error] = "An error occured while updating the datatype: #{$ERROR_INFO}"
       redirect_to :back
     end
@@ -167,10 +168,11 @@ class DatacolumnsController < ApplicationController
 
   # creates categories for all invalid values completed in the form and assigns the category to the sheetcell
   def update_invalid_values
-    invalid_values = params.permit(invalid_values: [ :import_value, :short, :long, :description ]).require(:invalid_values)
+    invalid_values = params.permit(invalid_values: %i[import_value short long description]).require(:invalid_values)
     unless invalid_values.blank?
       invalid_values.each do |h|
         next if h['short'].blank?
+
         @datacolumn.update_invalid_value(h['import_value'], h['short'], h['long'], h['description'], @dataset)
       end
       @datacolumn.touch
@@ -186,13 +188,14 @@ class DatacolumnsController < ApplicationController
     begin
       CSV.foreach(f, headers: true, skip_blanks: true) do |row|
         next if row['import value'].blank? || row['category short'].blank?
+
         @datacolumn.update_invalid_value(row['import value'], row['category short'], row['category long'], row['category description'], @dataset)
       end
       @datacolumn.touch
       ExportedFile.invalidate(@dataset.id, :all)
       flash[:notice] = 'The invalid values have been successfully approved'
       next_approval_step
-    rescue => e
+    rescue StandardError => e
       flash[:error] = e.message
       redirect_to(:back) && return
     end

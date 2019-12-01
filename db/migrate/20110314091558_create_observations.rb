@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateObservations < ActiveRecord::Migration
   def self.up
     create_table :observations do |t|

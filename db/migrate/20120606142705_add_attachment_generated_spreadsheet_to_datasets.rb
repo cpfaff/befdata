@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddAttachmentGeneratedSpreadsheetToDatasets < ActiveRecord::Migration
   def self.up
     add_column :datasets, :generated_spreadsheet_file_name, :string

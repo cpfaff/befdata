@@ -3,15 +3,15 @@
 = content_for :actions do
   %ul
     %li
-      = link_to admin_approve_all_votes_paperproposal_url(@paperproposal), :confirm => 'Are you sure?' do
+      = link_to admin_approve_all_votes_paperproposal_url(@paperproposal), data: { confirm: 'Are you sure?' } do
         = image_tag 'checkbox.png'
         Approve the votes
     %li
-      = link_to admin_reset_all_votes_paperproposal_url(@paperproposal), :confirm => 'Are you sure?' do
+      = link_to admin_reset_all_votes_paperproposal_url(@paperproposal), data: { confirm: 'Are you sure?' } do
         = image_tag 'cancel.png'
         Reset the votes
     %li
-      = link_to admin_hard_reset_paperproposal_url(@paperproposal), :confirm => 'This will delete all votes and download rights. Are you sure?' do
+      = link_to admin_hard_reset_paperproposal_url(@paperproposal), data: { confirm: 'This will delete all votes and download rights. Are you sure?' } do
         = image_tag 'cancel.png'
         Hard reset proposal
 

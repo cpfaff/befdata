@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddImportStatusToDataset < ActiveRecord::Migration
   def self.up
     add_column :datasets, :import_status, :string

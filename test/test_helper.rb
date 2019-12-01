@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 # Adds code coverage analysis on test runs - and produces the nice README badge
 require 'coveralls'
 Coveralls.wear!('rails')
 
 ENV['RAILS_ENV'] = 'test'
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 require 'rails/test_help'
 require 'authlogic/test_case'
 

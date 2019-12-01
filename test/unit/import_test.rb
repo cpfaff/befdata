@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ImportTest < ActiveSupport::TestCase
@@ -74,7 +76,7 @@ class ImportTest < ActiveSupport::TestCase
     importcats = column_category2.import_categories
     assert_equal 6, importcats.count, 'There should be 6 import categories for this column'
 
-    uniquelist = importcats.to_a.uniq{|t| t.short }
+    uniquelist = importcats.to_a.uniq(&:short)
     assert_equal 3, uniquelist.count, 'There should be 3 unique import categories for this column'
 
     #==============================================================#

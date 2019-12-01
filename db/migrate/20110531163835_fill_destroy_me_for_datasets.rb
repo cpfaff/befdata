@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FillDestroyMeForDatasets < ActiveRecord::Migration
   def self.up
     Dataset.all.each do |ds|

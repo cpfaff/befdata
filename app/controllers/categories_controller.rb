@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CategoriesController < ApplicationController
   before_filter :load_datagroup, only: %i[index new create]
   before_filter :load_category, only: %i[show destroy upload_sheetcells update_sheetcells]
@@ -24,7 +26,7 @@ class CategoriesController < ApplicationController
                                 .select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
                                 .search(params[:search])
                                 .order("#{params[:sort]} #{params[:direction]}")
-          .paginate(page: params.fetch(:page, 1), per_page: 20)
+                                .paginate(page: params.fetch(:page, 1), per_page: 20)
       end
     end
   end

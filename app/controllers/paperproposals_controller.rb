@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PaperproposalsController < ApplicationController
   include PaperproposalsHelper
 
@@ -80,8 +82,7 @@ class PaperproposalsController < ApplicationController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     @temp_proponents = User.where(id: params.fetch(:people, [])) # doesn't save it - workaround so they don't get lost when form is not filled correctly
@@ -104,7 +105,7 @@ class PaperproposalsController < ApplicationController
   end
 
   def update_datasets
-    msg = @paperproposal.update_datasets params.permit(datasets: [ :id, :aspect ]) || [datasets: []]
+    msg = @paperproposal.update_datasets params.permit(datasets: %i[id aspect]) || [datasets: []]
     flash[:notice] = 'Datasets have been updated. ' + msg.to_s
     redirect_to @paperproposal
   end
@@ -198,6 +199,7 @@ class PaperproposalsController < ApplicationController
       csv << ['ID', 'Title', 'Dataset Url', 'CSV download']
       @paperproposal.datasets.order('title ASC').each do |ds|
         next unless ds.can_download_by?(current_user)
+
         csv << [ds.id, ds.title, dataset_url(ds),
                 download_dataset_url(ds, :csv, separate_category_columns: true, user_credentials: current_user.try(:single_access_token))]
         ds_count += 1
@@ -241,7 +243,7 @@ class PaperproposalsController < ApplicationController
                                           :comment,
                                           :author_id,
                                           :project_id,
-                                          not_needed: [ :param ],
+                                          not_needed: [:param],
                                           people: [])
   end
 end

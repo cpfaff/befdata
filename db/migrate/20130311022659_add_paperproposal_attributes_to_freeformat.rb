@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPaperproposalAttributesToFreeformat < ActiveRecord::Migration
   def change
     add_column :freeformats, :is_essential, :boolean, default: false

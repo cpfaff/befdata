@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -69,7 +71,6 @@ Rails.application.configure do
     Rails.root.join('config', 'mailers.yml')
   ).try(:to_options)
   # config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
-
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

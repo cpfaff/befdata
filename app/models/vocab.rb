@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Vocab < ActiveRecord::Base
   # attr_accessible :term
   validates_presence_of :term

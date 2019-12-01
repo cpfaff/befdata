@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameDatasetProjectJoinTableAndRemovePrimaryKeyAndComment < ActiveRecord::Migration
   def self.up
     rename_table :dataset_projects, :datasets_projects

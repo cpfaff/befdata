@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file contains the DatasetPaperproposal class definition, organising the usage of Dataset instances
 # by Paperproposal instances. Paperproposals organise the access rights to data.
 

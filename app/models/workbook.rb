@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## The Workbook class functions as wrapper for the BEFdata Workbook, an MS Excel 2003 file containing
 ## the raw data array in one sheet and four separate sheets providing metadata.
 ##
@@ -19,10 +21,10 @@ class Workbook
     @dataset = datafile.dataset
     begin
       @book = Spreadsheet.open datafile.path
-    rescue
+    rescue StandardError
       nil
     end
-    @book.io.close if @book
+    @book&.io&.close
   end
 
   def wb_version
@@ -46,6 +48,7 @@ class Workbook
       info.is_a?(Array) ? info[0] : info
     end
     return true if columnnrs.empty?
+
     columnnrs.max + 1 > columnnrs.length
   end
 
@@ -101,6 +104,7 @@ class Workbook
   # this is the main workhorse that reads worksheets and import data into database
   def import_data
     return false unless @dataset
+
     save_data_columns
     import_categories
     add_acknowledged_people
@@ -127,6 +131,7 @@ class Workbook
   # This is the content of the 'columns and datagroups' sheet.
   def columns_info
     return @columns if defined? @columns
+
     @columns = []
     data_description_sheet.each(1) do |row|
       @columns << row.take(9).collect { |c| c.to_s.squish } unless row[0].blank?
@@ -148,7 +153,7 @@ class Workbook
   def datemin
     date_string = metadata_sheet[*WBF[:meta_datemin_pos]].to_s.strip
     Date.parse(date_string)
-  rescue
+  rescue StandardError
     date_string.to_i > 2000 ? Date.new(date_string.to_i) : Date.today.beginning_of_year
   end
 
@@ -156,7 +161,7 @@ class Workbook
   def datemax
     date_string = metadata_sheet[*WBF[:meta_datemax_pos]].to_s.strip
     Date.parse(date_string)
-  rescue
+  rescue StandardError
     date_string.to_i > 2000 ? Date.new(date_string.to_i) : Date.today
   end
 
@@ -233,7 +238,9 @@ class Workbook
 
     datagroup = Datagroup.where(['title iLike ?', dg_hash[:title]]).first
     if datagroup
-      result[:description_not_equal] = true if not_same?(datagroup.description, dg_hash[:description])
+      if not_same?(datagroup.description, dg_hash[:description])
+        result[:description_not_equal] = true
+      end
     else
       datagroup = Datagroup.create(dg_hash)
     end
@@ -264,6 +271,7 @@ class Workbook
 
       # import categories in batch of about 1000.
       next unless counter >= 1000
+
       ImportCategory.import fields, import_categories_in_queue, validate: false
       import_categories_in_queue.clear
       counter = 0
@@ -308,6 +316,7 @@ class Workbook
       end
 
       next unless counter >= 1000
+
       save_data_into_database(sheetcells_in_queue, rownr)
       counter = 0
       sheetcells_in_queue.clear
@@ -330,6 +339,7 @@ class Workbook
       first = clean_string(un[0])
       last = clean_string(un[1])
       next if first.blank? && last.blank?
+
       u = User.where(['firstname iLike :first AND lastname iLike :last', first: first, last: last]).first
       if u
         result[:found_users] << u
@@ -361,6 +371,7 @@ class Workbook
   # clean_string removes any leading and trailing spaces from the input
   def clean_string(input)
     return input if input.nil?
+
     input.to_s.try(:strip)
   end
 
@@ -368,6 +379,7 @@ class Workbook
     # blank test_string represents that it uses the info on the portal.
     # this allows users to omit datagroup description to avoid unconscious typo.
     return false if test_string.blank?
+
     !datagroup_string.squish.casecmp(test_string.squish.downcase).zero?
   end
 end

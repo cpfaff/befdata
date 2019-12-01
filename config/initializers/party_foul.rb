@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # PartyFoul.configure do |config|
 # config.blacklisted_exceptions = ['ActiveRecord::RecordNotFound', 'ActionController::RoutingError']
 # config.oauth_token            = CONFIG[:party_foul_github_oauth_token]

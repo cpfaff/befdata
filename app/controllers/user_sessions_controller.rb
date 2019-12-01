@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserSessionsController < ApplicationController
   before_filter :require_no_user, only: %i[new create]
 
@@ -38,5 +40,4 @@ class UserSessionsController < ApplicationController
   def user_session_params
     params.require(:user_session).permit(:login, :password, :remember_me)
   end
-
 end

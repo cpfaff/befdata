@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddCounterCaches < ActiveRecord::Migration
   def up
     add_column :datagroups, :datacolumns_count, :integer, default: 0

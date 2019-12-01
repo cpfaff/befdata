@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveUnusedRoles < ActiveRecord::Migration
   def up
     to_be_deleted = Role.joins('left join roles_users on roles.id = roles_users.role_id')

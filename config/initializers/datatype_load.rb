@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Datatypehelper
   DATATYPE_COLLECTION = [
     Datatype.new(1, 'text'),
@@ -15,6 +17,7 @@ class Datatypehelper
 
   def self.find_by_name(name)
     return UNKNOWN if name.blank?
+
     name = name.downcase.strip
     DATATYPE_COLLECTION.each { |dt| return dt if dt.name == name }
     UNKNOWN

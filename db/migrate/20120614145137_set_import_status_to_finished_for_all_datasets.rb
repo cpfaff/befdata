@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetImportStatusToFinishedForAllDatasets < ActiveRecord::Migration
   def self.up
     # This is needed to initially generate all download files
@@ -7,6 +9,5 @@ class SetImportStatusToFinishedForAllDatasets < ActiveRecord::Migration
     end
   end
 
-  def self.down
-  end
+  def self.down; end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveDatagroupSystemFieldAddTypeId < ActiveRecord::Migration
   def self.up
     add_column :datagroups, :type_id, :integer

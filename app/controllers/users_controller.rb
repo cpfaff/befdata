@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This controller handles all calls for staff information.
 
 class UsersController < ApplicationController

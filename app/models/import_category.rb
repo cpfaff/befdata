@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## The ImportCategory class represents the "Category" values stored in the "Categories" sheet of the MS Excel Workbook ("Workbook" class).
 ## These are the user-defined categories that will be used during the validation process if "Category" does not already exist in the portal
 ## within the correct "Datagroup".

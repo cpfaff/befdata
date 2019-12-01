@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
-# the rails framework: 
+# the rails framework:
 gem 'rails', '~> 4.2.0'
 
 # the postgres db connector
@@ -12,18 +14,18 @@ gem 'haml', '~> 3.1.7'
 # authentication solution
 gem 'authlogic', '~> 3.4.0'
 # gem 'scrypt' authlogic moves on to using
-# script instead of sha in later versions. 
+# script instead of sha in later versions.
 # Once everything else is running we can move
 # on as well. It requires to edit the user model.
-#acts_as_authentic do |c|
-    # if Rails.env.production?
-      # c.logged_in_timeout = 30.minutes
-    # else
-      # c.logged_in_timeout = 90.minutes
-    # end
-    # c.transition_from_crypto_providers = Authlogic::CryptoProviders::Sha512,
-    # c.crypto_provider = Authlogic::CryptoProviders::SCrypt
-  # end
+# acts_as_authentic do |c|
+# if Rails.env.production?
+# c.logged_in_timeout = 30.minutes
+# else
+# c.logged_in_timeout = 90.minutes
+# end
+# c.transition_from_crypto_providers = Authlogic::CryptoProviders::Sha512,
+# c.crypto_provider = Authlogic::CryptoProviders::SCrypt
+# end
 
 # role-based authorization system
 gem 'acl9', '~> 1.0.0'
@@ -38,11 +40,11 @@ gem 'paperclip', '~> 5.2.0'
 # tag a single model on several contexts
 gem 'acts-as-taggable-on'
 # , '3.4.0'
-  # '~> 2.4.1'
+# '~> 2.4.1'
 
 # read and write spreadsheet documents
 gem 'spreadsheet', '1.2.5'
-  # '0.9.7'
+# '0.9.7'
 
 # active record backend for Delayed::Job
 gem 'delayed_job_active_record', '~> 4.1.0'

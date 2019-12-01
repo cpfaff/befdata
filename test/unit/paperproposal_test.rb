@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class PaperproposalTest < ActiveSupport::TestCase
@@ -28,4 +30,3 @@ class PaperproposalTest < ActiveSupport::TestCase
     assert old_roles_count > Role.count
   end
 end
-

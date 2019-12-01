@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DatasetEdit < ActiveRecord::Base
   belongs_to :dataset
   # attr_accessible :description, :submitted
@@ -18,10 +20,10 @@ class DatasetEdit < ActiveRecord::Base
       self.description = self.description + "\r\n- #{line}"
     end
 
-    unless new_record?
-      touch
-    else
+    if new_record?
       save
+    else
+      touch
     end
   end
 

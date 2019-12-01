@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddInformationsourceAndInstrumentationToDatacolumnsTable < ActiveRecord::Migration
   def self.up
     add_column :datacolumns, :informationsource, :string

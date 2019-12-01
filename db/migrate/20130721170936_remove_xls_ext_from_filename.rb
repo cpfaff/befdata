@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveXlsExtFromFilename < ActiveRecord::Migration
   def up
     Dataset.where('filename is not NULL').each do |dt|
@@ -5,6 +7,5 @@ class RemoveXlsExtFromFilename < ActiveRecord::Migration
     end
   end
 
-  def down
-  end
+  def down; end
 end

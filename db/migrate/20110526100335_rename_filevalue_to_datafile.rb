@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameFilevalueToDatafile < ActiveRecord::Migration
   def self.up
     remove_index :filevalues, [:paperproposal_id]

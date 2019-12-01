@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreatePaperproposalVotes < ActiveRecord::Migration
   def self.up
     create_table :paperproposal_votes do |t|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MigrateObservationsToBeStoredAsLinenumbersInsideSheetcells < ActiveRecord::Migration
   def self.up
     add_column(:sheetcells, :row_number, :integer)

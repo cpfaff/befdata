@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PagesController < ApplicationController
   skip_before_filter :deny_access_to_all
   access_control do
@@ -46,16 +48,26 @@ class PagesController < ApplicationController
     @datasets = Dataset.all
     @filter_params = BefParam.new(params[:filter], checkbox: :access_code, radio: :f)
 
-    @datasets = @datasets.where(access_code: @filter_params[:access_code]) if @filter_params.has_param? :access_code
+    if @filter_params.has_param? :access_code
+      @datasets = @datasets.where(access_code: @filter_params[:access_code])
+    end
 
-    @datasets = @datasets.where(['datafiles_count > 0']) if @filter_params.has_param?(:f, 'w')
-    @datasets = @datasets.where(['freeformats_count > 0']) if @filter_params.has_param?(:f, 'a')
-    @datasets = @datasets.where(['freeformats_count = 0 and datafiles_count = 0']) if @filter_params.has_param?(:f, 'n')
-    @datasets = @datasets.where(['datafiles_count > 0 or freeformats_count > 0']) if @filter_params.has_param?(:f, %w[a w])
+    if @filter_params.has_param?(:f, 'w')
+      @datasets = @datasets.where(['datafiles_count > 0'])
+    end
+    if @filter_params.has_param?(:f, 'a')
+      @datasets = @datasets.where(['freeformats_count > 0'])
+    end
+    if @filter_params.has_param?(:f, 'n')
+      @datasets = @datasets.where(['freeformats_count = 0 and datafiles_count = 0'])
+    end
+    if @filter_params.has_param?(:f, %w[a w])
+      @datasets = @datasets.where(['datafiles_count > 0 or freeformats_count > 0'])
+    end
 
     @datasets = @datasets.select('id, title, updated_at as last_update')
                          .order("#{params[:sort]} #{params[:direction]}")
-      .paginate(page: params.fetch(:page, 1), per_page: 25)
+                         .paginate(page: params.fetch(:page, 1), per_page: 25)
   end
 
   def search

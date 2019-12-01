@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## Links "Cart"s to "Dataset"s and maps to the "cart_datasets" table.
 class CartDataset < ActiveRecord::Base
   belongs_to :cart

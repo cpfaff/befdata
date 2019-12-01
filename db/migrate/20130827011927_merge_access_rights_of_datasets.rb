@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MergeAccessRightsOfDatasets < ActiveRecord::Migration
   def up
     add_column :datasets, :access_code, :integer, default: 0
@@ -18,8 +20,12 @@ class MergeAccessRightsOfDatasets < ActiveRecord::Migration
     Dataset.reset_column_information
     Dataset.record_timestamps = false
     Dataset.find_each do |dt|
-      dt.update_attributes(free_for_public: true, free_for_members: true, free_within_projects: true) if dt.access_code == 3
-      dt.update_attributes(free_for_members: true, free_within_projects: true) if dt.access_code == 2
+      if dt.access_code == 3
+        dt.update_attributes(free_for_public: true, free_for_members: true, free_within_projects: true)
+      end
+      if dt.access_code == 2
+        dt.update_attributes(free_for_members: true, free_within_projects: true)
+      end
       dt.update_attributes(free_within_projects: true) if dt.access_code == 1
     end
     Dataset.record_timestamps = true
@@ -32,6 +38,7 @@ class MergeAccessRightsOfDatasets < ActiveRecord::Migration
     return 3 if dataset.read_attribute(:free_for_public)
     return 2 if dataset.read_attribute(:free_for_members)
     return 1 if dataset.read_attribute(:free_within_projects)
+
     0
   end
 end

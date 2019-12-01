@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameNewColumnInPaperproposals < ActiveRecord::Migration
   def self.up
     rename_column :paperproposals, :authoring_project, :project_id

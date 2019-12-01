@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameFilesToFreeformat < ActiveRecord::Migration
   def self.up
     rename_table :files, :freeformats

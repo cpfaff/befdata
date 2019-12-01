@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class PaperproposalsControllerTest < ActionController::TestCase
@@ -138,7 +140,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     assert_success_no_error
     paperproposal = Paperproposal.find_by_title('Test')
 
-    assert 'Test' == paperproposal.initial_title
+    assert paperproposal.initial_title == 'Test'
   end
 
   test 'show paperproposal' do

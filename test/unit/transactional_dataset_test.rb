@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 # This class does not use transactional fixtures thus allowing to
@@ -39,8 +41,8 @@ class TransactionalDatasetTest < ActiveSupport::TestCase
     # For whatever reason tag 43 vanishes when the name of the fixture
     # is "variable". I renamed it to "avariable" and now it works
     # tags_012:
-      # id: '43'
-      # name: avariable
+    # id: '43'
+    # name: avariable
     dataset.destroy
 
     Datagroup.delete_orphan_datagroups

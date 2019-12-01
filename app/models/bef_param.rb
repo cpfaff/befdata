@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This class is used to parse query params in specified format(eg: a:1,b:x|y):
 # 1) a list of key-value pairs separated by commas.
 # 2) Key and value are separated by a colon.
@@ -13,6 +15,7 @@ class BefParam
   def to_s
     arr = @params.collect do |k, v|
       next if v.blank?
+
       v_str = v.is_a?(Array) ? v.join('|') : v
       "#{k}:#{v_str}"
     end
@@ -23,18 +26,20 @@ class BefParam
   # p.has_param?('access_code', '0') checks existence and value
   def has_param?(*args)
     return false if args.blank?
+
     k, v = args
     if v
       return false unless @params[k].present?
+
       if @param_config[k].eql? 'radio'
         return false unless v.class == @params[k].class
         return false unless [v].flatten.sort == [@params[k]].flatten.sort
       else
         return false unless ([v].flatten - [@params[k]].flatten).empty?
       end
-      return true
+      true
     else
-      return @params[k].present?
+      @params[k].present?
     end
   end
 
@@ -80,6 +85,7 @@ class BefParam
 
     bef_param_str.split(',').each do |pairs|
       next unless pairs.include? ':'
+
       k, v = pairs.split(':')
       parsed_params[k] = v =~ /\|/ ? v.split('|') : v
     end

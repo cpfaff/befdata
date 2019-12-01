@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveUnusedFieldsFromImportCategories < ActiveRecord::Migration
   def self.up
     remove_column :import_categories, :raw_data_value
@@ -5,6 +7,5 @@ class RemoveUnusedFieldsFromImportCategories < ActiveRecord::Migration
     remove_column :import_categories, :category_id
   end
 
-  def self.down
-  end
+  def self.down; end
 end

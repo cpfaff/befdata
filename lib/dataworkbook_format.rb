@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DataworkbookFormat
   WBF = {
     # Version of File Format - Change when making changes here

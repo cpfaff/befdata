@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddAvatarToUser < ActiveRecord::Migration
   def self.up
     add_column :users, :avatar_file_name, :string # Original filename

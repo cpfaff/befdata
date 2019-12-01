@@ -1,3 +1,5 @@
+# frozen_string_literal: false
+
 # This file contains the Paperproposal model definition. Paperproposals are used for organizing data exchange.
 
 # Paperproposals assemble the Dataset instances (DatasetPaperproposal) )that are
@@ -22,16 +24,16 @@ class Paperproposal < ActiveRecord::Base
   has_many :authors, class_name: 'User', source: :user, through: :author_paperproposals
   # with four conditional association.
   # has_many :proponents, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'user']
-  has_many :proponents, -> { where "kind = 'user'"}, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :proponents, -> { where "kind = 'user'" }, class_name: 'User', source: :user, through: :author_paperproposals
 
   # has_many :main_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'main']
-  has_many :main_aspect_dataset_owners, -> { where "kind = 'main'"}, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :main_aspect_dataset_owners, -> { where "kind = 'main'" }, class_name: 'User', source: :user, through: :author_paperproposals
 
   # has_many :side_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'side']
-  has_many :side_aspect_dataset_owners, -> { where "kind = 'side'"}, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :side_aspect_dataset_owners, -> { where "kind = 'side'" }, class_name: 'User', source: :user, through: :author_paperproposals
 
   # has_many :acknowledgements_from_datasets, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind = ?', 'ack']
-  has_many :acknowledgements_from_datasets, -> { where "kind = 'ack'"}, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :acknowledgements_from_datasets, -> { where "kind = 'ack'" }, class_name: 'User', source: :user, through: :author_paperproposals
 
   # User votes on a paperproposal.
   # has_many association with paperproposal_votes model.
@@ -74,34 +76,45 @@ class Paperproposal < ActiveRecord::Base
 
   def beautiful_title
     str = "#{author.short_name}: #{created_at.year}, #{title}, "
-    str = "#{authored_by_project.shortname}, " + str if authored_by_project.present?
+    if authored_by_project.present?
+      str = "#{authored_by_project.shortname}, " + str
+    end
     proponents_and_dataowners = authors_selection(:proponents_and_all_owners)
     unless proponents_and_dataowners.empty?
       str << '<i>Proponents and dataowners</i>: '
       str << proponents_and_dataowners.collect(&:full_name).sort.join(', ')
     end
-    str << ", <i>Citation</i>: #{envisaged_journal}" if envisaged_journal.present?
+    if envisaged_journal.present?
+      str << ", <i>Citation</i>: #{envisaged_journal}"
+    end
     str
   end
 
   def <=>(other)
     # sort by state, then by year if published, then title
     x = STATES[state] <=> STATES[other.state]
-    x = (x != 0 ? x : envisaged_date.year <=> other.envisaged_date.year) if state == 'accepted'
+    if state == 'accepted'
+      x = (x != 0 ? x : envisaged_date.year <=> other.envisaged_date.year)
+    end
     x = (x != 0 ? x : beautiful_title <=> other.beautiful_title)
     x = (x != 0 ? x : title.downcase <=> other.title.downcase)
     x
   end
 
   def calc_board_state
-    return 'can be send to project board' if board_state == 'prep' && includes_datasets?
+    if board_state == 'prep' && includes_datasets?
+      return 'can be send to project board'
+    end
     return 'in preparation, no data selected' if board_state == 'prep'
-    return 'submitted to board, waiting for acceptance' if board_state == 'submit'
+    if board_state == 'submit'
+      return 'submitted to board, waiting for acceptance'
+    end
     return 'rejected by project board' if board_state == 're_prep'
     return 'project board approved, requesting data' if board_state == 'accept'
     return 'data request rejected' if board_state == 'data_rejected'
     return 'final' if board_state == 'final' && !expiry_date.blank?
-    return 'download rights expired' if board_state == 'final' && expiry_date.blank?
+
+    'download rights expired' if board_state == 'final' && expiry_date.blank?
   end
 
   def calc_authorship(user)
@@ -225,17 +238,15 @@ class Paperproposal < ActiveRecord::Base
 
     if datasets_array[:datasets].present?
       self.dataset_paperproposals = datasets_array[:datasets].collect do |da|
-        DatasetPaperproposal.new(dataset_id: da[:id], aspect: da[:aspect], paperproposal_id: self.id)
+        DatasetPaperproposal.new(dataset_id: da[:id], aspect: da[:aspect], paperproposal_id: id)
       end
     else
-      self.datasets.map(&:delete)
+      datasets.map(&:delete)
     end
 
     reload
 
-    if datasets_array[:datasets].present?
-      update_datasets_providers
-    end
+    update_datasets_providers if datasets_array[:datasets].present?
 
     if %w[prep re_prep submit].include?(board_state)
       set_lock_status
@@ -414,9 +425,11 @@ class Paperproposal < ActiveRecord::Base
     when 'accept'
       # accept data request votes
       for_data_request_votes.where('user_id IN (?)', auto_voters).each do |v|
-        unless v.vote == 'accept'
-          v.update_attribute(:vote, 'accept')
-          NotificationMailer.delay.auto_accept_for_free_datasets(v.user, self) unless v.user == author
+        next if v.vote == 'accept'
+
+        v.update_attribute(:vote, 'accept')
+        unless v.user == author
+          NotificationMailer.delay.auto_accept_for_free_datasets(v.user, self)
         end
       end
     when 'submit'

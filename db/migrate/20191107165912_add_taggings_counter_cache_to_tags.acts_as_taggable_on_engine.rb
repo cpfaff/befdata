@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This migration comes from acts_as_taggable_on_engine (originally 3)
 class AddTaggingsCounterCacheToTags < ActiveRecord::Migration
   def self.up
@@ -7,7 +9,7 @@ class AddTaggingsCounterCacheToTags < ActiveRecord::Migration
 
     # ActsAsTaggableOn::Tag.reset_column_information
     # ActsAsTaggableOn::Tag.find_each do |tag|
-      # ActsAsTaggableOn::Tag.reset_counters(tag.id, :taggings)
+    # ActsAsTaggableOn::Tag.reset_counters(tag.id, :taggings)
     # end
   end
 

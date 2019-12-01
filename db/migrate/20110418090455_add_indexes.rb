@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 class AddIndexes < ActiveRecord::Migration
   def self.up
     # author_paperproposals table
-    add_index :author_paperproposals, [:user_id, :paperproposal_id]
+    add_index :author_paperproposals, %i[user_id paperproposal_id]
 
     # cart_datasets table
     add_index :cart_datasets, [:cart_id]
     add_index :cart_datasets, [:dataset_id]
 
     # datacolumns
-    add_index :datacolumns, [:datagroup_id, :dataset_id]
+    add_index :datacolumns, %i[datagroup_id dataset_id]
 
     # dataset_paperproposals
-    add_index :dataset_paperproposals, [:dataset_id, :paperproposal_id]
+    add_index :dataset_paperproposals, %i[dataset_id paperproposal_id]
 
     # filevalues
     add_index :filevalues, [:paperproposal_id]
 
     # observation_sheetcells
-    add_index :observation_sheetcells, [:observation_id, :sheetcell_id]
+    add_index :observation_sheetcells, %i[observation_id sheetcell_id]
 
     # paperproposal_votes
     add_index :paperproposal_votes, [:paperproposal_id]
@@ -30,32 +32,32 @@ class AddIndexes < ActiveRecord::Migration
     # sheetcells
     add_index :sheetcells, [:datacolumn_id]
     add_index :sheetcells, [:observation_id]
-    add_index :sheetcells, [:value_id, :value_type]
+    add_index :sheetcells, %i[value_id value_type]
 
     # taggings
     add_index :taggings, [:tag_id]
-    add_index :taggings, [:taggable_id, :taggable_type]
+    add_index :taggings, %i[taggable_id taggable_type]
   end
 
   def self.down
     # author_paperproposals table
-    remove_index :author_paperproposals, [:user_id, :paperproposal_id]
+    remove_index :author_paperproposals, %i[user_id paperproposal_id]
 
     # cart_datasets table
     remove_index :cart_datasets, [:cart_id]
     remove_index :cart_datasets, [:dataset_id]
 
     # datacolumns
-    remove_index :datacolumns, [:datagroup_id, :dataset_id]
+    remove_index :datacolumns, %i[datagroup_id dataset_id]
 
     # datset_paperproposals
-    remove_index :datset_paperproposals, [:dataset_id, :paperproposal_id]
+    remove_index :datset_paperproposals, %i[dataset_id paperproposal_id]
 
     # filevalues
     remove_index :filevalues, [:paperproposal_id]
 
     # observation_sheetcells
-    remove_index :observation_sheetcells, [:observation_id, :sheetcell_id]
+    remove_index :observation_sheetcells, %i[observation_id sheetcell_id]
 
     # paperproposal_votes
     remove_index :paperproposal_votes, [:paperproposal_id]
@@ -68,10 +70,10 @@ class AddIndexes < ActiveRecord::Migration
     # sheetcells
     remove_index :sheetcells, [:datacolumn_id]
     remove_index :sheetcells, [:observation_id]
-    remove_index :sheetcells, [:value_id, :value_type]
+    remove_index :sheetcells, %i[value_id value_type]
 
     # taggings
     remove_index :taggings, [:tag_id]
-    remove_index :taggings, [:taggable_id, :taggable_type]
+    remove_index :taggings, %i[taggable_id taggable_type]
   end
 end

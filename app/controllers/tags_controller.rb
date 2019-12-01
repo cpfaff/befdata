@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TagsController < ApplicationController
   skip_before_filter :deny_access_to_all
   before_filter :load_keywords, only: %i[delete pre_rename pre_merge merge]
@@ -47,13 +49,13 @@ class TagsController < ApplicationController
 
   def rename
     all_keywords = ActsAsTaggableOn::Tag.update(params[:keywords].keys, params[:keywords].values)
-    @keywords = all_keywords.reject {|t| t.errors.empty? }
+    @keywords = all_keywords.reject { |t| t.errors.empty? }
     if @keywords.empty?
       flash[:notice] = "Successfully updated #{all_keywords.length} keywords"
       redirect_to manage_keywords_path
     else
-      flash.now[:error] = "#{(all_keywords-@keywords).length} keywords were updated successfully; However, #{@keywords.length} keywords were not successfully updated"
-      render :action => :pre_rename
+      flash.now[:error] = "#{(all_keywords - @keywords).length} keywords were updated successfully; However, #{@keywords.length} keywords were not successfully updated"
+      render action: :pre_rename
     end
   end
 
@@ -104,5 +106,4 @@ class TagsController < ApplicationController
   def keywords_params
     params.permit(:id, :name, :q, :merge_to, :new_keyword, keywords: [])
   end
-
 end

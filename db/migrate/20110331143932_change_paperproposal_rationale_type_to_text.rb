@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangePaperproposalRationaleTypeToText < ActiveRecord::Migration
   def self.up
     change_column :paperproposals, :rationale, :text

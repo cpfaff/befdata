@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDestroyMeToDatasets < ActiveRecord::Migration
   def self.up
     add_column :datasets, :destroy_me, :boolean, default: false

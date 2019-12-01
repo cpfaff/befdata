@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateVocabs < ActiveRecord::Migration
   def up
     create_table :vocabs do |t|

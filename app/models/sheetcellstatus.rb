@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## The constants in the Sheetcellstatus class indicate the status of the Sheetcell data value.
 ##
 ## UNPROCESSED is the default status of a newly instantiated Sheetcell.

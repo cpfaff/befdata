@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddApprovedToDatacolumn < ActiveRecord::Migration
   def self.up
     add_column :datacolumns, :approved, :boolean

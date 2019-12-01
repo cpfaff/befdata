@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FillOptimisationFieldsInSheetcells < ActiveRecord::Migration
   def self.up
     # take the existing value of the sheetcell and place it in the new accepted_value field

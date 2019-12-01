@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DropUnusedTablesAndFields < ActiveRecord::Migration
   def self.up
     remove_column :sheetcells, :value_id
@@ -9,6 +11,5 @@ class DropUnusedTablesAndFields < ActiveRecord::Migration
     drop_table :numericvalues
   end
 
-  def self.down
-  end
+  def self.down; end
 end

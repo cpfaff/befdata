@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UpdateIsnumericSqlFunction < ActiveRecord::Migration
   def self.up
     execute <<-SQL
@@ -8,6 +10,5 @@ class UpdateIsnumericSqlFunction < ActiveRecord::Migration
     SQL
   end
 
-  def self.down
-  end
+  def self.down; end
 end

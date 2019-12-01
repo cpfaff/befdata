@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class RenameTagTables < ActiveRecord::Migration
   def self.up
     remove_index 'taggings', ['tag_id']
-    remove_index 'taggings', %w(taggable_id taggable_type)
+    remove_index 'taggings', %w[taggable_id taggable_type]
     rename_table :tags, :old_tags
     rename_table :taggings, :old_taggings
   end

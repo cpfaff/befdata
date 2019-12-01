@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameDatasetsProjectsTable < ActiveRecord::Migration
   def self.up
     rename_table('datasets_projects', 'dataset_projects')

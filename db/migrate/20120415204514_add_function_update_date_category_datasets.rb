@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddFunctionUpdateDateCategoryDatasets < ActiveRecord::Migration
   def self.up
     execute <<-SQL
@@ -13,6 +15,5 @@ class AddFunctionUpdateDateCategoryDatasets < ActiveRecord::Migration
     SQL
   end
 
-  def self.down
-  end
+  def self.down; end
 end

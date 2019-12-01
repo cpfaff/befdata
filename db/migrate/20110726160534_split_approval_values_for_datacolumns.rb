@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SplitApprovalValuesForDatacolumns < ActiveRecord::Migration
   def self.up
     rename_column :datacolumns, :approved, :datagroup_approved

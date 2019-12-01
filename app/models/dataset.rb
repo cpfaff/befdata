@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file contains the Dataset model, which maps the database table Datasets for the application.
 # The Dataset title must be unique.
 
@@ -32,9 +34,9 @@ class Dataset < ActiveRecord::Base
   attr_writer :owner_ids
   acts_as_taggable
 
-  has_many :datafiles, -> { order 'id DESC'}, dependent: :destroy, class_name: 'Datafile'
+  has_many :datafiles, -> { order 'id DESC' }, dependent: :destroy, class_name: 'Datafile'
 
-  has_one  :current_datafile, -> { order 'id DESC'}, class_name: 'Datafile'
+  has_one  :current_datafile, -> { order 'id DESC' }, class_name: 'Datafile'
 
   has_many :exported_files, dependent: :destroy
   has_one  :exported_excel   # exported Excel workbook
@@ -73,7 +75,7 @@ class Dataset < ActiveRecord::Base
     free_within_projects: 1,
     free_for_members: 2,
     free_for_public: 3
-  }
+  }.freeze
   validates_inclusion_of :access_code, in: ACCESS_CODES.values,
                                        message: 'is invalid! Access Rights is out of Range.'
 
@@ -99,8 +101,11 @@ class Dataset < ActiveRecord::Base
 
   def load_projects_and_authors_from_current_datafile
     return unless current_datafile
+
     current_datafile.authors_list[:found_users].each { |user| user.has_role!(:owner, self) }
-    self.projects = current_datafile.projects_list if current_datafile.projects_list.present?
+    if current_datafile.projects_list.present?
+      self.projects = current_datafile.projects_list
+    end
   end
 
   def add_datafile(datafile)
@@ -161,7 +166,10 @@ class Dataset < ActiveRecord::Base
 
   def columns_with_invalid_values_after_approving_predefined
     # TODO: this should be a proper method without relying on the state of this object
-    raise "This method may be only called directly after executing 'approve_predefined_columns'" unless @columns_with_invalid_values
+    unless @columns_with_invalid_values
+      raise "This method may be only called directly after executing 'approve_predefined_columns'"
+    end
+
     @columns_with_invalid_values
   end
 
@@ -177,6 +185,7 @@ class Dataset < ActiveRecord::Base
   def number_of_observations
     # TODO: use sql query finding max rownumber
     return 0 if datacolumns.empty?
+
     datacolumns.first.sheetcells.count
   end
 
@@ -197,6 +206,7 @@ class Dataset < ActiveRecord::Base
 
   def being_imported? # TODO: this is prone to be out of sync if new status added
     return false unless has_research_data?
+
     %w[new finished].exclude?(import_status) && !import_status.start_with?('error')
   end
 
@@ -209,6 +219,7 @@ class Dataset < ActiveRecord::Base
   def find_related_datasets
     tags = all_tags.pluck(:id)
     return [] if tags.empty?
+
     datasets = Dataset.joins(:dataset_tags)
                       .select('datasets.*')
                       .where(['tag_id in (?) and datasets.id <> ?', tags, id])
@@ -249,6 +260,7 @@ class Dataset < ActiveRecord::Base
     return false unless user
     return true if free_for_members?
     return true if free_within_projects? && !(user.projects & projects).empty?
+
     false
   end
 
@@ -256,14 +268,20 @@ class Dataset < ActiveRecord::Base
     return false unless current_datafile
     return true if free_for?(user)
     return false unless user
-    return true if user.has_role?(:proposer, self) || user.has_role?(:owner, self)
+    if user.has_role?(:proposer, self) || user.has_role?(:owner, self)
+      return true
+    end
     return true if user.has_role?(:admin) || user.has_role?(:data_admin)
+
     false
   end
 
   def can_edit_by?(user)
     return false unless user
-    return true if user.has_role?(:owner, self) || user.has_role?(:admin) || user.has_role?(:data_admin)
+    if user.has_role?(:owner, self) || user.has_role?(:admin) || user.has_role?(:data_admin)
+      return true
+    end
+
     false
   end
 
@@ -287,7 +305,7 @@ class Dataset < ActiveRecord::Base
       @owner_ids.reject!(&:blank?)
       if @owner_ids.empty?
         errors.add :base, 'The dataset should have at least one author.'
-        return false
+        false
       else
         self.owners = User.find(@owner_ids)
       end

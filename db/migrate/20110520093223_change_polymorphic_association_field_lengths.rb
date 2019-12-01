@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangePolymorphicAssociationFieldLengths < ActiveRecord::Migration
   def self.up
     change_column :sheetcells, :value_type, :string, limit: 25

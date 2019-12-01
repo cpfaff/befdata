@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ReassignProjectsToPaperproposals < ActiveRecord::Migration
   def self.up
     ## looping through projects to get associated paperproposals and fill the

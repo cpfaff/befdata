@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DatasetsHelper
   def content_tag_unless_blank(tag, content)
     content_tag_string(tag, content, nil) unless content.blank?
@@ -22,6 +24,7 @@ module DatasetsHelper
     return true if current_user.has_role? :admin
     return true if current_user.has_role? :project_board
     return true if dataset.accepts_role? :owner, current_user
+
     false
   end
 

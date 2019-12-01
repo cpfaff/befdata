@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CartsController < ApplicationController
   skip_before_filter :deny_access_to_all
   access_control do

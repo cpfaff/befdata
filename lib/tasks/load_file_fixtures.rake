@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 desc 'copy files from test_data_files to files directory'
 task 'cp_datafiles' do
   test_data_files = File.join(Rails.root, 'test', 'fixtures', 'test_data_files/*')

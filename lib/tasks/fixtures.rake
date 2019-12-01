@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :db do
   namespace :fixtures do
     desc 'Create YAML test fixtures in /test/fixtures_dump from data in an existing database.
@@ -8,7 +10,9 @@ namespace :db do
       ActiveRecord::Base.establish_connection(:development)
       (ActiveRecord::Base.connection.tables - skip_tables).each do |table_name|
         i = '000'
-        Dir.mkdir("#{Rails.root}/test/fixtures_dump") unless File.exist?("#{Rails.root}/test/fixtures_dump")
+        unless File.exist?("#{Rails.root}/test/fixtures_dump")
+          Dir.mkdir("#{Rails.root}/test/fixtures_dump")
+        end
         File.open("#{Rails.root}/test/fixtures_dump/#{table_name}.yml", 'w') do |file|
           data = ActiveRecord::Base.connection.select_all(sql % table_name)
           file.write data.each_with_object({}) { |record, hash|

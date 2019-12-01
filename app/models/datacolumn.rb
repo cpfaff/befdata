@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## The Datacolumn class models the Datacolumn table.
 ##
 ## A Datacolumn manages all the observations for a particular measurement which are stored in the the "Sheetcell" table.
@@ -58,7 +60,9 @@ class Datacolumn < ActiveRecord::Base
 
   def predefined?
     # To be predefined, a column must have datatype that is not 'unknown'.
-    return false if Datatypehelper.find_by_name(import_data_type).name == 'unknown'
+    if Datatypehelper.find_by_name(import_data_type).name == 'unknown'
+      return false
+    end
 
     # To be predefined, a column must belongs to a datagroup
     # Furthermore, the datacolumn approval process must not have already started.
@@ -74,7 +78,7 @@ class Datacolumn < ActiveRecord::Base
   end
 
   # returns the first 'count' number unique imported values
-  def imported_values(count)
+  def imported_values(_count)
     values = sheetcells.order('import_value').limit(2).group('import_value').select('import_value').to_a
     values
   end
@@ -116,7 +120,7 @@ class Datacolumn < ActiveRecord::Base
       connection.execute(sql)
 
       connection.commit_db_transaction
-    rescue
+    rescue StandardError
       connection.rollback_db_transaction
       raise
     end
@@ -205,7 +209,9 @@ class Datacolumn < ActiveRecord::Base
     stage = 1 if datagroup_approved
     stage = 2 if datagroup_approved && datatype_approved
     stage = 3 if datagroup_approved && datatype_approved && !has_invalid_values?
-    stage = 4 if datagroup_approved && datatype_approved && !has_invalid_values? && finished
+    if datagroup_approved && datatype_approved && !has_invalid_values? && finished
+      stage = 4
+    end
     stage
   end
 
@@ -217,6 +223,7 @@ class Datacolumn < ActiveRecord::Base
     # This method returns true for a column when it requires splitting.
     return false unless datagroup_approved && datatype_approved
     return false if %w[category text].include? import_data_type
+
     sheetcells.where('category_id is not null').exists?
   end
 

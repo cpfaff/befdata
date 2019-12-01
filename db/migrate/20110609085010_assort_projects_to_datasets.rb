@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AssortProjectsToDatasets < ActiveRecord::Migration
   ## looping through projects to get associated datasets and fill the
   ## datasets projects link table
@@ -13,6 +15,5 @@ class AssortProjectsToDatasets < ActiveRecord::Migration
     end
   end
 
-  def self.down
-  end
+  def self.down; end
 end

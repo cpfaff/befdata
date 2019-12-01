@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 xml.instruct!
 xml.users(version: 1) do
   @users.each do |u|

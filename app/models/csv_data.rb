@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CsvData
   include ActiveModel::Validations
   validate :check_csvfile
@@ -12,8 +14,8 @@ class CsvData
     return_headers: false,
     skip_blanks: true,
     converters: :strip,
-    header_converters: [:strip, :upcase]
-  }
+    header_converters: %i[strip upcase]
+  }.freeze
 
   def initialize(datafile)
     @dataset = datafile.dataset
@@ -38,6 +40,7 @@ class CsvData
 
   def headers
     return @headers if defined? @headers
+
     CSV.open @path, OPTS.merge(col_sep: @delimitor) do |csv|
       @headers = csv.first.headers
     end
@@ -57,7 +60,7 @@ class CsvData
     # it's very possible that it's the delimitor.
     begin
       first_row.count("\t") > 0 ? "\t" : ','
-    rescue
+    rescue StandardError
       nil
     end
   end
@@ -68,10 +71,16 @@ class CsvData
     rescue CSV::MalformedCSVError => e
       errors.add(:file, 'is not valid CSV file.') && (return)
     rescue ArgumentError => e
-      errors.add(:base, 'File with non-english characters should be in UTF-8 encoding') && return if e.message =~ /invalid byte sequence in UTF-8/
+      if e.message =~ /invalid byte sequence in UTF-8/
+        errors.add(:base, 'File with non-english characters should be in UTF-8 encoding') && return
+      end
     end
-    errors.add(:base, 'Failed to find data in your file') && return unless headers.present?
-    errors.add(:base, 'It seems one or more columns do not have a header') && return if headers.any?(&:blank?)
+    unless headers.present?
+      errors.add(:base, 'Failed to find data in your file') && return
+    end
+    if headers.any?(&:blank?)
+      errors.add(:base, 'It seems one or more columns do not have a header') && return
+    end
     errors.add :file, 'column headers must be uniq' unless headers_unique?
   end
 
@@ -98,6 +107,7 @@ class CsvData
     CSV.foreach @path, OPTS.merge(col_sep: @delimitor) do |row|
       row.to_hash.each do |k, v|
         next if v.blank?
+
         sheetcells_in_queue << [id_for_header[k], v, $INPUT_LINE_NUMBER, Datatypehelper::UNKNOWN.id]
         counter += 1
       end

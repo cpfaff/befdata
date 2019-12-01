@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ExportedFilesController < ApplicationController
   before_filter :load_file
   skip_before_filter :deny_access_to_all

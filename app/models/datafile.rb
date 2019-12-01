@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Datafile < ActiveRecord::Base
   belongs_to :dataset, counter_cache: true
 
@@ -18,6 +20,7 @@ class Datafile < ActiveRecord::Base
   def spreadsheet
     return nil unless file.present?
     return @spreadsheet if defined? @spreadsheet
+
     @spreadsheet = case File.extname(path)
                    when '.xls' then Workbook.new(self)
                    when '.csv' then CsvData.new(self)
@@ -28,7 +31,9 @@ class Datafile < ActiveRecord::Base
   # TODO: that might be deprecated with the paperclip validation
   validate :check_spreadsheet, if: proc { file.present? }
   def check_spreadsheet
-    errors[:base] = 'We currently only support Excel-2003 and CSV files.' && return unless spreadsheet
+    unless spreadsheet
+      errors[:base] = 'We currently only support Excel-2003 and CSV files.' && return
+    end
     unless spreadsheet.valid?
       spreadsheet.errors.to_hash.each do |k, v|
         errors.add k, v

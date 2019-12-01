@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddIndexes3 < ActiveRecord::Migration
   def self.up
     # categories
@@ -9,7 +11,7 @@ class AddIndexes3 < ActiveRecord::Migration
     remove_index :datagroups, [:id]
 
     # datasets_projects
-    add_index :dataset_projects, [:dataset_id, :project_id]
+    add_index :dataset_projects, %i[dataset_id project_id]
 
     # dataset
     add_index :datasets, [:upload_spreadsheet_id]
@@ -22,7 +24,7 @@ class AddIndexes3 < ActiveRecord::Migration
     add_index :freeformats, [:dataset_id]
 
     # sheetcells
-    add_index :sheetcells, [:category_id, :status_id, :datacolumn_id]
+    add_index :sheetcells, %i[category_id status_id datacolumn_id]
   end
 
   def self.down
@@ -35,7 +37,7 @@ class AddIndexes3 < ActiveRecord::Migration
     add_index :datagroups, [:id]
 
     # datasets_projects
-    remove_index :dataset_projects, [:dataset_id, :project_id]
+    remove_index :dataset_projects, %i[dataset_id project_id]
 
     # dataset
     remove_index :datasets, [:upload_spreadsheet_id]
@@ -48,6 +50,6 @@ class AddIndexes3 < ActiveRecord::Migration
     remove_index :freeformats, [:dataset_id]
 
     # sheetcells
-    remove_index :sheetcells, [:category_id, :status_id, :datacolumn_id]
+    remove_index :sheetcells, %i[category_id status_id datacolumn_id]
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MergeDateType < ActiveRecord::Migration
   def self.up
     # migrate datacolumn table
@@ -28,7 +30,7 @@ class MergeDateType < ActiveRecord::Migration
     else
       Date.strptime(dmy, '%d.%m.%Y').strftime('%Y-%m-%d')
     end
-  rescue
+  rescue StandardError
     dmy
   end
 end

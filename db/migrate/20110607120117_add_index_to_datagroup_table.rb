@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddIndexToDatagroupTable < ActiveRecord::Migration
   def self.up
     # datagroup

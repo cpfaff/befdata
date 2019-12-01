@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CounterCacheDatafileFreeformatsToDatasets < ActiveRecord::Migration
   def up
     add_column :datasets, :datafiles_count, :integer, default: 0

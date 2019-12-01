@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Sheetcell entries are pointing at the raw data obtained from
 # measuring something.
 #
@@ -32,9 +34,9 @@ class Sheetcell < ActiveRecord::Base
 
   def export_value
     value = nil
-    value = if datatype && datatype.is_category? && category
+    value = if datatype&.is_category? && category
               category.short
-            elsif datatype && datatype.name.match(/^date/) && accepted_value
+            elsif datatype&.name&.match(/^date/) && accepted_value
               accepted_value.to_datetime.to_s(:db)
             elsif accepted_value
               accepted_value

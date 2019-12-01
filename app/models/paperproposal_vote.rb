@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file organises the communications between users (User) and data
 # sharing via paperproposals (Paperproposal). It defines the class
 # PaperproposalVote.

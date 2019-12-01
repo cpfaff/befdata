@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PrependDatafileFilenamesWithDatafileId < ActiveRecord::Migration
   def self.up
     filepath = File.join(Rails.root, 'files')
@@ -24,6 +26,5 @@ class PrependDatafileFilenamesWithDatafileId < ActiveRecord::Migration
     end
   end
 
-  def self.down
-  end
+  def self.down; end
 end

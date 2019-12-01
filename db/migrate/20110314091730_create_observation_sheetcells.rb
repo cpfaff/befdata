@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateObservationSheetcells < ActiveRecord::Migration
   def self.up
     create_table :observation_sheetcells do |t|

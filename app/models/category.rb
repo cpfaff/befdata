@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## Categories store naming conventions that are referenced by an instance of a "Sheetcell".
 ##
 ## Categories are linked to "Datagroup"s. The validation process ensures that Categories are unique within a "Datagroup".
@@ -15,7 +17,9 @@ class Category < ActiveRecord::Base
     # delete categories that has no assciated sheetcells
     to_be_deleted = Category.joins('left outer join sheetcells on sheetcells.category_id = categories.id')
                             .where('sheetcells.category_id is NULL')
-    puts "#{to_be_deleted.count} categories is deleted at #{Time.now.utc}" unless to_be_deleted.empty?
+    unless to_be_deleted.empty?
+      puts "#{to_be_deleted.count} categories is deleted at #{Time.now.utc}"
+    end
     Category.delete(to_be_deleted)
   end
 
@@ -49,7 +53,7 @@ class Category < ActiveRecord::Base
   def update_sheetcells_with_csv(file, user)
     begin
       lines = CSV.read(file, CsvData::OPTS)
-    rescue
+    rescue StandardError
       errors.add(:file, 'can not be read') && (return false)
     end
     return false if validate_sheetcells_csv?(lines)
@@ -64,6 +68,7 @@ class Category < ActiveRecord::Base
 
   def merge_to(to_category, user)
     return unless datagroup_id == to_category.datagroup_id
+
     expire_related_exported_datasets
 
     comment_string = "Merged #{short} by #{user.lastname} at #{Time.now.utc} via CSV; "
@@ -93,9 +98,13 @@ class Category < ActiveRecord::Base
     end
 
     csv_sheetcell_ids = csv_lines['ID'].collect(&:to_i)
-    errors.add(:csv, 'IDs must be unique') && (return false) unless csv_sheetcell_ids.uniq!.nil?
+    unless csv_sheetcell_ids.uniq!.nil?
+      errors.add(:csv, 'IDs must be unique') && (return false)
+    end
 
-    errors.add(:csv, 'ID must not be empty') && (return false) if csv_lines['ID'].any?(&:blank?)
+    if csv_lines['ID'].any?(&:blank?)
+      errors.add(:csv, 'ID must not be empty') && (return false)
+    end
 
     cat_sheetcell_ids = sheetcell_ids
     sheetcells_no_match = csv_sheetcell_ids - cat_sheetcell_ids

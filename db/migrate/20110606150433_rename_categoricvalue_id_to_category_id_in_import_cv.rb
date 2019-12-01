@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenameCategoricvalueIdToCategoryIdInImportCv < ActiveRecord::Migration
   def self.up
     rename_column :import_categoricvalues, :categoricvalue_id, :category_id

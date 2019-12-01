@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## A Freeformat file is an asset file that has been uploaded to the application within a "Dataset". A "Dataset" can have
 ## none, one or more than one Freeformat files. No validation is performed on a Freeformat file.
 class Freeformat < ActiveRecord::Base

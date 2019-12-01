@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProfilesController < ApplicationController
   before_filter :load_current_user
   skip_before_filter :deny_access_to_all
@@ -53,8 +55,8 @@ class ProfilesController < ApplicationController
 
   def user_params
     params.require(:user).permit(:login, :password, :password_confirmation, :firstname,
-                        :middlenames, :lastname, :email, :salutation, :institution_name,
-                        :institution_url, :institution_phone, :institution_fax, :url, :country,
-                        :city, :street, :comment, :avatar, :receive_emails)
+                                 :middlenames, :lastname, :email, :salutation, :institution_name,
+                                 :institution_url, :institution_phone, :institution_fax, :url, :country,
+                                 :city, :street, :comment, :avatar, :receive_emails)
   end
 end

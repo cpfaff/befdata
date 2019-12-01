@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 xml.instruct!
 xml.dataset(id: @dataset.id, version: 1) do
   if @dataset.visible_for_public || current_user
@@ -45,7 +47,10 @@ xml.dataset(id: @dataset.id, version: 1) do
           end
           xml.semanticTagging dc.semantic_term.try(:term)
         end
-        next unless params[:separate_category_columns].to_s.casecmp('true').zero? && dc.split_me?
+        unless params[:separate_category_columns].to_s.casecmp('true').zero? && dc.split_me?
+          next
+        end
+
         xml.column do
           xml.header dc.columnheader + '_Categories'
           xml.definition dc.definition
