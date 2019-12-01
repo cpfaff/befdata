@@ -19,7 +19,7 @@ class DatagroupsController < ApplicationController
                             (select count(*) from categories where datagroup_id = datagroups.id) as categories_count')
                    .order("#{params[:sort]} #{params[:direction]}").search(params[:search])
     respond_to do |format|
-      format.html { @datagroups = dgs.paginate(page: params[:page], per_page: 100) }
+      format.html { @datagroups = dgs.paginate(page: params.fetch(:page, 1), per_page: 100) }
       format.xml { @datagroups = dgs }
     end
   end
@@ -103,7 +103,7 @@ class DatagroupsController < ApplicationController
   def datacolumns
     respond_to do |format|
       format.html do
-        @datacolumns = @datagroup.datacolumns.paginate(page: params[:page], per_page: 20).order('dataset_id, columnheader')
+        @datacolumns = @datagroup.datacolumns.paginate(page: params.fetch(:page, 1), per_page: 20).order('dataset_id, columnheader')
       end
       format.js { @headers = @datagroup.datacolumns.pluck(:columnheader) }
     end

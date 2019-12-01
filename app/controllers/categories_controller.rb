@@ -24,7 +24,7 @@ class CategoriesController < ApplicationController
                                 .select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
                                 .search(params[:search])
                                 .order("#{params[:sort]} #{params[:direction]}")
-                                .paginate(page: params[:page], per_page: 20)
+          .paginate(page: params.fetch(:page, 1), per_page: 20)
       end
     end
   end
