@@ -13,19 +13,6 @@ gem 'haml', '~> 3.1.7'
 
 # authentication solution
 gem 'authlogic', '~> 3.4.0'
-# gem 'scrypt' authlogic moves on to using
-# script instead of sha in later versions.
-# Once everything else is running we can move
-# on as well. It requires to edit the user model.
-# acts_as_authentic do |c|
-# if Rails.env.production?
-# c.logged_in_timeout = 30.minutes
-# else
-# c.logged_in_timeout = 90.minutes
-# end
-# c.transition_from_crypto_providers = Authlogic::CryptoProviders::Sha512,
-# c.crypto_provider = Authlogic::CryptoProviders::SCrypt
-# end
 
 # role-based authorization system
 gem 'acl9', '~> 1.0.0'
@@ -38,13 +25,10 @@ gem 'dynamic_form', '~> 1.1.4'
 gem 'paperclip', '~> 5.2.0'
 
 # tag a single model on several contexts
-gem 'acts-as-taggable-on'
-# , '3.4.0'
-# '~> 2.4.1'
+gem 'acts-as-taggable-on', '~> 5.0.0'
 
 # read and write spreadsheet documents
-gem 'spreadsheet', '1.2.5'
-# '0.9.7'
+gem 'spreadsheet', '~> 1.2.5'
 
 # active record backend for Delayed::Job
 gem 'delayed_job_active_record', '~> 4.1.0'
@@ -59,7 +43,6 @@ gem 'whenever', '~> 0.8.2', require: false
 gem 'activerecord-import', '~> 0.4.1'
 
 # named scoples for postgres fulltext search
-# gem 'pg_search', '~> 0.5.7'
 gem 'pg_search', '~> 2.0.0'
 
 # jQuery and the jQuery-ujs driver for your Rails
@@ -80,7 +63,7 @@ gem 'will_paginate', '~> 3.0.5'
 # gem 'rack-mini-profiler', :group => :development
 
 # sass adapter
-gem 'sass-rails',   '~> 4.0.0'
+gem 'sass-rails', '~> 4.0.0'
 
 # coffee script adapter
 gem 'coffee-rails', '~> 4.0.0'
@@ -102,8 +85,7 @@ group :test, :development do
   # gem 'ruby-prof'
 
   # bindings for the GNOME Libxml2
-  gem 'libxml-ruby'
-  # , '~> 2.4.0'
+  gem 'libxml-ruby', '~> 3.1.0'
 
   # wrapper for Linux inotify
   gem 'rb-inotify', '~> 0.9.1'
@@ -119,7 +101,6 @@ group :test, :development do
 
   # hosted test coverage service (badge)
   gem 'coveralls', '~> 0.8.23', require: false
-  # gem 'codecov', :require => false, :group => :test
 end
 
 group :tools do
