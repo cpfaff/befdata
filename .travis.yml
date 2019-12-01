@@ -5,18 +5,19 @@ env:
   global:
     - COVERALLS_PARALLEL=true
     - RAILS_ENV=test
+    - RUBYOPT=-W0
 rvm:
   - 2.3.3
 script:
   - bundle exec rake db:setup 
   - bundle exec rake db:fixtures:load
-  - RUBYOPT=-W0 bundle exec rake test
+  - bundle exec rake test
 before_script:
   - cp config/configuration.yml.dist config/configuration.yml
   - cp config/database.yml.travis config/database.yml
   - cp config/application.yml.dist config/application.yml
   - cp config/mailers.yml.dist config/mailers.yml 
   - psql -c 'create database befdata_test;' -U postgres
-  - script/delayed_job_testing start
+  - bin/delayed_job_testing start
 notifications:
   webhooks: https://coveralls.io/webhook
