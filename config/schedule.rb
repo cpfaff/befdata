@@ -22,6 +22,14 @@ every 1.day, at: '0:10 am' do
   runner 'Paperproposal.revoke_old_download_rights'
 end
 
+every :reboot do
+ rake 'start_delayed_jobs'
+end
+
+every 1.day do
+ rake 'restart_delayed_jobs'
+end
+
 # cleanup orphan datagroups and categories
 # every :day, :at => '1:00 am' do
 #  rake 'cleanup:all'
