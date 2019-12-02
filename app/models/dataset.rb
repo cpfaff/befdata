@@ -76,11 +76,18 @@ class Dataset < ActiveRecord::Base
     free_for_members: 2,
     free_for_public: 3
   }.freeze
+
+  PROJECT_PHASE = {
+    befchina: 0,
+    treedi: 1,
+  }.freeze
+
   validates_inclusion_of :access_code, in: ACCESS_CODES.values,
                                        message: 'is invalid! Access Rights is out of Range.'
 
   before_destroy :check_for_paperproposals
-  before_save :set_include_license, :check_author
+  before_save :set_include_license, :check_author, :set_default_phase
+
   pg_search_scope :search, against: {
     title: 'A',
     abstract: 'B',
@@ -124,6 +131,16 @@ class Dataset < ActiveRecord::Base
   %w[free_within_projects free_for_members free_for_public].each do |right|
     define_method("#{right}?") do
       access_code >= ACCESS_CODES[right.to_sym]
+    end
+  end
+
+  def project_phases
+    PROJECT_PHASE.invert[project_phase].to_s.humanize
+  end
+
+  %w[from_befchina from_treedi].each do |phase|
+    define_method("#{phase}?") do
+      access_code >= ACCESS_CODES[phase.to_sym]
     end
   end
 
@@ -309,6 +326,12 @@ class Dataset < ActiveRecord::Base
       else
         self.owners = User.find(@owner_ids)
       end
+    end
+  end
+
+  def set_default_phase
+    if self.project_phase.nil?
+      self.project_phase = '1'
     end
   end
 end

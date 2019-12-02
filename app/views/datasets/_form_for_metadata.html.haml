@@ -18,6 +18,18 @@
     %span.control-label Belongs to projects
     .control-group
       = f.select :project_ids, all_projects_for_select, {}, {:multiple => true, class: 'select2'}
+  %h4 Project Phase
+  .form-group
+    %span.control-label Project Phase
+    .control-group
+      %div.access-option
+        = f.radio_button :project_phase, Dataset::PROJECT_PHASE[:befchina], {id: 'befchina'}
+        = label_tag 'befchina', 'BEF-China'
+        .help-block Data which has been collected in the first three project phases.
+      %div.access-option
+        = f.radio_button :project_phase, Dataset::PROJECT_PHASE[:treedi], {id: 'treedi', checked: true}
+        = label_tag 'treedi', 'TreeDi'
+        .help-block Data collected in the treedi project phase.
   %h4 Access rights
   .form-group
     %span.control-label Access Rights

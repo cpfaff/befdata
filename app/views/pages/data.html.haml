@@ -28,7 +28,7 @@
     = select_tag :name, dropdown_list_to_sort_datasets, class: 'js-select-menu'
   %ul.left.nav
     %li.dropdown
-      %span.dropdown-toggle Access Rights
+      %span.dropdown-toggle Rights
       .js-modal-container
         .js-modal
           .modal-header
@@ -39,7 +39,7 @@
                 = content_tag :li, class: @filter_params.has_param?(:access_code, value.to_s) ? 'selected' : nil do
                   = link_to access.humanize, data_path(params.merge(page: nil, filter: @filter_params.toggle_param(:access_code, value.to_s))), class: access.dasherize
     %li.dropdown
-      %span.dropdown-toggle Data Files
+      %span.dropdown-toggle Data
       .js-modal-container
         .js-modal
           .modal-header
@@ -54,6 +54,17 @@
                 = link_to 'With Primary Data or Attached Files', data_path(params.merge(page: nil, filter: @filter_params.toggle_param(:f, ['w', 'a']))), class: 'files-aw'
               = content_tag :li, class: @filter_params.has_param?(:f, 'n') ? 'selected' : nil do
                 = link_to 'Metadata Only', data_path(params.merge(page: nil, filter: @filter_params.toggle_param(:f, 'n'))), class: 'files-n'
+    %li.dropdown
+      %span.dropdown-toggle Phase
+      .js-modal-container
+        .js-modal
+          .modal-header
+            %h4 Project Phase
+          .modal-body
+            %ul.dropdown-menu
+              - Dataset::PROJECT_PHASE.stringify_keys.each do |phase, value|
+                = content_tag :li, class: @filter_params.has_param?(:project_phase, value.to_s) ? 'selected' : nil do
+                  = link_to phase.humanize, data_path(params.merge(page: nil, filter: @filter_params.toggle_param(:project_phase, value.to_s))), class: phase.dasherize
 
 - if @datasets.empty?
   %i No Datasets Found.

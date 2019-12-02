@@ -86,9 +86,13 @@ class DatasetsController < ApplicationController
 
   # update the metatadata of a file
   def update
-    if @dataset.update_attributes(params.require(:dataset).permit(:authenticity_token, :title, :access_code, :usagerights, :tag_list,
-                                                                  :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)', :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)',
-                                                                  :temporalextent, :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [], project_ids: []))
+    if @dataset.update_attributes(params.require(:dataset).permit(:authenticity_token,
+                        :title, :project_phase, :access_code, :usagerights, :tag_list,
+                        :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)',
+                        :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)', :temporalextent,
+                        :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [],
+                        project_ids: []))
+
       if params.require(:dataset)[:owner_ids].present?
         @dataset.refresh_paperproposal_authors
       end

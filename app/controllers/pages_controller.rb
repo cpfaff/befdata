@@ -46,10 +46,14 @@ class PagesController < ApplicationController
     @tags = DatasetTag.tag_counts
 
     @datasets = Dataset.all
-    @filter_params = BefParam.new(params[:filter], checkbox: :access_code, radio: :f)
+    @filter_params = BefParam.new(params[:filter], checkbox: :access_code, checkbox: :project_phase, radio: :f)
 
     if @filter_params.has_param? :access_code
       @datasets = @datasets.where(access_code: @filter_params[:access_code])
+    end
+
+    if @filter_params.has_param? :project_phase
+      @datasets = @datasets.where(project_phase: @filter_params[:project_phase])
     end
 
     if @filter_params.has_param?(:f, 'w')
