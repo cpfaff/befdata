@@ -5,6 +5,10 @@ source 'https://rubygems.org'
 # the rails framework:
 gem 'rails', '~> 4.2.0'
 
+# the gem was vulnerable thus i explicitly set
+# it here to update it.
+gem 'rails-html-sanitizer', '~> 1.0.3'
+
 # the postgres db connector
 gem 'pg', '~> 0.18.0'
 
