@@ -1015,12 +1015,12 @@ a.remove_parent, a.hide_parent {
   float: right;
   font-weight: bold;
   font-family: Arial, sans-serif;
-  font-size: 20px;
+  font-size: 17px;
   &:hover{
     text-decoration: none;
   }
   &:after {
-    content: "×";
+    content: "x";
   }
 }
 #error a.hide_parent {
