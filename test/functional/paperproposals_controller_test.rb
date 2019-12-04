@@ -50,20 +50,20 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'admin can completely reset proposal' do
     paperproposal = Paperproposal.find 4
     old_votes_count = PaperproposalVote.all.count
-    old_roles_count = User.find(paperproposal.author).roles.count
+    old_roles_count = User.find(paperproposal.author.id).roles.count
     login_nadrowski
 
     # make paperproposal final
     get :update_state, id: paperproposal.id, paperproposal: { board_state: 'submit' }
     get :admin_approve_all_votes, id: paperproposal.id
     get :admin_approve_all_votes, id: paperproposal.id
-    assert_not_equal User.find(paperproposal.author).roles.count, old_roles_count
+    assert_not_equal User.find(paperproposal.author.id).roles.count, old_roles_count
 
     # and now reset
     get :admin_hard_reset, id: paperproposal.id
 
     assert_equal old_votes_count, PaperproposalVote.all.count
-    assert_equal old_roles_count, User.find(paperproposal.author).roles.count
+    assert_equal old_roles_count, User.find(paperproposal.author.id).roles.count
     assert_equal 'prep', paperproposal.board_state
     assert_not_nil Paperproposal.find(paperproposal.id)
   end
