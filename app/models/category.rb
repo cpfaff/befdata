@@ -91,9 +91,7 @@ class Category < ActiveRecord::Base
 
   def validate_sheetcells_csv?(csv_lines)
     errors.add(:csv, 'seems to be empty') && (return false) if csv_lines.empty?
-    unless (['ID', 'IMPORT VALUE', 'COLUMNHEADER', 'DATASET', 'NEW CATEGORY SHORT'] - csv_lines.headers).empty?
-      errors.add(:csv, 'column headers does not match') && (return false)
-    end
+    errors.add(:csv, 'column headers does not match') && (return false) unless (['ID', 'IMPORT VALUE', 'COLUMNHEADER', 'DATASET', 'NEW CATEGORY SHORT'] - csv_lines.headers).empty?
 
     csv_sheetcell_ids = csv_lines['ID'].collect(&:to_i)
     errors.add(:csv, 'IDs must be unique') && (return false) unless csv_sheetcell_ids.uniq!.nil?
@@ -102,9 +100,7 @@ class Category < ActiveRecord::Base
 
     cat_sheetcell_ids = sheetcell_ids
     sheetcells_no_match = csv_sheetcell_ids - cat_sheetcell_ids
-    unless sheetcells_no_match.empty?
-      errors.add(:csv, "sheetcell #{sheetcells_no_match} not found in category") && (return false)
-    end
+    errors.add(:csv, "sheetcell #{sheetcells_no_match} not found in category") && (return false) unless sheetcells_no_match.empty?
   end
 
   def split_sheetcells_category(csv_lines, user)

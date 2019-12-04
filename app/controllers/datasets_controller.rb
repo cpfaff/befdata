@@ -240,9 +240,7 @@ class DatasetsController < ApplicationController
   end
 
   def edit_files
-    unless @dataset.import_status.nil? || @dataset.import_status.starts_with?('finished', 'error')
-      redirect_to(action: 'show') && return
-    end
+    redirect_to(action: 'show') && return unless @dataset.import_status.nil? || @dataset.import_status.starts_with?('finished', 'error')
     @freeformats = @dataset.freeformats order: :file_file_name
     @datafiles = @dataset.datafiles
   end

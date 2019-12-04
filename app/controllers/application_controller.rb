@@ -12,21 +12,16 @@ class ::ApplicationController < ActionController::Base
 
   def dataset_is_free_for_members
     return true unless @dataset.blank? || !@dataset.free_for_members?
-
     false
   end
 
   def dataset_is_free_for_public
     return true unless @dataset.blank? || !@dataset.free_for_public?
-
     false
   end
 
   def dataset_is_free_for_project_of_user(user = current_user)
-    unless @dataset.blank? || !(@dataset.free_within_projects? && !(user.projects & @dataset.projects).empty?)
-      return true
-    end
-
+    return true unless @dataset.blank? || !(@dataset.free_within_projects? && !(user.projects & @dataset.projects).empty?)
     false
   end
 
@@ -45,13 +40,11 @@ class ::ApplicationController < ActionController::Base
 
   def current_user_session
     return @current_user_session if defined?(@current_user_session)
-
     @current_user_session = UserSession.find
   end
 
   def current_user
     return @current_user if defined?(@current_user)
-
     @current_user = current_user_session&.user
   end
 

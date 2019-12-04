@@ -181,9 +181,7 @@ class Dataset < ActiveRecord::Base
 
   def columns_with_invalid_values_after_approving_predefined
     # TODO: this should be a proper method without relying on the state of this object
-    unless @columns_with_invalid_values
-      raise "This method may be only called directly after executing 'approve_predefined_columns'"
-    end
+    raise "This method may be only called directly after executing 'approve_predefined_columns'" unless @columns_with_invalid_values
 
     @columns_with_invalid_values
   end
@@ -265,9 +263,7 @@ class Dataset < ActiveRecord::Base
   end
 
   def log_edit(string)
-    unless unsubmitted_edit.nil? && (Time.now - 10.minutes) < created_at
-      create_or_use_unsubmitted_edit.add_line!(string)
-    end
+    create_or_use_unsubmitted_edit.add_line!(string) unless unsubmitted_edit.nil? && (Time.now - 10.minutes) < created_at
   end
 
   def free_for?(user)

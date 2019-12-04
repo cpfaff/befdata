@@ -292,9 +292,7 @@ class Workbook
       ppl[:found_users].each do |user|
         user.has_role! :responsible, datacolumn
       end
-      unless ppl[:unfound_usernames].blank?
-        datacolumn.update_attribute :acknowledge_unknown, ppl[:unfound_usernames].join(', ')
-      end
+      datacolumn.update_attribute :acknowledge_unknown, ppl[:unfound_usernames].join(', ') unless ppl[:unfound_usernames].blank?
     end
   end
 

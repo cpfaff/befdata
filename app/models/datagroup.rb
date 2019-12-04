@@ -20,12 +20,8 @@ class Datagroup < ActiveRecord::Base
   after_update :expire_exported_files
 
   def check_if_destroyable
-    if is_system_datagroup
-      errors.add(:base, "'#{title}' is a system datagroup, thus can't be deleted") && (return false)
-    end
-    if datacolumns(true).present?
-      errors.add(:base, "'#{title}' has associated datacolumns, thus can't be deleted") && (return false)
-    end
+    errors.add(:base, "'#{title}' is a system datagroup, thus can't be deleted") && (return false) if is_system_datagroup
+    errors.add(:base, "'#{title}' has associated datacolumns, thus can't be deleted") && (return false) if datacolumns(true).present?
     true
   end
 
@@ -60,9 +56,7 @@ class Datagroup < ActiveRecord::Base
     merge_sources = merges.collect { |m| m['ID'].to_i }
     updates.reject! { |c| merge_sources.include?(c.id) }
 
-    unless categories_remain_unique?(updates, merges)
-      errors.add(:categories, 'need to remain unique for datagroup') && return
-    end
+    errors.add(:categories, 'need to remain unique for datagroup') && return unless categories_remain_unique?(updates, merges)
 
     # begin updating and merging
     # merging should be ahead of updating
@@ -100,9 +94,7 @@ class Datagroup < ActiveRecord::Base
 
   def validate_categories_csv?(csv_lines)
     errors.add(:csv, 'seems to be empty') && (return false) if csv_lines.empty?
-    unless (['ID', 'SHORT', 'LONG', 'DESCRIPTION', 'MERGE ID'] - csv_lines.headers).empty?
-      errors.add(:csv, 'header does not match') && (return false)
-    end
+    errors.add(:csv, 'header does not match') && (return false) unless (['ID', 'SHORT', 'LONG', 'DESCRIPTION', 'MERGE ID'] - csv_lines.headers).empty?
     errors.add(:csv, 'ID must not be empty') && (return false) if csv_lines['ID'].any?(&:blank?)
     errors.add(:csv, 'IDs must be unique') && (return false) unless csv_lines['ID'].uniq!.nil?
     errors.add(:csv, 'SHORT must not be empty') && (return false) if csv_lines['SHORT'].any?(&:blank?)
@@ -112,16 +104,12 @@ class Datagroup < ActiveRecord::Base
     cats_no_match = csv_lines['ID'].map(&:to_i) - dg_cats_ids
     errors.add(:csv, "ID out of range: #{cats_no_match.to_sentence}") && (return false) unless cats_no_match.empty?
     merge_ids_no_match = csv_lines['MERGE ID'].compact.map(&:to_i) - dg_cats_ids
-    unless merge_ids_no_match.empty?
-      errors.add(:csv, "MERGE ID out of range: #{merge_ids_no_match.to_sentence}") && (return false)
-    end
+    errors.add(:csv, "MERGE ID out of range: #{merge_ids_no_match.to_sentence}") && (return false) unless merge_ids_no_match.empty?
 
     merges = collect_merges(csv_lines)
     merge_source_ids = merges.map { |l| l['ID'] }
     merge_target_ids = merges.map { |l| l['MERGE ID'] }
-    unless (merge_source_ids & merge_target_ids).empty?
-      errors.add(:csv, 'Recursive merges are not allowed') && (return false)
-    end
+    errors.add(:csv, 'Recursive merges are not allowed') && (return false) unless (merge_source_ids & merge_target_ids).empty?
 
     true
   end
@@ -171,17 +159,13 @@ class Datagroup < ActiveRecord::Base
 
   def validate_categories_csv_for_import?(csv_lines)
     errors.add(:file, 'is empty') && (return false) if csv_lines.empty?
-    unless (%w[short long description] - csv_lines.headers).empty?
-      errors.add(:csv, 'header does not match') && (return false)
-    end
+    errors.add(:csv, 'header does not match') && (return false) unless (%w[short long description] - csv_lines.headers).empty?
     errors.add(:base, "category short can't be empty") && (return false) if csv_lines['short'].any?(&:blank?)
 
     short = csv_lines['short'].collect(&:downcase)
     existing_short = categories.pluck('lower(short)')
     duplicated_shorts = (short + existing_short).group_by { |c| c }.select { |_k, v| v.size > 1 }.keys
-    unless duplicated_shorts.empty?
-      errors.add(:base, 'Duplicated categories found: ' + duplicated_shorts.join(',').to_s) && (return false)
-    end
+    errors.add(:base, 'Duplicated categories found: ' + duplicated_shorts.join(',').to_s) && (return false) unless duplicated_shorts.empty?
 
     true
   end

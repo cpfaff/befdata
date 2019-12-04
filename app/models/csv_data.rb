@@ -71,9 +71,7 @@ class CsvData
     rescue CSV::MalformedCSVError => e
       errors.add(:file, 'is not valid CSV file.') && (return)
     rescue ArgumentError => e
-      if e.message =~ /invalid byte sequence in UTF-8/
-        errors.add(:base, 'File with non-english characters should be in UTF-8 encoding') && return
-      end
+      errors.add(:base, 'File with non-english characters should be in UTF-8 encoding') && return if e.message =~ /invalid byte sequence in UTF-8/
     end
     errors.add(:base, 'Failed to find data in your file') && return unless headers.present?
     errors.add(:base, 'It seems one or more columns do not have a header') && return if headers.any?(&:blank?)

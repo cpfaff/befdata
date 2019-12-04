@@ -50,16 +50,12 @@ class PagesController < ApplicationController
 
     @datasets = @datasets.where(access_code: @filter_params[:access_code]) if @filter_params.has_param? :access_code
 
-    if @filter_params.has_param? :project_phase
-      @datasets = @datasets.where(project_phase: @filter_params[:project_phase])
-    end
+    @datasets = @datasets.where(project_phase: @filter_params[:project_phase]) if @filter_params.has_param? :project_phase
 
     @datasets = @datasets.where(['datafiles_count > 0']) if @filter_params.has_param?(:f, 'w')
     @datasets = @datasets.where(['freeformats_count > 0']) if @filter_params.has_param?(:f, 'a')
     @datasets = @datasets.where(['freeformats_count = 0 and datafiles_count = 0']) if @filter_params.has_param?(:f, 'n')
-    if @filter_params.has_param?(:f, %w[a w])
-      @datasets = @datasets.where(['datafiles_count > 0 or freeformats_count > 0'])
-    end
+    @datasets = @datasets.where(['datafiles_count > 0 or freeformats_count > 0']) if @filter_params.has_param?(:f, %w[a w])
 
     @datasets = @datasets.select('id, title, updated_at as last_update')
                          .order("#{params[:sort]} #{params[:direction]}")

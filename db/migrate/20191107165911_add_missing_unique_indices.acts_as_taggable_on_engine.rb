@@ -7,9 +7,7 @@ class AddMissingUniqueIndices < ActiveRecord::Migration
 
     remove_index :taggings, :tag_id if index_exists? :taggings, :tag_id
 
-    if index_exists? :taggings, %i[taggable_id taggable_type context]
-      remove_index :taggings, %i[taggable_id taggable_type context]
-    end
+    remove_index :taggings, %i[taggable_id taggable_type context] if index_exists? :taggings, %i[taggable_id taggable_type context]
 
     unless index_exists? :taggings, %i[tag_id taggable_id taggable_type context tagger_id tagger_type], unique: true, name: 'taggings_idx'
       add_index :taggings,
