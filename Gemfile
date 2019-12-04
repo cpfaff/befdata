@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # tested with ruby 2.3.3
 
 source 'https://rubygems.org'
@@ -111,14 +112,14 @@ group :test, :development do
   gem 'coveralls', '~> 0.8.23', require: false
 
   # code formatter
-  gem 'rubocop', require: false
+  gem 'rubocop', '~> 0.77.0', require: false
 
- # Profiling toolkit
- # gem 'rack-mini-profiler', :group => :development
-  
- # handle events on file system modifications
- # gem 'guard', '~> 2.15.1'
+  # Profiling toolkit
+  # gem 'rack-mini-profiler', :group => :development
 
- # automatically run your tests on file modification
- # gem 'guard-test', '~> 2.0.8'
+  # handle events on file system modifications
+  # gem 'guard', '~> 2.15.1'
+
+  # automatically run your tests on file modification
+  # gem 'guard-test', '~> 2.0.8'
 end

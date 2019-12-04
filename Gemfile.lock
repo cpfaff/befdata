@@ -262,7 +262,7 @@ DEPENDENCIES
   rails (~> 4.2.0)
   rails-html-sanitizer (~> 1.0.3)
   rb-inotify (~> 0.9.1)
-  rubocop
+  rubocop (~> 0.77.0)
   sass-rails (~> 4.0.0)
   spreadsheet (~> 1.2.5)
   test-unit (~> 3.3.4)
