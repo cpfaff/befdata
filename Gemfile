@@ -59,19 +59,19 @@ gem 'jquery-ui-rails', '~> 3.0.1'
 # paginated queries with Active Record
 gem 'will_paginate', '~> 3.0.5'
 
-# group :production do
-# performance management system
-# gem 'newrelic_rpm'
-# end
-
-# Profiling toolkit
-# gem 'rack-mini-profiler', :group => :development
-
 # sass adapter
 gem 'sass-rails', '~> 4.0.0'
 
 # coffee script adapter
 gem 'coffee-rails', '~> 4.0.0'
+
+group :production do
+  # maintenance mode
+  gem 'turnout', '~> 2.5.0'
+
+  # monitoring tools
+  # gem 'newrelic_rpm'
+end
 
 # call java script code and manipulate java script
 # gem 'therubyracer', :platforms => :ruby
@@ -85,9 +85,6 @@ group :test, :development do
 
   # process manager
   gem 'foreman', '~> 0.61.0'
-
-  # code profiler
-  # gem 'ruby-prof'
 
   # bindings for the GNOME Libxml2
   gem 'libxml-ruby', '~> 3.1.0'
@@ -106,21 +103,16 @@ group :test, :development do
 
   # hosted test coverage service (badge)
   gem 'coveralls', '~> 0.8.23', require: false
-end
 
-group :tools do
   # code formatter
   gem 'rubocop', require: false
 
-  # handle events on file system modifications
-  # gem 'guard', '~> 2.15.1'
+ # Profiling toolkit
+ # gem 'rack-mini-profiler', :group => :development
+  
+ # handle events on file system modifications
+ # gem 'guard', '~> 2.15.1'
 
-  # automatically run your tests on file modification
-  # gem 'guard-test', '~> 2.0.8'
-
-  # html parser
-  gem 'hpricot', '~> 0.8.6'
-
-  # ruby parser written in pure ruby
-  gem 'ruby_parser', '~> 3.1.2'
+ # automatically run your tests on file modification
+ # gem 'guard-test', '~> 2.0.8'
 end
