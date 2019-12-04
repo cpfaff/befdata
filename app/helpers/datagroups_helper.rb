@@ -16,6 +16,6 @@ module DatagroupsHelper
                          'Least Used' => datagroups_path(params.except(:action, :controller).merge(sort: 'datacolumns_count', direction: 'asc')),
                          'Most categories' => datagroups_path(params.except(:action, :controller).merge(sort: 'categories_count', direction: 'desc')),
                          'Least categories' => datagroups_path(params.except(:action, :controller).merge(sort: 'categories_count', direction: 'asc'))
-    }, selected: datagroups_path(params.params.except(:action, :controller)))
+    }, selected: datagroups_path(params.except(:action, :controller)))
   end
 end
