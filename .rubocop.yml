@@ -1,5 +1,7 @@
 AllCops:
   Exclude:
     - 'app/models/null_datagroup.rb'
+    - 'tmp/vulnerabilities/**/*'
+    - 'db/schema.rb'
 Metrics/LineLength:
   Enabled: false
