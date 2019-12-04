@@ -1,12 +1,12 @@
-#production:
-#  adapter: postgresql
-#  host:
-#  port: 5432
-#  encoding: unicode
-#  database:
-#  pool: 5
-#  username:
-#  password:
+# production:
+  # adapter: postgresql
+  # host: localhost
+  # port: 5432
+  # encoding: unicode
+  # database: befdata_prod
+  # pool: 5
+  # username: admin
+  # password: admin
 
 #Unfortunately rails rake test does a clone from development db to prepare for test
 #so we have to define this and on teamcity we can simply call db:setup before 
@@ -16,10 +16,10 @@ development:
   host: localhost
   port: 5432
   encoding: unicode
-  database: teamcity_befdata_dev
+  database: befdata_dev
   pool: 5
-  username: postgres
-  password: postgres
+  username: admin 
+  password: admin
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -30,9 +30,19 @@ test:
   host: localhost
   port: 5432
   encoding: unicode
-  database: teamcity_befdata_test
+  # database: befdata_test 
+  database: befdata_test<%= ENV['TEST_ENV_NUMBER'] %>
   pool: 5
-  username: postgres
-  password: postgres
-
-
+  username: admin 
+  password: admin
+  
+# performance:
+  # min_messages: WARNING
+  # adapter: postgresql
+  # host: localhost
+  # port: 5432
+  # encoding: unicode
+  # database: befdata_perform
+  # pool: 5
+  # username: admin 
+  # password: admin
