@@ -106,5 +106,5 @@ group :test, :development do
   gem 'rubocop', '~> 0.77.0', require: false
 
   # Profiling toolkit
-  # gem 'rack-mini-profiler'
+  # gem 'rack-mini-profiler', require: false
 end
