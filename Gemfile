@@ -86,6 +86,9 @@ group :test, :development do
   # process manager
   gem 'foreman', '~> 0.61.0'
 
+  # find missing indexes
+  gem 'lol_dba', '~> 2.1.8'
+
   # bindings for the GNOME Libxml2
   gem 'libxml-ruby', '~> 3.1.0'
 

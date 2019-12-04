@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191202094346) do
+ActiveRecord::Schema.define(version: 20191204132115) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -24,8 +24,10 @@ ActiveRecord::Schema.define(version: 20191202094346) do
     t.datetime "updated_at"
   end
 
+  add_index "author_paperproposals", ["paperproposal_id", "user_id"], name: "index_author_paperproposals_on_paperproposal_id_and_user_id", using: :btree
   add_index "author_paperproposals", ["paperproposal_id"], name: "index_author_paperproposals_on_paperproposal_id", using: :btree
   add_index "author_paperproposals", ["user_id", "paperproposal_id"], name: "index_author_paperproposals_on_user_id_and_paperproposal_id", using: :btree
+  add_index "author_paperproposals", ["user_id"], name: "index_author_paperproposals_on_user_id", using: :btree
 
   create_table "cart_datasets", force: :cascade do |t|
     t.integer  "cart_id"
@@ -78,6 +80,7 @@ ActiveRecord::Schema.define(version: 20191202094346) do
 
   add_index "datacolumns", ["datagroup_id"], name: "index_datacolumns_on_datagroup_id", using: :btree
   add_index "datacolumns", ["dataset_id"], name: "index_datacolumns_on_dataset_id", using: :btree
+  add_index "datacolumns", ["term_id"], name: "index_datacolumns_on_term_id", using: :btree
 
   create_table "datafiles", force: :cascade do |t|
     t.string   "file_file_name"
@@ -111,7 +114,10 @@ ActiveRecord::Schema.define(version: 20191202094346) do
     t.datetime "updated_at"
   end
 
+  add_index "dataset_downloads", ["dataset_id", "user_id"], name: "index_dataset_downloads_on_dataset_id_and_user_id", using: :btree
+  add_index "dataset_downloads", ["dataset_id"], name: "index_dataset_downloads_on_dataset_id", using: :btree
   add_index "dataset_downloads", ["user_id", "dataset_id"], name: "index_dataset_downloads_on_user_id_and_dataset_id", using: :btree
+  add_index "dataset_downloads", ["user_id"], name: "index_dataset_downloads_on_user_id", using: :btree
 
   create_table "dataset_edits", force: :cascade do |t|
     t.integer  "dataset_id"
@@ -132,6 +138,8 @@ ActiveRecord::Schema.define(version: 20191202094346) do
   end
 
   add_index "dataset_paperproposals", ["dataset_id", "paperproposal_id"], name: "index_dataset_paperproposals_on_dataset_id_and_paperproposal_id", using: :btree
+  add_index "dataset_paperproposals", ["dataset_id"], name: "index_dataset_paperproposals_on_dataset_id", using: :btree
+  add_index "dataset_paperproposals", ["paperproposal_id"], name: "index_dataset_paperproposals_on_paperproposal_id", using: :btree
 
   create_table "datasets", force: :cascade do |t|
     t.string   "title"
@@ -169,6 +177,7 @@ ActiveRecord::Schema.define(version: 20191202094346) do
   end
 
   add_index "datasets_projects", ["dataset_id", "project_id"], name: "index_dataset_projects_on_dataset_id_and_project_id", using: :btree
+  add_index "datasets_projects", ["dataset_id"], name: "index_datasets_projects_on_dataset_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0
@@ -197,6 +206,7 @@ ActiveRecord::Schema.define(version: 20191202094346) do
   end
 
   add_index "exported_files", ["dataset_id"], name: "index_exported_files_on_dataset_id", using: :btree
+  add_index "exported_files", ["id", "type"], name: "index_exported_files_on_id_and_type", using: :btree
 
   create_table "freeformats", force: :cascade do |t|
     t.string   "file_file_name"
@@ -212,6 +222,7 @@ ActiveRecord::Schema.define(version: 20191202094346) do
     t.string   "uri"
   end
 
+  add_index "freeformats", ["freeformattable_id", "freeformattable_type"], name: "freeformattable_index", using: :btree
   add_index "freeformats", ["freeformattable_type", "freeformattable_id"], name: "idx_freeformats_type_id", using: :btree
 
   create_table "import_categories", force: :cascade do |t|
@@ -235,6 +246,8 @@ ActiveRecord::Schema.define(version: 20191202094346) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
   end
+
+  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "paperproposal_votes", force: :cascade do |t|
     t.integer  "paperproposal_id"
@@ -294,6 +307,7 @@ ActiveRecord::Schema.define(version: 20191202094346) do
     t.datetime "updated_at"
   end
 
+  add_index "roles", ["authorizable_id", "authorizable_type"], name: "index_roles_on_authorizable_id_and_authorizable_type", using: :btree
   add_index "roles", ["authorizable_type", "authorizable_id"], name: "index_roles_on_authorizable_type_and_authorizable_id", using: :btree
 
   create_table "roles_users", id: false, force: :cascade do |t|
@@ -301,7 +315,10 @@ ActiveRecord::Schema.define(version: 20191202094346) do
     t.integer "role_id"
   end
 
+  add_index "roles_users", ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", using: :btree
+  add_index "roles_users", ["role_id"], name: "index_roles_users_on_role_id", using: :btree
   add_index "roles_users", ["user_id", "role_id"], name: "index_roles_users_on_user_id_and_role_id", using: :btree
+  add_index "roles_users", ["user_id"], name: "index_roles_users_on_user_id", using: :btree
 
   create_table "sheetcells", force: :cascade do |t|
     t.integer  "datacolumn_id"
