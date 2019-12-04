@@ -74,9 +74,6 @@ group :production do
   # gem 'newrelic_rpm'
 end
 
-# call java script code and manipulate java script
-# gem 'therubyracer', :platforms => :ruby
-
 # uglifier minifies java script
 gem 'uglifier', '~> 2.7.2'
 
@@ -84,11 +81,8 @@ group :test, :development do
   # unit testing framework
   gem 'test-unit', '~> 3.3.4'
 
-  # process manager
-  # gem 'foreman', '~> 0.61.0'
-
   # find missing indexes
-  # gem 'lol_dba', '~> 2.1.8'
+  gem 'lol_dba', '~> 2.1.8'
 
   # parallelize tests
   gem 'parallel_tests'
@@ -96,11 +90,8 @@ group :test, :development do
   # bindings for the GNOME Libxml2
   gem 'libxml-ruby', '~> 3.1.0'
 
-  # wrapper for Linux inotify
-  gem 'rb-inotify', '~> 0.9.1'
-
   # web server
-  gem 'thin', '~> 1.5.0'
+  gem 'thin', '~> 1.7.0'
 
   # gem 'debugger'
   gem 'better_errors', '~> 2.5.1'
@@ -115,11 +106,5 @@ group :test, :development do
   gem 'rubocop', '~> 0.77.0', require: false
 
   # Profiling toolkit
-  # gem 'rack-mini-profiler', :group => :development
-
-  # handle events on file system modifications
-  # gem 'guard', '~> 2.15.1'
-
-  # automatically run your tests on file modification
-  # gem 'guard-test', '~> 2.0.8'
+  # gem 'rack-mini-profiler'
 end
