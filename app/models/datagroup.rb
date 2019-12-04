@@ -40,9 +40,7 @@ class Datagroup < ActiveRecord::Base
   def self.delete_orphan_datagroups
     # delete non-system orphan datagroups that has no associated datacolumns
     to_be_deleted = Datagroup.where(datacolumns_count: 0, type_id: Datagrouptype::DEFAULT)
-    unless to_be_deleted.empty?
-      puts "#{to_be_deleted.count} datagroups is deleted at #{Time.now.utc}"
-    end
+    puts "#{to_be_deleted.count} datagroups is deleted at #{Time.now.utc}" unless to_be_deleted.empty?
     Datagroup.delete(to_be_deleted)
   end
 
@@ -105,22 +103,14 @@ class Datagroup < ActiveRecord::Base
     unless (['ID', 'SHORT', 'LONG', 'DESCRIPTION', 'MERGE ID'] - csv_lines.headers).empty?
       errors.add(:csv, 'header does not match') && (return false)
     end
-    if csv_lines['ID'].any?(&:blank?)
-      errors.add(:csv, 'ID must not be empty') && (return false)
-    end
-    unless csv_lines['ID'].uniq!.nil?
-      errors.add(:csv, 'IDs must be unique') && (return false)
-    end
-    if csv_lines['SHORT'].any?(&:blank?)
-      errors.add(:csv, 'SHORT must not be empty') && (return false)
-    end
+    errors.add(:csv, 'ID must not be empty') && (return false) if csv_lines['ID'].any?(&:blank?)
+    errors.add(:csv, 'IDs must be unique') && (return false) unless csv_lines['ID'].uniq!.nil?
+    errors.add(:csv, 'SHORT must not be empty') && (return false) if csv_lines['SHORT'].any?(&:blank?)
 
     dg_cats_ids = category_ids
 
     cats_no_match = csv_lines['ID'].map(&:to_i) - dg_cats_ids
-    unless cats_no_match.empty?
-      errors.add(:csv, "ID out of range: #{cats_no_match.to_sentence}") && (return false)
-    end
+    errors.add(:csv, "ID out of range: #{cats_no_match.to_sentence}") && (return false) unless cats_no_match.empty?
     merge_ids_no_match = csv_lines['MERGE ID'].compact.map(&:to_i) - dg_cats_ids
     unless merge_ids_no_match.empty?
       errors.add(:csv, "MERGE ID out of range: #{merge_ids_no_match.to_sentence}") && (return false)
@@ -147,9 +137,7 @@ class Datagroup < ActiveRecord::Base
 
     lines.each do |l|
       c = cats.detect { |c| c.id == l['ID'].to_i }
-      unless c.short != l['SHORT'] || c.long != l['LONG'] || c.description != l['DESCRIPTION']
-        next
-      end
+      next unless c.short != l['SHORT'] || c.long != l['LONG'] || c.description != l['DESCRIPTION']
 
       c.short = l['SHORT']
       c.long = l['LONG']
@@ -186,9 +174,7 @@ class Datagroup < ActiveRecord::Base
     unless (%w[short long description] - csv_lines.headers).empty?
       errors.add(:csv, 'header does not match') && (return false)
     end
-    if csv_lines['short'].any?(&:blank?)
-      errors.add(:base, "category short can't be empty") && (return false)
-    end
+    errors.add(:base, "category short can't be empty") && (return false) if csv_lines['short'].any?(&:blank?)
 
     short = csv_lines['short'].collect(&:downcase)
     existing_short = categories.pluck('lower(short)')

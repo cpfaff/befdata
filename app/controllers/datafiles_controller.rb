@@ -15,9 +15,7 @@ class DatafilesController < ApplicationController
   end
 
   def destroy
-    unless @datafile.destroy
-      flash[:error] = @datafile.errors.full_messages.to_sentence
-    end
+    flash[:error] = @datafile.errors.full_messages.to_sentence unless @datafile.destroy
     redirect_to :back
   end
 

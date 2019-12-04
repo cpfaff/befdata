@@ -238,9 +238,7 @@ class Workbook
 
     datagroup = Datagroup.where(['title iLike ?', dg_hash[:title]]).first
     if datagroup
-      if not_same?(datagroup.description, dg_hash[:description])
-        result[:description_not_equal] = true
-      end
+      result[:description_not_equal] = true if not_same?(datagroup.description, dg_hash[:description])
     else
       datagroup = Datagroup.create(dg_hash)
     end

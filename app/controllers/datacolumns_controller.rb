@@ -38,27 +38,19 @@ class DatacolumnsController < ApplicationController
   def approval_overview; end
 
   def next_approval_step
-    unless @datacolumn.datagroup_approved?
-      redirect_to(action: 'approve_datagroup') && return
-    end
-    unless @datacolumn.datatype_approved?
-      redirect_to(action: 'approve_datatype') && return
-    end
-    if @datacolumn.has_invalid_values?
-      redirect_to(action: 'approve_invalid_values') && return
-    end
-    unless @datacolumn.finished
-      redirect_to(action: 'approve_metadata') && return
-    end
+    redirect_to(action: 'approve_datagroup') && return unless @datacolumn.datagroup_approved?
+    redirect_to(action: 'approve_datatype') && return unless @datacolumn.datatype_approved?
+    redirect_to(action: 'approve_invalid_values') && return if @datacolumn.has_invalid_values?
+    redirect_to(action: 'approve_metadata') && return unless @datacolumn.finished
     redirect_to action: 'approval_overview'
   end
 
   def approve_datagroup
-    if @datacolumn.datagroup_id
-      @data_groups_available = Datagroup.order(:title).where(['id <> ?', @datacolumn.datagroup_id])
-    else # no datagroup assigned
-      @data_groups_available = Datagroup.order(:title)
-    end
+    @data_groups_available = if @datacolumn.datagroup_id
+                               Datagroup.order(:title).where(['id <> ?', @datacolumn.datagroup_id])
+                             else # no datagroup assigned
+                               Datagroup.order(:title)
+                             end
   end
 
   def approve_datatype
@@ -212,13 +204,11 @@ class DatacolumnsController < ApplicationController
   def annotate; end
 
   def update_annotation
-    if params[:new_term].present?
-      term = Vocab.where(['term iLike ?', params.require(:new_term)]).first || Vocab.create(term: params.require(:new_term))
-    elsif params[:term_id].present?
-      term = Vocab.find(params.require(:term_id))
-    else
-      term = nil
-    end
+    term = if params[:new_term].present?
+             Vocab.where(['term iLike ?', params.require(:new_term)]).first || Vocab.create(term: params.require(:new_term))
+           elsif params[:term_id].present?
+             Vocab.find(params.require(:term_id))
+           end
 
     @datacolumn.update_attribute(:semantic_term, term)
     redirect_to :back, notice: 'Semantic tag was updated'

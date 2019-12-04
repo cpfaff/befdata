@@ -16,9 +16,7 @@ class DatagroupText < ActiveSupport::TestCase
     datagroup = Datagroup.create!(title: 'Unit test',
                                   description: 'Unit test datagroup')
     assert(!datagroup.nil?, 'The data group was not created')
-    unless datagroup.nil?
-      assert(datagroup.type_id = 1, 'The datagroup does not have the default type id')
-    end
+    assert(datagroup.type_id = 1, 'The datagroup does not have the default type id') unless datagroup.nil?
   end
 
   test 'update datagroup expires exported datasets' do

@@ -3,9 +3,7 @@
 # This migration comes from acts_as_taggable_on_engine (originally 2)
 class AddMissingUniqueIndices < ActiveRecord::Migration
   def self.up
-    unless index_exists? :tags, :name, unique: true
-      add_index :tags, :name, unique: true
-    end
+    add_index :tags, :name, unique: true unless index_exists? :tags, :name, unique: true
 
     remove_index :taggings, :tag_id if index_exists? :taggings, :tag_id
 

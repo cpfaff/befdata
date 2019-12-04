@@ -75,12 +75,8 @@ class CsvData
         errors.add(:base, 'File with non-english characters should be in UTF-8 encoding') && return
       end
     end
-    unless headers.present?
-      errors.add(:base, 'Failed to find data in your file') && return
-    end
-    if headers.any?(&:blank?)
-      errors.add(:base, 'It seems one or more columns do not have a header') && return
-    end
+    errors.add(:base, 'Failed to find data in your file') && return unless headers.present?
+    errors.add(:base, 'It seems one or more columns do not have a header') && return if headers.any?(&:blank?)
     errors.add :file, 'column headers must be uniq' unless headers_unique?
   end
 

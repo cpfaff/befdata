@@ -77,9 +77,7 @@ class ExportedFile < ActiveRecord::Base
   # redefine the getter method of status field
   def status
     stored_status = read_attribute(:status)
-    if stored_status == 'finished' && invalidated_at > generated_at
-      return 'outdated'.inquiry
-    end
+    return 'outdated'.inquiry if stored_status == 'finished' && invalidated_at > generated_at
 
     stored_status.inquiry
   end

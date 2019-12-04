@@ -12,16 +12,12 @@ class SeparateUploadedAndGeneratedFiles < ActiveRecord::Migration
     Dataset.has_attached_file :generated_spreadsheet, path: ':rails_root/files/:id_generated-download.xls'
 
     Datafile.where('file_file_name is not NULL and dataset_id is not NULL').find_each do |df|
-      if File.file? df.file.path
-        FileUtils.mv df.file.path, File.join(uploaded_dir, File.basename(df.file.path))
-      end
+      FileUtils.mv df.file.path, File.join(uploaded_dir, File.basename(df.file.path)) if File.file? df.file.path
     end
 
     Dataset.where('generated_spreadsheet_file_name is not NULL').find_each do |dt|
       original_path = dt.generated_spreadsheet.path
-      if File.file? original_path
-        FileUtils.mv original_path, File.join(generated_dir, File.basename(original_path))
-      end
+      FileUtils.mv original_path, File.join(generated_dir, File.basename(original_path)) if File.file? original_path
     end
   end
 

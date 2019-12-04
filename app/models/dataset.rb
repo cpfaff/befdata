@@ -79,7 +79,7 @@ class Dataset < ActiveRecord::Base
 
   PROJECT_PHASE = {
     befchina: 0,
-    treedi: 1,
+    treedi: 1
   }.freeze
 
   validates_inclusion_of :access_code, in: ACCESS_CODES.values,
@@ -110,9 +110,7 @@ class Dataset < ActiveRecord::Base
     return unless current_datafile
 
     current_datafile.authors_list[:found_users].each { |user| user.has_role!(:owner, self) }
-    if current_datafile.projects_list.present?
-      self.projects = current_datafile.projects_list
-    end
+    self.projects = current_datafile.projects_list if current_datafile.projects_list.present?
   end
 
   def add_datafile(datafile)
@@ -285,9 +283,7 @@ class Dataset < ActiveRecord::Base
     return false unless current_datafile
     return true if free_for?(user)
     return false unless user
-    if user.has_role?(:proposer, self) || user.has_role?(:owner, self)
-      return true
-    end
+    return true if user.has_role?(:proposer, self) || user.has_role?(:owner, self)
     return true if user.has_role?(:admin) || user.has_role?(:data_admin)
 
     false
@@ -295,9 +291,7 @@ class Dataset < ActiveRecord::Base
 
   def can_edit_by?(user)
     return false unless user
-    if user.has_role?(:owner, self) || user.has_role?(:admin) || user.has_role?(:data_admin)
-      return true
-    end
+    return true if user.has_role?(:owner, self) || user.has_role?(:admin) || user.has_role?(:data_admin)
 
     false
   end
@@ -330,8 +324,6 @@ class Dataset < ActiveRecord::Base
   end
 
   def set_default_phase
-    if self.project_phase.nil?
-      self.project_phase = '1'
-    end
+    self.project_phase = '1' if project_phase.nil?
   end
 end

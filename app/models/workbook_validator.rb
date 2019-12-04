@@ -8,9 +8,7 @@ class WorkbookValidator < ActiveModel::Validator
       record.errors.add(:file, 'is no valid workbook - has wrong number of pages') && return
     end
 
-    if record.wb_version.blank?
-      record.errors.add(:base, 'Workbook version number not found') && return
-    end
+    record.errors.add(:base, 'Workbook version number not found') && return if record.wb_version.blank?
     # check if first two numbers of version information match
     if record.wb_version.scan(/\A\d+\.\d+\./).first != Workbook::WBF[:wb_format_version].scan(/\A\d+\.\d+\./).first
       record.errors.add :base, "Workbook version not matching (#{wb_version} < #{Workbook::WBF[:wb_format_version]})"
@@ -27,8 +25,6 @@ class WorkbookValidator < ActiveModel::Validator
       record.errors.add(:base, 'Column headers in the raw data sheet must be unique') && return
     end
 
-    if record.with_missing_headers?
-      record.errors.add(:base, 'Column headers should not be blank') && return
-    end
+    record.errors.add(:base, 'Column headers should not be blank') && return if record.with_missing_headers?
   end
 end

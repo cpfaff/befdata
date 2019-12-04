@@ -128,9 +128,7 @@ class User < ActiveRecord::Base
     return if roles_config.blank?
 
     roles_config.each do |role|
-      unless role[:project_id].blank?
-        has_role!(role[:role_name], Project.find(role[:project_id]))
-      end
+      has_role!(role[:role_name], Project.find(role[:project_id])) unless role[:project_id].blank?
     end
   end
 
@@ -143,9 +141,7 @@ class User < ActiveRecord::Base
   def change_avatar_file_name
     if avatar_file_name && avatar_file_name_changed?
       new_name = "#{id}_#{lastname}#{File.extname(avatar_file_name).downcase}"
-      if avatar_file_name != new_name
-        avatar.instance_write(:file_name, new_name)
-      end
+      avatar.instance_write(:file_name, new_name) if avatar_file_name != new_name
     end
   end
 

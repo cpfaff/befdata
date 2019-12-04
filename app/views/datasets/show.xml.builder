@@ -47,9 +47,7 @@ xml.dataset(id: @dataset.id, version: 1) do
           end
           xml.semanticTagging dc.semantic_term.try(:term)
         end
-        unless params[:separate_category_columns].to_s.casecmp('true').zero? && dc.split_me?
-          next
-        end
+        next unless params[:separate_category_columns].to_s.casecmp('true').zero? && dc.split_me?
 
         xml.column do
           xml.header dc.columnheader + '_Categories'

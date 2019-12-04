@@ -60,9 +60,7 @@ class Datacolumn < ActiveRecord::Base
 
   def predefined?
     # To be predefined, a column must have datatype that is not 'unknown'.
-    if Datatypehelper.find_by_name(import_data_type).name == 'unknown'
-      return false
-    end
+    return false if Datatypehelper.find_by_name(import_data_type).name == 'unknown'
 
     # To be predefined, a column must belongs to a datagroup
     # Furthermore, the datacolumn approval process must not have already started.
@@ -209,9 +207,7 @@ class Datacolumn < ActiveRecord::Base
     stage = 1 if datagroup_approved
     stage = 2 if datagroup_approved && datatype_approved
     stage = 3 if datagroup_approved && datatype_approved && !has_invalid_values?
-    if datagroup_approved && datatype_approved && !has_invalid_values? && finished
-      stage = 4
-    end
+    stage = 4 if datagroup_approved && datatype_approved && !has_invalid_values? && finished
     stage
   end
 

@@ -48,23 +48,15 @@ class PagesController < ApplicationController
     @datasets = Dataset.all
     @filter_params = BefParam.new(params[:filter], checkbox: :access_code, checkbox: :project_phase, radio: :f)
 
-    if @filter_params.has_param? :access_code
-      @datasets = @datasets.where(access_code: @filter_params[:access_code])
-    end
+    @datasets = @datasets.where(access_code: @filter_params[:access_code]) if @filter_params.has_param? :access_code
 
     if @filter_params.has_param? :project_phase
       @datasets = @datasets.where(project_phase: @filter_params[:project_phase])
     end
 
-    if @filter_params.has_param?(:f, 'w')
-      @datasets = @datasets.where(['datafiles_count > 0'])
-    end
-    if @filter_params.has_param?(:f, 'a')
-      @datasets = @datasets.where(['freeformats_count > 0'])
-    end
-    if @filter_params.has_param?(:f, 'n')
-      @datasets = @datasets.where(['freeformats_count = 0 and datafiles_count = 0'])
-    end
+    @datasets = @datasets.where(['datafiles_count > 0']) if @filter_params.has_param?(:f, 'w')
+    @datasets = @datasets.where(['freeformats_count > 0']) if @filter_params.has_param?(:f, 'a')
+    @datasets = @datasets.where(['freeformats_count = 0 and datafiles_count = 0']) if @filter_params.has_param?(:f, 'n')
     if @filter_params.has_param?(:f, %w[a w])
       @datasets = @datasets.where(['datafiles_count > 0 or freeformats_count > 0'])
     end

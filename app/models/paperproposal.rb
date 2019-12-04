@@ -76,17 +76,13 @@ class Paperproposal < ActiveRecord::Base
 
   def beautiful_title
     str = "#{author.short_name}: #{created_at.year}, #{title}, "
-    if authored_by_project.present?
-      str = "#{authored_by_project.shortname}, " + str
-    end
+    str = "#{authored_by_project.shortname}, " + str if authored_by_project.present?
     proponents_and_dataowners = authors_selection(:proponents_and_all_owners)
     unless proponents_and_dataowners.empty?
       str << '<i>Proponents and dataowners</i>: '
       str << proponents_and_dataowners.collect(&:full_name).sort.join(', ')
     end
-    if envisaged_journal.present?
-      str << ", <i>Citation</i>: #{envisaged_journal}"
-    end
+    str << ", <i>Citation</i>: #{envisaged_journal}" if envisaged_journal.present?
     str
   end
 
@@ -102,13 +98,9 @@ class Paperproposal < ActiveRecord::Base
   end
 
   def calc_board_state
-    if board_state == 'prep' && includes_datasets?
-      return 'can be send to project board'
-    end
+    return 'can be send to project board' if board_state == 'prep' && includes_datasets?
     return 'in preparation, no data selected' if board_state == 'prep'
-    if board_state == 'submit'
-      return 'submitted to board, waiting for acceptance'
-    end
+    return 'submitted to board, waiting for acceptance' if board_state == 'submit'
     return 'rejected by project board' if board_state == 're_prep'
     return 'project board approved, requesting data' if board_state == 'accept'
     return 'data request rejected' if board_state == 'data_rejected'
@@ -428,9 +420,7 @@ class Paperproposal < ActiveRecord::Base
         next if v.vote == 'accept'
 
         v.update_attribute(:vote, 'accept')
-        unless v.user == author
-          NotificationMailer.delay.auto_accept_for_free_datasets(v.user, self)
-        end
+        NotificationMailer.delay.auto_accept_for_free_datasets(v.user, self) unless v.user == author
       end
     when 'submit'
       project_board_votes.where(user_id: author).each do |v|

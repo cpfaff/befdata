@@ -23,9 +23,7 @@ class MergeAccessRightsOfDatasets < ActiveRecord::Migration
       if dt.access_code == 3
         dt.update_attributes(free_for_public: true, free_for_members: true, free_within_projects: true)
       end
-      if dt.access_code == 2
-        dt.update_attributes(free_for_members: true, free_within_projects: true)
-      end
+      dt.update_attributes(free_for_members: true, free_within_projects: true) if dt.access_code == 2
       dt.update_attributes(free_within_projects: true) if dt.access_code == 1
     end
     Dataset.record_timestamps = true

@@ -87,15 +87,13 @@ class DatasetsController < ApplicationController
   # update the metatadata of a file
   def update
     if @dataset.update_attributes(params.require(:dataset).permit(:authenticity_token,
-                        :title, :project_phase, :access_code, :usagerights, :tag_list,
-                        :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)',
-                        :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)', :temporalextent,
-                        :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [],
-                        project_ids: []))
+                                                                  :title, :project_phase, :access_code, :usagerights, :tag_list,
+                                                                  :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)',
+                                                                  :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)', :temporalextent,
+                                                                  :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [],
+                                                                                                                                      project_ids: []))
 
-      if params.require(:dataset)[:owner_ids].present?
-        @dataset.refresh_paperproposal_authors
-      end
+      @dataset.refresh_paperproposal_authors if params.require(:dataset)[:owner_ids].present?
       # TODO: should not refresh all authors of the pp
       @dataset.log_edit('Metadata updated')
 
@@ -142,9 +140,7 @@ class DatasetsController < ApplicationController
         changes += 1
       end
 
-      unless datacolumn.datagroup_approved && hash[:import_data_type].present?
-        next
-      end
+      next unless datacolumn.datagroup_approved && hash[:import_data_type].present?
 
       datatype = hash[:import_data_type]
       datacolumn.approve_datatype datatype, current_user

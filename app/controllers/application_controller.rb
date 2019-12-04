@@ -85,14 +85,10 @@ class ::ApplicationController < ActionController::Base
   # eg: validate_sort_params(collection: ['a', 'b'], default: 'a')
   def validate_sort_params(*options)
     options = options.extract_options!
-    unless options[:collection].present?
-      raise 'A collection of allowed sorting options should be specified!'
-    end
+    raise 'A collection of allowed sorting options should be specified!' unless options[:collection].present?
 
     options[:default] ||= options[:collection].first
-    unless options[:collection].include?(params[:sort])
-      params[:sort] = options[:default]
-    end
+    params[:sort] = options[:default] unless options[:collection].include?(params[:sort])
     params[:direction] = 'asc' unless %w[desc asc].include?(params[:direction])
   end
 

@@ -103,12 +103,8 @@ class ExportedExcel < ExportedFile
       keywords = datacolumn.tag_list.join(', ')
       sheet[row, WBF[:column_keywords_col]] = keywords unless keywords.blank?
 
-      if datacolumn.datagroup.present?
-        sheet[row, WBF[:group_title_col]] = datacolumn.datagroup.title
-      end
-      if datacolumn.datagroup.present?
-        sheet[row, WBF[:group_description_col]] = datacolumn.datagroup.description
-      end
+      sheet[row, WBF[:group_title_col]] = datacolumn.datagroup.title if datacolumn.datagroup.present?
+      sheet[row, WBF[:group_description_col]] = datacolumn.datagroup.description if datacolumn.datagroup.present?
     end
   end
 
@@ -119,9 +115,7 @@ class ExportedExcel < ExportedFile
     row = 1
     datacolumns.each do |datacolumn|
       datacolumn.users.each do |pr|
-        if datacolumn.columnheader
-          sheet[row, WBF[:people_columnheader_col]] = datacolumn.columnheader
-        end
+        sheet[row, WBF[:people_columnheader_col]] = datacolumn.columnheader if datacolumn.columnheader
         sheet[row, WBF[:people_firstname_col]] = pr.firstname if pr.firstname
         sheet[row, WBF[:people_lastname_col]] = pr.lastname if pr.lastname
         row += 1

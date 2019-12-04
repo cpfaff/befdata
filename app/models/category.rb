@@ -17,9 +17,7 @@ class Category < ActiveRecord::Base
     # delete categories that has no assciated sheetcells
     to_be_deleted = Category.joins('left outer join sheetcells on sheetcells.category_id = categories.id')
                             .where('sheetcells.category_id is NULL')
-    unless to_be_deleted.empty?
-      puts "#{to_be_deleted.count} categories is deleted at #{Time.now.utc}"
-    end
+    puts "#{to_be_deleted.count} categories is deleted at #{Time.now.utc}" unless to_be_deleted.empty?
     Category.delete(to_be_deleted)
   end
 
@@ -98,13 +96,9 @@ class Category < ActiveRecord::Base
     end
 
     csv_sheetcell_ids = csv_lines['ID'].collect(&:to_i)
-    unless csv_sheetcell_ids.uniq!.nil?
-      errors.add(:csv, 'IDs must be unique') && (return false)
-    end
+    errors.add(:csv, 'IDs must be unique') && (return false) unless csv_sheetcell_ids.uniq!.nil?
 
-    if csv_lines['ID'].any?(&:blank?)
-      errors.add(:csv, 'ID must not be empty') && (return false)
-    end
+    errors.add(:csv, 'ID must not be empty') && (return false) if csv_lines['ID'].any?(&:blank?)
 
     cat_sheetcell_ids = sheetcell_ids
     sheetcells_no_match = csv_sheetcell_ids - cat_sheetcell_ids
