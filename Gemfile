@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# tested with ruby 2.3.3
 
 source 'https://rubygems.org'
 
@@ -44,7 +45,7 @@ gem 'daemons', '~> 1.1.9'
 gem 'whenever', '~> 0.8.2', require: false
 
 # bulk inserting data using active record
-gem 'activerecord-import', '~> 0.4.1'
+gem 'activerecord-import', '~> 1.0.3'
 
 # named scoples for postgres fulltext search
 gem 'pg_search', '~> 2.0.0'
