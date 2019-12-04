@@ -1,3 +1,5 @@
 AllCops:
   Exclude:
     - 'app/models/null_datagroup.rb'
+Metrics/LineLength:
+  Enabled: false
