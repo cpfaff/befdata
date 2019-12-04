@@ -84,10 +84,10 @@ group :test, :development do
   gem 'test-unit', '~> 3.3.4'
 
   # process manager
-  gem 'foreman', '~> 0.61.0'
+  # gem 'foreman', '~> 0.61.0'
 
   # find missing indexes
-  gem 'lol_dba', '~> 2.1.8'
+  # gem 'lol_dba', '~> 2.1.8'
 
   # parallelize tests
   gem 'parallel_tests'
@@ -102,7 +102,7 @@ group :test, :development do
   gem 'thin', '~> 1.5.0'
 
   # gem 'debugger'
-  gem 'better_errors', '~> 0.3.2'
+  gem 'better_errors', '~> 2.5.1'
 
   # retrieve the binding of a method's caller
   gem 'binding_of_caller', '~> 0.8.0'
