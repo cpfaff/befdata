@@ -9,9 +9,11 @@ env:
 rvm:
   - 2.3.3
 script:
-  - bundle exec rake db:setup 
-  - bundle exec rake db:fixtures:load
-  - bundle exec rake test
+  - bundle exec rake parallel:setup
+  - bundle exec rake parallel:test
+  # - bundle exec rake db:setup 
+  # - bundle exec rake db:fixtures:load
+  # - bundle exec rake test
 before_script:
   - cp config/configuration.yml.dist config/configuration.yml
   - cp config/database.yml.travis config/database.yml

@@ -81,13 +81,16 @@ gem 'uglifier', '~> 2.7.2'
 
 group :test, :development do
   # unit testing framework
-  gem 'test-unit', '~> 2.5.4'
+  gem 'test-unit', '~> 3.3.4'
 
   # process manager
   gem 'foreman', '~> 0.61.0'
 
   # find missing indexes
   gem 'lol_dba', '~> 2.1.8'
+
+  # parallelize tests
+  gem 'parallel_tests'
 
   # bindings for the GNOME Libxml2
   gem 'libxml-ruby', '~> 3.1.0'

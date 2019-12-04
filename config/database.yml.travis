@@ -1,4 +1,4 @@
 test:
   adapter: postgresql
-  database: befdata_test
+  database: befdata_test<%= ENV['TEST_ENV_NUMBER'] %>
   username: postgres

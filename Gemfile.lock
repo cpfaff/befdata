@@ -133,6 +133,8 @@ GEM
       mime-types
       mimemagic (~> 0.3.0)
     parallel (1.19.1)
+    parallel_tests (2.29.2)
+      parallel
     parser (2.6.5.0)
       ast (~> 2.4.0)
     pg (0.18.4)
@@ -140,6 +142,7 @@ GEM
       activerecord (>= 4.2)
       activesupport (>= 4.2)
       arel (>= 6)
+    power_assert (1.1.5)
     rack (1.6.11)
     rack-accept (0.4.5)
       rack (>= 0.4)
@@ -211,7 +214,8 @@ GEM
       sprockets (>= 2.8, < 4.0)
     term-ansicolor (1.7.1)
       tins (~> 1.0)
-    test-unit (2.5.5)
+    test-unit (3.3.4)
+      power_assert
     thin (1.5.1)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -258,6 +262,7 @@ DEPENDENCIES
   libxml-ruby (~> 3.1.0)
   lol_dba (~> 2.1.8)
   paperclip (~> 5.2.0)
+  parallel_tests
   pg (~> 0.18.0)
   pg_search (~> 2.0.0)
   rails (~> 4.2.0)
@@ -266,7 +271,7 @@ DEPENDENCIES
   rubocop
   sass-rails (~> 4.0.0)
   spreadsheet (~> 1.2.5)
-  test-unit (~> 2.5.4)
+  test-unit (~> 3.3.4)
   thin (~> 1.5.0)
   turnout (~> 2.5.0)
   uglifier (~> 2.7.2)
