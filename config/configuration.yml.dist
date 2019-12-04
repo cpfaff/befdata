@@ -1,22 +1,39 @@
 site:
-  #set layout to use one different than standard befdata
-  #layout: 'fundiv'
+  # this options sets the layout for the whole application. If this is
+  # commented out it is set to an empty default layout and style. You can
+  # choose here from builtin layout options (fundiv, befchina). You can also
+  # create your own folder named after your layout in app/pages/. You can just
+  # copy one existing folder and choose a name. That folder contains files like
+  # the header, the footer, the imprint which you can modify to your liking.
+  # Afterwards you enable it by setting the name of the folder in the layout
+  # option.
 
-  # Specify the title of your site which will appear at the browser title bar.
-  # uncomment subtitle if you need a subtitle
-  # the resulting pattern would be "title | subtitle" for the home page
-  # and "title | page_title" for the other pages.
-  title: Biodiversity
-  # subtitle:
+  # layout: 'fundiv'
 
-  #Add your google analytics account here if you wish to use analytics.
-  #google_analytics_account: 'UA-0000000-1'
+  # Here you can specify the title of your site which will appear in the
+  # browser title bar. Uncomment subtitle if you need a subtitle. The resulting
+  # pattern would be "title | subtitle" for the home page and "title |
+  # page_title" for the other pages.
 
-  #To use new-relic for monitoring your app you have to copy newrelic.yml.dist to newrelic.yml and enter your
-  #license key and details.
+  title: BEFdata 
+  subtitle: a data management platform
 
+  # Add your google analytics account here if you wish to use analytics.
+  # Be carefull with this. You have to take into account that you have to
+  # inform users that you are processing their data according to dsgvo.
+
+  # google_analytics_account: 'UA-0000000-1'
+
+  # To use new-relic for monitoring your app you have to copy newrelic.yml.dist
+  # to newrelic.yml and enter your license key and details.
 
 eml:
+  # this option sets up the bounding box of the project. This is used for all
+  # metadata created for your datasets. You can create the required information
+  # using on online service like: https://boundingbox.klokantech.com. There you
+  # can drag a rectangle on the map to the right location and find out the values
+  # (Please set the menu there to format for DublinCore)
+
   bounding_coordinates_for_geographic_coverage:
     west_bounding_coordinate: 117.89978
     east_bounding_coordinate: 118.148346
