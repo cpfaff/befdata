@@ -1,7 +1,8 @@
 # Application wide environment variables
 
-# Applications secret token
-application_secret_token: "12f3456a78cc910121b314d1516e171awe8192030"
+# Applications secrets
+application_secret_token: 'e5a77f45f37320eb201f171fe6fa861b34e0e57cefbec1f80990ccf1165a370d1610b1fb50245fb2076c4dd9f9b17f5e138d13d10350aa92d2e327b6e57f683f'
+application_secret_key_base: '249805eecadd8d9218888d9bde81598cc645365acf1dadaf75feb9ed7b35c56cc4802514cd112b158e15f71ecceafb340f97c8507c940675a9225f54eca65cfc'
 
 # production:
    # Configuration party_foul
