@@ -22,7 +22,6 @@ gem 'authlogic', '~> 3.4.0'
 
 # role-based authorization system
 gem 'acl9', '~> 1.0.0'
-# '~> 0.12.1'
 
 # helper methods for rails 3 models
 gem 'dynamic_form', '~> 1.1.4'
@@ -57,6 +56,9 @@ gem 'jquery-rails', '~> 3.1.3'
 # jQuery UI's JavaScript, CSS, and image files
 gem 'jquery-ui-rails', '~> 3.0.1'
 
+# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
+gem 'turbolinks', '~> 5.2.1'
+
 # paginated queries with Active Record
 gem 'will_paginate', '~> 3.0.5'
 
@@ -85,7 +87,7 @@ group :test, :development do
   gem 'lol_dba', '~> 2.1.8'
 
   # parallelize tests
-  gem 'parallel_tests'
+  gem 'parallel_tests', '~> 2.29.2'
 
   # bindings for the GNOME Libxml2
   gem 'libxml-ruby', '~> 3.1.0'
@@ -105,6 +107,15 @@ group :test, :development do
   # code formatter
   gem 'rubocop', '~> 0.77.0', require: false
 
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'byebug', '~> 11.0.1'
+   
+  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  gem 'spring', '~> 2.0.2'
+
   # Profiling toolkit
   # gem 'rack-mini-profiler', require: false
 end
+
+# bundle exec rake doc:rails generates the API under doc/api.
+# gem 'sdoc', '~> 0.4.0', group: :doc
