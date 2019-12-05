@@ -47,15 +47,11 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  # Only use best-standards-support built into browsers
-  config.action_dispatch.best_standards_support = :builtin
-
   # Raise exception on mass assignment protection for Active Record models
   # config.active_record.mass_assignment_sanitizer = :strict
 
   # Do not compress assets
   # config.assets.compress = false
-  config.assets.js_compressor = false
 
   # For the use of Paperclip Image Manipulation - the path to ImageMagic executables
   Paperclip.options[:command_path] = '/usr/bin/'

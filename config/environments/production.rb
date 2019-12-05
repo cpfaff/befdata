@@ -38,8 +38,6 @@ Rails.application.configure do
   # yet still be able to expire them through the digest params.
   config.assets.digest = true
 
-  # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
-
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
@@ -88,7 +86,4 @@ Rails.application.configure do
   # setup paperclip
   Paperclip.options[:command_path] = '/usr/bin'
   Paperclip.options[:log] = false
-
-  # Configures Party-Fould exception handling middleware (needs to be on last position)
-  # config.middleware.use('PartyFoul::Middleware')
 end
