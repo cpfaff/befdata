@@ -5,8 +5,7 @@ web based portal, it enables research groups to upload, store, manage and share
 data with each other. BEFdata uses an Excel workbook for the exchange of data
 and metadata and thus integrates easily into your data collection and analysis
 workflow. It provides a secure environment for your data during an on-going
-data collection or analysis. With its companion R package you have access to
-your data from your analysis environment.
+data collection or analysis.
 
 [![Build Status](https://travis-ci.org/cpfaff/befdata.svg?branch=master)](https://travis-ci.org/cpfaff/befdata)[![Coverage Status](https://coveralls.io/repos/github/cpfaff/befdata/badge.svg?branch=master)](https://coveralls.io/github/cpfaff/befdata?branch=master)
 
@@ -20,7 +19,7 @@ A brief list of the most important features:
 * Tools to curate the naming conventions used in the primary data (harmonization).
 * The software can export metadata as Ecological Metadata Standard (exchange)
 * Keep record of ideas for analysis and data exchange (Proposals)
-* Access to data with the rBEFdata R package for (analysis, documentation)
+* Access the data with the rBEFdata R package for (analysis, documentation)
 
 ## Getting Started
 
