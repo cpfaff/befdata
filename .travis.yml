@@ -7,7 +7,7 @@ env:
     - RAILS_ENV=test
     - RUBYOPT=-W0
 rvm:
-  - 2.3.3
+  - 2.3.8
 script:
   - bundle exec rake parallel:setup
   - bundle exec rake parallel:test

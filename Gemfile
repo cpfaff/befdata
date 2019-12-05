@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# tested with ruby 2.3.3
+# tested with ruby 2.3.8
 
 source 'https://rubygems.org'
 

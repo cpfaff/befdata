@@ -19,5 +19,6 @@
 //= require jquery.tablesorter.min
 //= require jquery-cookie
 //= require select2.min
+//= require turbolinks
 //= require jquery.tipsy
 //= require_tree .
