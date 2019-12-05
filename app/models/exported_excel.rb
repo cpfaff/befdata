@@ -134,6 +134,7 @@ class ExportedExcel < ExportedFile
       col_loop = Datacolumn.find(col_id)
       # cats = col.sheetcells.select{|s| s.datatype.is_category?}.collect{|s| s.category}
       # clean_cats = cats.compact.uniq.sort{|a,b| a.short <=> b.short}
+      # TODO: replace hash based finder method with where and appropriate other methods
       clean_cats = col_loop.sheetcells.find(:all, conditions: ['sheetcells.datatype_id = ?', Datatypehelper.find_by_name('category').id],
                                                   joins: 'JOIN categories ON categories.id = sheetcells.category_id',
                                                   select: 'distinct categories.short, categories.long, categories.description',
@@ -150,6 +151,7 @@ class ExportedExcel < ExportedFile
       download_time = Time.now.to_s
       # unaccepted_values = col.sheetcells.select{|s| s.accepted_value.blank? && !s.datatype.is_category?}.collect{|s| s.import_value}
       # clean_un_val = unaccepted_values.compact.uniq.sort
+      # TODO: replace hash based finder method with where and appropriate other methods
       clean_un_val = col_loop.sheetcells.find(:all, conditions: ['status_id = ?', Sheetcellstatus::INVALID],
                                                     select: 'distinct import_value',
                                                     order: 'import_value')
