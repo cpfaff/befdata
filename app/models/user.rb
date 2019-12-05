@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
+  # TODO: update authlogic and use new crypto provider
   acts_as_authentic do |c|
     c.crypto_provider = Authlogic::CryptoProviders::Sha512
   end
@@ -8,9 +9,11 @@ class User < ActiveRecord::Base
   acts_as_authorization_subject association_name: :roles, join_table_name: :roles_users
 
   validates_presence_of :lastname, :firstname
+
   validates_uniqueness_of :login
 
-  # related paperproposals. Roles include: proponent, main aspect dataset owner, side aspect dataset owner, acknowledged.
+  # related paperproposals. Roles include: proponent, main aspect dataset
+  # owner, side aspect dataset owner, acknowledged.
   has_many :author_paperproposals, -> { includes :paperproposals }, dependent: :destroy
 
   has_many :paperproposals_author_table, through: :author_paperproposals, source: :paperproposal
@@ -18,7 +21,8 @@ class User < ActiveRecord::Base
   # paperproposals created by the user
   has_many :owning_paperproposals, class_name: 'Paperproposal', foreign_key: 'author_id'
 
-  has_many :paperproposal_votes, dependent: :destroy # Todo really dependent destroy?
+  # TODO: really dependent destroy?
+  has_many :paperproposal_votes, dependent: :destroy
 
   has_many :project_board_votes, -> { where project_board_vote: true }, class_name: 'PaperproposalVote', source: :paperproposal_votes
 
@@ -43,6 +47,7 @@ class User < ActiveRecord::Base
                                              message: 'is invalid. Must be a picture such as jpeg or png.'
 
   before_save :change_avatar_file_name, :add_protocol_to_url
+
   before_destroy :check_destroyable
 
   def to_s
