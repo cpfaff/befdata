@@ -15,7 +15,7 @@ gem 'rails-html-sanitizer', '~> 1.0.3'
 gem 'pg', '~> 0.18.0'
 
 # a templating engine for html
-gem 'haml', '~> 3.1.7'
+gem 'haml', '~> 5.1.2'
 
 # authentication solution
 gem 'authlogic', '~> 3.4.0'
