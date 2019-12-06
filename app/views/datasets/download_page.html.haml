@@ -63,7 +63,7 @@
     %p
       This is the same as the workbook the owner uploaded, including all the data and metadata.
     #download
-      = link_to "Download", download_dataset_path(@dataset), class: 'button', rel: 'nofollow'
+      = link_to "Download", download_dataset_path(@dataset), class: 'button', rel: 'nofollow', data: { turbolinks: false }
 
 - unless @freeformats.blank?
   %h3 Attachment Files (#{pluralize @freeformats.length, 'file'})
