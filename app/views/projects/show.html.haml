@@ -45,5 +45,5 @@
       %li
         = render :partial => ds, :locals => {:with_cart => true, :with_comment => true}
 
-= render :partial => 'paperproposals/associated_paperproposals', :locals => {:paperproposals => @project.authored_paperproposals}
+= render :partial => 'paperproposals/associated_paperproposals', :locals => { :paperproposals => @project.authored_paperproposals }
 
