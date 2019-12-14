@@ -11,4 +11,3 @@ Befchina::Application.config.secret_token = CONFIG[:application_secret_token]
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
 Befchina::Application.config.secret_key_base = CONFIG[:application_secret_key_base]
-
