@@ -132,13 +132,7 @@ class ExportedExcel < ExportedFile
     row = 1
     approved_cols_ids.each do |col_id|
       col_loop = Datacolumn.find(col_id)
-      # cats = col.sheetcells.select{|s| s.datatype.is_category?}.collect{|s| s.category}
-      # clean_cats = cats.compact.uniq.sort{|a,b| a.short <=> b.short}
-      # TODO: replace hash based finder method with where and appropriate other methods
-      clean_cats = col_loop.sheetcells.find(:all, conditions: ['sheetcells.datatype_id = ?', Datatypehelper.find_by_name('category').id],
-                                                  joins: 'JOIN categories ON categories.id = sheetcells.category_id',
-                                                  select: 'distinct categories.short, categories.long, categories.description',
-                                                  order: 'categories.short')
+      clean_cats = col_loop.sheetcells.where('sheetcells.datatype_id = ?', Datatypehelper.find_by_name('category').id).joins('JOIN categories ON categories.id = sheetcells.category_id').select('distinct categories.short, categories.long, categories.description').order('categories.short')
 
       clean_cats.each do |cat|
         sheet[row, WBF[:category_columnheader_col]] = col_loop.columnheader
@@ -149,12 +143,7 @@ class ExportedExcel < ExportedFile
       end
 
       download_time = Time.now.to_s
-      # unaccepted_values = col.sheetcells.select{|s| s.accepted_value.blank? && !s.datatype.is_category?}.collect{|s| s.import_value}
-      # clean_un_val = unaccepted_values.compact.uniq.sort
-      # TODO: replace hash based finder method with where and appropriate other methods
-      clean_un_val = col_loop.sheetcells.find(:all, conditions: ['status_id = ?', Sheetcellstatus::INVALID],
-                                                    select: 'distinct import_value',
-                                                    order: 'import_value')
+      clean_un_val = col_loop.sheetcells.where('status_id = ?', Sheetcellstatus::INVALID).select('distinct import_value').order('import_value')
 
       clean_un_val.each do |uv|
         sheet.row(row).default_format = WBF[:unapproved_format]
