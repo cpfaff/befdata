@@ -56,4 +56,10 @@ Rails.application.configure do
   # For the use of Paperclip Image Manipulation - the path to ImageMagic executables
   Paperclip.options[:command_path] = '/usr/bin/'
   Paperclip.options[:log] = false
+
+  # config.after_initialize do
+    # Bullet.enable = true
+    # # Bullet.bullet_logger = true
+    # Bullet.alert = true
+  # end
 end
