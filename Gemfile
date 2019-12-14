@@ -7,10 +7,6 @@ source 'https://rubygems.org'
 # the rails framework:
 gem 'rails', '~> 4.2.0'
 
-# the gem was vulnerable thus i explicitly set
-# it here to update it.
-gem 'rails-html-sanitizer', '~> 1.0.3'
-
 # the postgres db connector
 gem 'pg', '~> 0.18.0'
 
@@ -109,7 +105,7 @@ group :test, :development do
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', '~> 11.0.1'
-   
+
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring', '~> 2.0.2'
 
