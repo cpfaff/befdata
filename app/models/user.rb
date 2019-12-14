@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
-  # TODO: update authlogic and use new crypto provider
+  # TODO: update authlogic and use new crypto provider. This code needs to remain
+  # in place as it allows to transition old users to the new provider and uses scrypt
+  # for new users
   acts_as_authentic do |c|
-    c.crypto_provider = Authlogic::CryptoProviders::Sha512
+    c.transition_from_crypto_providers = [Authlogic::CryptoProviders::Sha512]
+    c.crypto_provider = Authlogic::CryptoProviders::SCrypt
   end
 
   acts_as_authorization_subject association_name: :roles, join_table_name: :roles_users

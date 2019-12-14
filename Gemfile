@@ -18,7 +18,7 @@ gem 'pg', '~> 0.18.0'
 gem 'haml', '~> 5.1.2'
 
 # authentication solution
-gem 'authlogic', '~> 3.4.0'
+gem 'authlogic', '~> 4.4.3'
 
 # role-based authorization system
 gem 'acl9', '~> 1.0.0'
@@ -115,6 +115,7 @@ group :test, :development do
 
   # Profiling toolkit
   # gem 'rack-mini-profiler', require: false
+  gem 'bullet', group: 'development'
 end
 
 # bundle exec rake doc:rails generates the API under doc/api.
