@@ -55,8 +55,8 @@ Rails.application.configure do
   Paperclip.options[:log] = false
 
   # config.after_initialize do
-    # Bullet.enable = true
-    # # Bullet.bullet_logger = true
-    # Bullet.alert = true
+  # Bullet.enable = true
+  # # Bullet.bullet_logger = true
+  # Bullet.alert = true
   # end
 end
