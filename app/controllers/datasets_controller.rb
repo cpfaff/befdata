@@ -110,7 +110,7 @@ class DatasetsController < ApplicationController
   # note: this funciton is used by the ajax import status query
   def importing
     @dataset = Dataset.where(id: params.fetch(:id)).first
-    render text: @dataset.import_status
+    render plain: @dataset.import_status
   end
 
   def approve
