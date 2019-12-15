@@ -41,6 +41,15 @@ class DatasetEdit < ActiveRecord::Base
     downloaders -= proposers # proposers are more important
 
     # send notification
+    # Previously, calling a mailer method on a mailer class will result in the
+    # corresponding instance method being executed directly. With the
+    # introduction of Active Job and #deliver_later, this is no longer true. In
+    # Rails 4.2, the invocation of the instance methods are deferred until
+    # either deliver_now or deliver_later is called. For example:
+    # deliver_now or deliver_later
+    # TODO: Keep an eye on if that stuff is working otherwise migrate to
+    # active job.
+    # NotificationMailer.data_request_rejected(self).deliver_now
     proposers.each { |u| NotificationMailer.delay.dataset_edit(u, self, :proposer) }
     downloaders.each { |u| NotificationMailer.delay.dataset_edit(u, self, :downloader) }
   end

@@ -50,7 +50,7 @@ class NotificationMailer < ActionMailer::Base
   def send_mail(user, subject)
     return unless user.receive_emails
 
-    recipient = Rails.env == 'development' ? smtp_settings[:default_from] : user.email # dev mode sends maisl to notification address
+    recipient = Rails.env == 'development' ? smtp_settings[:default_from] : user.email # dev mode sends mails to notification address
 
     mail(to: recipient, subject: subject) do |format|
       format.html { render layout: 'notification_mail' }
