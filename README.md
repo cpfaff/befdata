@@ -25,26 +25,25 @@ A brief list of the most important features:
 
 BEF-Data is developed under an [MIT](LICENSE.md) license. You can set up the
 software for your own projects. To set up a local instance on your computer
-follow the steps below. In the wiki you will find instructions about how to
-setup a dedicated linux server instsance.
+follow the steps below.
 
 1. Prerequisites
 
 Install the following tools on your system.
 
-* Ruby 2.3.3 (You can use a ruby version manager e.g. rvm)
+* Ruby 2.3.8 (You can use a ruby version manager e.g. rvm)
 * PostgreSql (version <= 9.6.15)
 * ImageMagick
-* Passenger (deployment)
 * Node.js
 
 2. Download the source code
 
 * You can e.g. use the `git clone` command or the
-  [download](https://github.com/cpfaff/befdata/archive/master.zip) button.
+  [download](https://github.com/cpfaff/befdata/archive/master.zip) button to
+  retrieve the source of the project
 
-You find the last stable version on the branch with the greatest version number
-(e.g. v1.6.1) After you cloned the project you should issue a checkout for that
+You can find the latest stable version on the branch with the greatest version
+number (e.g. v1.6.1) After you cloned the project you should checkout that
 branch (e.g. `git checkout v1.6.1`).
 
 3. Install the bundle
@@ -74,39 +73,38 @@ configuration.yml.dist -> configuration.yml
 database.yml.dist -> database.yml
 application.yml.dist -> appication.yml
 mailer.yml.dist -> mailer.yml
+secrets.yml.dist -> secrets.yml
 ```
 
 Afterwards you need to open them and make your changes to the configuration
 according to your needs. The files are commented so you can understand what the
 separate options do.
 
-* Create a secret key.
+* Create a secret key for the default local environment (development)
 
 ```
 bundle exec rake secret
 ```
 
-You copy and paste it into the configuration file
-`config/initializers/secret_token.rb`
+You copy and paste it into the configuration file in the appropriate
+section (development)
+`config/secrets.yml`
 
 * Set up the database
 
-We are using postgres as our database backend. When you have set it up you
-should change the password of the root user which is named postgres. When you
-have done this create a new user for BEFadta and a database you want to use in
-our application. Make the new user the owner of the database.
+We are using postgres as database backend. First you need to configure your
+local postgres installation. You should change the password of the root user in
+postgres which is named postgres. When you have done this create a new user for
+your BEFadta instance and a database you want to use in our application. Make
+the new user the owner of the database.
 
 * Connect to the database
 
 In the configuration file `config/database.yml` you can set the `host` the
 `database` the `username` and `password` for different environments
-(`production`, `test`, `development`). If you want to run this on a dedicated
-Linux server, you need only the `production` environment related information.
-Add all information from the database you just have set up.
-
-If you run this locally on your computer, and if want spin up an instance of
-BEFdata with the rails builtin server you might also want to setup the other
-environments (particularly development).
+(`production`, `test`, `development`). As we are running this on a local
+computer we, for now you use the `development` settings. Add all information to
+the section from the your postgres database setup.
 
 4. Configure ImageMagick
 
@@ -114,7 +112,7 @@ The ImageMagick `convert` command is used to create thumbnails of the user
 uploaded avatar images in conjunction with the paperclip gem. Thus convert
 needs to be accessible by paperclip. You have to set the path to the executable
 in the configuration file of the environment you are running BEFdata in. For
-example in production `config/environments/production.rb`.
+example in production `config/environments/development.rb`.
 
 ```
 # setup paperclip
@@ -124,6 +122,9 @@ Paperclip.options[:log] = false
 
 5. Initialize the database
 
+Now you are ready to initialize the database. For this you can use the commands
+below.
+
 ```
 # setup the database
 bundle exec rake db:setup
@@ -132,7 +133,14 @@ bundle exec rake db:setup
 bundle exec rake db:seed
 ```
 
-Afterwards you can use your browser and add `localhost:3000` in the address
-bar. There you should find your very own befdata instance. You can login with
-the username "Admin" and the password "test". You should change that password
-in the profile of the user.
+6. Run a local server
+
+Afterwards you can point your favorite browser to `localhost:3000` in the
+address bar. should find your very own BEFdata instance. You can login with the
+username "Admin" and the password "test". You should change that password in
+the profile of the user.
+
+```
+bundle exec rails server
+```
+
