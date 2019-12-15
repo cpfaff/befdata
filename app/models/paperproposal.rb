@@ -391,6 +391,15 @@ class Paperproposal < ActiveRecord::Base
                        when 'accept' then 'data_rejected'
                        else board_state
                        end
+    # Previously, calling a mailer method on a mailer class will result in the
+    # corresponding instance method being executed directly. With the
+    # introduction of Active Job and #deliver_later, this is no longer true. In
+    # Rails 4.2, the invocation of the instance methods are deferred until
+    # either deliver_now or deliver_later is called. For example:
+    # deliver_now or deliver_later
+    # TODO: Keep an eye on if that stuff is working otherwise migrate to
+    # active job.
+    # NotificationMailer.data_request_rejected(self).deliver_now
     NotificationMailer.delay.data_request_rejected(self)
     set_lock_status
     save
@@ -420,6 +429,14 @@ class Paperproposal < ActiveRecord::Base
         next if v.vote == 'accept'
 
         v.update_attribute(:vote, 'accept')
+        # Previously, calling a mailer method on a mailer class will result in the
+        # corresponding instance method being executed directly. With the
+        # introduction of Active Job and #deliver_later, this is no longer true. In
+        # Rails 4.2, the invocation of the instance methods are deferred until
+        # either deliver_now or deliver_later is called. For example:
+        # deliver_now or deliver_later
+        # TODO: Keep an eye on if that stuff is working otherwise migrate to
+        # active job.
         NotificationMailer.delay.auto_accept_for_free_datasets(v.user, self) unless v.user == author
       end
     when 'submit'
