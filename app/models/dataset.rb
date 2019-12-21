@@ -78,8 +78,8 @@ class Dataset < ActiveRecord::Base
   }.freeze
 
   PROJECT_PHASE = {
-    befchina: 0,
-    treedi: 1
+    'BEF-China': 0,
+    'TreeDì': 1
   }.freeze
 
   validates_inclusion_of :access_code, in: ACCESS_CODES.values,
