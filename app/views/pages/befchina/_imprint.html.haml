@@ -1,16 +1,21 @@
-- karin_id = 3
-- christian_id = 14
+- gemma_id = 181
+- helge_id = 8
+- claas_id = 108
+
 %h2
   Impressum
 %p
-  = link_to("Special Botany and functional Biodiversity", "http://alfresco.uni-leipzig.de/spezbot/")
-  Faculty of Biology, University of Leipzig
+  The site is hosted at:
+  = link_to("Institute of Biology / Geobotany and Botanical Garden", "https://www.botanik.uni-halle.de/geobotanik/")
 %p
-  Responsible for the contents of this website is
-  = link_to "Prof. Dr. Christian Wirth", {:controller => :users, :action => :show, :id => christian_id}
+  Responsible for the contents of this website is:
+  = link_to "Prof. Dr. Helge Bruelheide", {:controller => :users, :action => :show, :id => helge_id}
 %p
-  Questions should be addressed to
-  = link_to "Karin Nadrowski", {:controller => :users, :action => :show, :id => karin_id}
+  General questions should be addressed to
+  = link_to "Dr. Gemma Rutten", {:controller => :users, :action => :show, :id => gemma_id}
+%p
+  IT related questions should be addressed to
+  = link_to "Dr. Claas-Thido Pfaff", {:controller => :users, :action => :show, :id => claas_id}
 
 %hr
 
@@ -18,29 +23,20 @@
   %strong
     Angaben gemäß § 5 TMG:
   %br
-  Universität Leipzig
+    Martin Luther University Halle Wittenberg
   %br
-  Johannisallee 21-23
+    Am Kirchtor 1
   %br
-  04103 Leipzig
+    06108 Halle
 %strong
   Vertreten durch
 %p
   %strong
-    = link_to "Prof. Dr. Christian Wirth", {:controller => :users, :action => :show, :id => christian_id}
+    = link_to "Prof. Dr. Helge Bruelheide", {:controller => :users, :action => :show, :id => helge_id}
   %br
-  Telefon: +49 341 9738576
+    Telefon: +49 345 55 26222
   %br
-  Telefax: +49 341 9738549
+    Telefax: +49 345 55 27228
   %br
-  E-Mail:
-  = mail_to("cwirth@uni-leipzig.de", nil, :encode => :javascript)
-%p
-  %strong
-    = link_to "Karin Nadrowski", {:controller => :users, :action => :show, :id => karin_id}
-  %br
-  E-Mail:
-  = mail_to("nadrowski@uni-leipzig.de", nil, :encode => :javascript)
-
-
-
+    E-Mail:
+    = mail_to("helge.bruelheide@botanik.uni-halle.de", nil, :encode => :javascript)
