@@ -1,10 +1,15 @@
+- gemma_id = 181
+
 %h2 Welcome to the Data portal of the BEF-China project.
 
 %p
-  The data portal presents the data aggregated within the BEF-China project and
+
+  This data portal presents the data collected within the BEF-China project and
   makes it available to researchers as well as the interested public.
   For more information on the project itself, go here:
   = link_to "www.bef-china.de", "http://www.bef-china.de"
+  If you are interested in a collaboration you can make contact with
+  = link_to "Dr. Gemma Rutten", {:controller => :users, :action => :show, :id => gemma_id}
 
 %p
   The Chinese-​European DFG Research Unit “BEF China” (FOR 891) has started a new forest Biodiversity and Ecosystem Functioning (BEF) experiment in subtropical forests in China.
