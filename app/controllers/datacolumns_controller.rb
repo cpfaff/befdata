@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class DatacolumnsController < ApplicationController
-  before_filter :load_datacolumn_and_dataset
-  before_filter :redirect_if_datagroup_unapproved, only: %i[update_invalid_values update_invalid_values_with_csv autofill_and_update_invalid_values]
-  after_filter  :dataset_edit_message,
+  before_action :load_datacolumn_and_dataset
+  before_action :redirect_if_datagroup_unapproved, only: %i[update_invalid_values update_invalid_values_with_csv autofill_and_update_invalid_values]
+  after_action  :dataset_edit_message,
                 only: %i[create_and_update_datagroup update_datagroup update_datatype update_metadata
                          update_invalid_values update_invalid_values_with_csv autofill_and_update_invalid_values]
 
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
   access_control do
     actions :approval_overview, :next_approval_step, :approve_datagroup, :approve_datatype, :approve_metadata,
             :approve_invalid_values, :update_datagroup, :create_and_update_datagroup, :update_datatype,
@@ -26,10 +26,10 @@ class DatacolumnsController < ApplicationController
         expire_type = @datacolumn.previous_changes.keys.include?('columnheader') ? :all : :xls
         ExportedFile.invalidate(@dataset.id, expire_type)
 
-        format.html { redirect_to :back }
+        format.html { redirect_back(fallback_location: root_url) }
         format.json { render json: @datacolumn }
       else
-        format.html { redirect_to :back, error: @datacolumn.errors.full_messages.to_sentence }
+        format.html { redirect_back(fallback_location: root_url, error: @datacolumn.errors.full_messages.to_sentence) }
         format.json { render json: { error: @datacolumn.errors.full_messages.to_sentence } }
       end
     end
@@ -90,7 +90,7 @@ class DatacolumnsController < ApplicationController
       next_approval_step
     else
       flash[:error] = @datagroup.errors.full_messages.to_sentence
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -99,7 +99,7 @@ class DatacolumnsController < ApplicationController
   def update_datagroup
     if params[:datagroup].nil?
       flash[:error] = 'You need to choose a datagroup.'
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     else
 
       @datagroup = Datagroup.find(params.require(:datagroup))
@@ -117,7 +117,7 @@ class DatacolumnsController < ApplicationController
   def update_datatype
     unless params[:import_data_type]
       flash[:error] = 'Please select a datatype'
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
 
     begin
@@ -127,7 +127,7 @@ class DatacolumnsController < ApplicationController
       next_approval_step
     rescue StandardError
       flash[:error] = "An error occured while updating the datatype: #{$ERROR_INFO}"
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -139,7 +139,7 @@ class DatacolumnsController < ApplicationController
                                                                             :tag_list, :instrumentation,
                                                                             :informationsource, :comment, :person_id, people: []))
       flash[:error] = @datacolumn.errors.to_a.first.capitalize
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
     expire_type = @datacolumn.previous_changes.keys.include?('columnheader') ? :all : :xls
     ExportedFile.invalidate(@dataset.id, expire_type)
@@ -175,7 +175,7 @@ class DatacolumnsController < ApplicationController
   end
 
   def update_invalid_values_with_csv
-    redirect_to(:back, error: 'No File given') && return unless params[:csvfile]
+    redirect_back(fallback_location: root_url, error: 'No File given') && return unless params[:csvfile]
     f = params.require(:csvfile).path
     begin
       CSV.foreach(f, headers: true, skip_blanks: true) do |row|
@@ -189,7 +189,7 @@ class DatacolumnsController < ApplicationController
       next_approval_step
     rescue StandardError => e
       flash[:error] = e.message
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
   end
 
@@ -211,7 +211,7 @@ class DatacolumnsController < ApplicationController
            end
 
     @datacolumn.update_attribute(:semantic_term, term)
-    redirect_to :back, notice: 'Semantic tag was updated'
+    redirect_back(fallback_location: root_url, notice: 'Semantic tag was updated')
   end
 
   private

@@ -10,7 +10,7 @@ class UsersControllerTest < ActionController::TestCase
   end
 
   test 'should get show user' do
-    get :show, id: User.first
+    get :show, params: { id: User.first }
     assert_success_no_error
   end
 
@@ -28,14 +28,14 @@ class UsersControllerTest < ActionController::TestCase
 
   test "regular user can't edit user" do
     login_user 'Phdstudentnutrientcycling'
-    get :edit, id: 5
+    get :edit, params: { id: 5 }
     assert_response :redirect
     assert_not_nil flash[:error]
   end
 
   test 'admin can edit user' do
     login_nadrowski
-    get :edit, id: 5
+    get :edit, params: { id: 5 }
     assert_success_no_error
   end
 end

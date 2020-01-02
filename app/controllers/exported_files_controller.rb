@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class ExportedFilesController < ApplicationController
-  before_filter :load_file
-  skip_before_filter :deny_access_to_all
+  before_action :load_file
+  skip_before_action :deny_access_to_all
 
   access_control do
     actions :regenerate_download do

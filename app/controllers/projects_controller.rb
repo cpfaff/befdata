@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class ProjectsController < ApplicationController
-  before_filter :load_project, only: %i[show edit update destroy]
-  skip_before_filter :deny_access_to_all
+  before_action :load_project, only: %i[show edit update destroy]
+  skip_before_action :deny_access_to_all
   access_control do
     allow all, to: %i[index show]
     allow :admin, to: %i[new create edit update destroy]
@@ -13,7 +13,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @project_datasets = @project.datasets.order(:title).uniq
+    @project_datasets = @project.datasets.order(:title).distinct
     @members = @project.users
   end
 

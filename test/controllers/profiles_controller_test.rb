@@ -24,13 +24,13 @@ class ProfilesControllerTest < ActionController::TestCase
   end
   test 'one can update the profile' do
     login_nadrowski
-    post :update, user: { city: 'testcity' }
+    post :update, params: { user: { city: 'testcity' }}
     assert_redirected_to '/profile'
     assert_equal 'testcity', User.find_by_login('nadrowski').city
   end
   test 'updating should ignore restrictive parameters' do
     login_user 'Phdstudentnutrientcycling'
-    post :update, user: { city: 'testcity', admin: '1', project_board: '1' }
+    post :update, params: { user: { city: 'testcity', admin: '1', project_board: '1' } }
     assert_success_no_error
     u = User.find_by_login('Phdstudentnutrientcycling')
     assert !u.admin?

@@ -10,12 +10,12 @@ module DatagroupsHelper
 
   def dropdown_list_to_sort_datagroups
     options_for_select({
-                         'Title' => datagroups_path(params.except(:action, :controller).merge(sort: 'title', direction: 'asc')),
-                         'Recently Added' => datagroups_path(params.except(:action, :controller).merge(sort: 'id', direction: 'desc')),
-                         'Most used' => datagroups_path(params.except(:action, :controller).merge(sort: 'datacolumns_count', direction: 'desc')),
-                         'Least Used' => datagroups_path(params.except(:action, :controller).merge(sort: 'datacolumns_count', direction: 'asc')),
-                         'Most categories' => datagroups_path(params.except(:action, :controller).merge(sort: 'categories_count', direction: 'desc')),
-                         'Least categories' => datagroups_path(params.except(:action, :controller).merge(sort: 'categories_count', direction: 'asc'))
-                       }, selected: datagroups_path(params.except(:action, :controller)))
+                         'Title' => datagroups_path(params.permit(sort: 'title', direction: 'asc')),
+                         'Recently Added' => datagroups_path(params.permit(sort: 'id', direction: 'desc')),
+                         'Most used' => datagroups_path(params.permit(sort: 'datacolumns_count', direction: 'desc')),
+                         'Least Used' => datagroups_path(params.permit(sort: 'datacolumns_count', direction: 'asc')),
+                         'Most categories' => datagroups_path(params.permit(sort: 'categories_count', direction: 'desc')),
+                         'Least categories' => datagroups_path(params.permit(sort: 'categories_count', direction: 'asc'))
+                       }, selected: datagroups_path(params.permit(:sort, :direction)))
   end
 end

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -22,22 +21,20 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.string   "kind"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["paperproposal_id", "user_id"], name: "index_author_paperproposals_on_paperproposal_id_and_user_id", using: :btree
+    t.index ["paperproposal_id"], name: "index_author_paperproposals_on_paperproposal_id", using: :btree
+    t.index ["user_id", "paperproposal_id"], name: "index_author_paperproposals_on_user_id_and_paperproposal_id", using: :btree
+    t.index ["user_id"], name: "index_author_paperproposals_on_user_id", using: :btree
   end
-
-  add_index "author_paperproposals", ["paperproposal_id", "user_id"], name: "index_author_paperproposals_on_paperproposal_id_and_user_id", using: :btree
-  add_index "author_paperproposals", ["paperproposal_id"], name: "index_author_paperproposals_on_paperproposal_id", using: :btree
-  add_index "author_paperproposals", ["user_id", "paperproposal_id"], name: "index_author_paperproposals_on_user_id_and_paperproposal_id", using: :btree
-  add_index "author_paperproposals", ["user_id"], name: "index_author_paperproposals_on_user_id", using: :btree
 
   create_table "cart_datasets", force: :cascade do |t|
     t.integer  "cart_id"
     t.integer  "dataset_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["cart_id"], name: "index_cart_datasets_on_cart_id", using: :btree
+    t.index ["dataset_id"], name: "index_cart_datasets_on_dataset_id", using: :btree
   end
-
-  add_index "cart_datasets", ["cart_id"], name: "index_cart_datasets_on_cart_id", using: :btree
-  add_index "cart_datasets", ["dataset_id"], name: "index_cart_datasets_on_dataset_id", using: :btree
 
   create_table "carts", force: :cascade do |t|
     t.datetime "created_at"
@@ -52,11 +49,10 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "datagroup_id"
+    t.index ["datagroup_id"], name: "index_categories_on_datagroup_id", using: :btree
+    t.index ["long"], name: "index_categories_on_long", using: :btree
+    t.index ["short"], name: "index_categoricvalues_on_short", using: :btree
   end
-
-  add_index "categories", ["datagroup_id"], name: "index_categories_on_datagroup_id", using: :btree
-  add_index "categories", ["long"], name: "index_categories_on_long", using: :btree
-  add_index "categories", ["short"], name: "index_categoricvalues_on_short", using: :btree
 
   create_table "datacolumns", force: :cascade do |t|
     t.integer  "datagroup_id"
@@ -76,11 +72,10 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.text     "instrumentation"
     t.string   "acknowledge_unknown"
     t.integer  "term_id"
+    t.index ["datagroup_id"], name: "index_datacolumns_on_datagroup_id", using: :btree
+    t.index ["dataset_id"], name: "index_datacolumns_on_dataset_id", using: :btree
+    t.index ["term_id"], name: "index_datacolumns_on_term_id", using: :btree
   end
-
-  add_index "datacolumns", ["datagroup_id"], name: "index_datacolumns_on_datagroup_id", using: :btree
-  add_index "datacolumns", ["dataset_id"], name: "index_datacolumns_on_dataset_id", using: :btree
-  add_index "datacolumns", ["term_id"], name: "index_datacolumns_on_term_id", using: :btree
 
   create_table "datafiles", force: :cascade do |t|
     t.string   "file_file_name"
@@ -90,9 +85,8 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "dataset_id"
+    t.index ["dataset_id"], name: "index_datafiles_on_dataset_id", using: :btree
   end
-
-  add_index "datafiles", ["dataset_id"], name: "index_datafiles_on_dataset_id", using: :btree
 
   create_table "datagroups", force: :cascade do |t|
     t.string   "title"
@@ -102,22 +96,20 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.datetime "updated_at"
     t.integer  "type_id",           default: 1
     t.integer  "datacolumns_count", default: 0
+    t.index ["title"], name: "index_datagroups_on_title", using: :btree
+    t.index ["type_id"], name: "index_datagroups_on_type_id", using: :btree
   end
-
-  add_index "datagroups", ["title"], name: "index_datagroups_on_title", using: :btree
-  add_index "datagroups", ["type_id"], name: "index_datagroups_on_type_id", using: :btree
 
   create_table "dataset_downloads", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "dataset_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["dataset_id", "user_id"], name: "index_dataset_downloads_on_dataset_id_and_user_id", using: :btree
+    t.index ["dataset_id"], name: "index_dataset_downloads_on_dataset_id", using: :btree
+    t.index ["user_id", "dataset_id"], name: "index_dataset_downloads_on_user_id_and_dataset_id", using: :btree
+    t.index ["user_id"], name: "index_dataset_downloads_on_user_id", using: :btree
   end
-
-  add_index "dataset_downloads", ["dataset_id", "user_id"], name: "index_dataset_downloads_on_dataset_id_and_user_id", using: :btree
-  add_index "dataset_downloads", ["dataset_id"], name: "index_dataset_downloads_on_dataset_id", using: :btree
-  add_index "dataset_downloads", ["user_id", "dataset_id"], name: "index_dataset_downloads_on_user_id_and_dataset_id", using: :btree
-  add_index "dataset_downloads", ["user_id"], name: "index_dataset_downloads_on_user_id", using: :btree
 
   create_table "dataset_edits", force: :cascade do |t|
     t.integer  "dataset_id"
@@ -125,9 +117,8 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.boolean  "submitted",   default: false
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
+    t.index ["dataset_id"], name: "index_dataset_edits_on_dataset_id", using: :btree
   end
-
-  add_index "dataset_edits", ["dataset_id"], name: "index_dataset_edits_on_dataset_id", using: :btree
 
   create_table "dataset_paperproposals", force: :cascade do |t|
     t.string   "aspect"
@@ -135,11 +126,10 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.integer  "dataset_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["dataset_id", "paperproposal_id"], name: "index_dataset_paperproposals_on_dataset_id_and_paperproposal_id", using: :btree
+    t.index ["dataset_id"], name: "index_dataset_paperproposals_on_dataset_id", using: :btree
+    t.index ["paperproposal_id"], name: "index_dataset_paperproposals_on_paperproposal_id", using: :btree
   end
-
-  add_index "dataset_paperproposals", ["dataset_id", "paperproposal_id"], name: "index_dataset_paperproposals_on_dataset_id_and_paperproposal_id", using: :btree
-  add_index "dataset_paperproposals", ["dataset_id"], name: "index_dataset_paperproposals_on_dataset_id", using: :btree
-  add_index "dataset_paperproposals", ["paperproposal_id"], name: "index_dataset_paperproposals_on_paperproposal_id", using: :btree
 
   create_table "datasets", force: :cascade do |t|
     t.string   "title"
@@ -174,10 +164,9 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.integer  "project_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["dataset_id", "project_id"], name: "index_dataset_projects_on_dataset_id_and_project_id", using: :btree
+    t.index ["dataset_id"], name: "index_datasets_projects_on_dataset_id", using: :btree
   end
-
-  add_index "datasets_projects", ["dataset_id", "project_id"], name: "index_dataset_projects_on_dataset_id_and_project_id", using: :btree
-  add_index "datasets_projects", ["dataset_id"], name: "index_datasets_projects_on_dataset_id", using: :btree
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0
@@ -191,9 +180,8 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "queue"
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
   end
-
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
   create_table "exported_files", force: :cascade do |t|
     t.integer  "dataset_id"
@@ -203,10 +191,9 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.string   "file_file_name"
     t.integer  "file_file_size"
     t.string   "type"
+    t.index ["dataset_id"], name: "index_exported_files_on_dataset_id", using: :btree
+    t.index ["id", "type"], name: "index_exported_files_on_id_and_type", using: :btree
   end
-
-  add_index "exported_files", ["dataset_id"], name: "index_exported_files_on_dataset_id", using: :btree
-  add_index "exported_files", ["id", "type"], name: "index_exported_files_on_id_and_type", using: :btree
 
   create_table "freeformats", force: :cascade do |t|
     t.string   "file_file_name"
@@ -220,10 +207,9 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.string   "freeformattable_type"
     t.boolean  "is_essential",         default: false
     t.string   "uri"
+    t.index ["freeformattable_id", "freeformattable_type"], name: "freeformattable_index", using: :btree
+    t.index ["freeformattable_type", "freeformattable_id"], name: "idx_freeformats_type_id", using: :btree
   end
-
-  add_index "freeformats", ["freeformattable_id", "freeformattable_type"], name: "freeformattable_index", using: :btree
-  add_index "freeformats", ["freeformattable_type", "freeformattable_id"], name: "idx_freeformats_type_id", using: :btree
 
   create_table "import_categories", force: :cascade do |t|
     t.integer  "datacolumn_id"
@@ -232,11 +218,10 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.string   "short"
     t.string   "long"
     t.text     "description"
+    t.index ["datacolumn_id"], name: "index_import_categories_on_datacolumn_id", using: :btree
+    t.index ["long"], name: "index_import_categories_on_long", using: :btree
+    t.index ["short"], name: "index_import_categories_on_short", using: :btree
   end
-
-  add_index "import_categories", ["datacolumn_id"], name: "index_import_categories_on_datacolumn_id", using: :btree
-  add_index "import_categories", ["long"], name: "index_import_categories_on_long", using: :btree
-  add_index "import_categories", ["short"], name: "index_import_categories_on_short", using: :btree
 
   create_table "notifications", force: :cascade do |t|
     t.integer  "user_id"
@@ -245,9 +230,8 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.boolean  "read",       default: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.index ["user_id"], name: "index_notifications_on_user_id", using: :btree
   end
-
-  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 
   create_table "paperproposal_votes", force: :cascade do |t|
     t.integer  "paperproposal_id"
@@ -257,10 +241,9 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.boolean  "project_board_vote"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["paperproposal_id"], name: "index_paperproposal_votes_on_paperproposal_id", using: :btree
+    t.index ["user_id"], name: "index_paperproposal_votes_on_user_id", using: :btree
   end
-
-  add_index "paperproposal_votes", ["paperproposal_id"], name: "index_paperproposal_votes_on_paperproposal_id", using: :btree
-  add_index "paperproposal_votes", ["user_id"], name: "index_paperproposal_votes_on_user_id", using: :btree
 
   create_table "paperproposals", force: :cascade do |t|
     t.integer  "author_id"
@@ -279,10 +262,9 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.text     "comment"
     t.integer  "project_id"
     t.integer  "freeformats_count", default: 0
+    t.index ["author_id"], name: "index_paperproposals_on_author_id", using: :btree
+    t.index ["project_id"], name: "index_paperproposals_on_project_id", using: :btree
   end
-
-  add_index "paperproposals", ["author_id"], name: "index_paperproposals_on_author_id", using: :btree
-  add_index "paperproposals", ["project_id"], name: "index_paperproposals_on_project_id", using: :btree
 
   create_table "projectphases", force: :cascade do |t|
     t.string   "name"
@@ -305,20 +287,18 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.integer  "authorizable_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.index ["authorizable_id", "authorizable_type"], name: "index_roles_on_authorizable_id_and_authorizable_type", using: :btree
+    t.index ["authorizable_type", "authorizable_id"], name: "index_roles_on_authorizable_type_and_authorizable_id", using: :btree
   end
-
-  add_index "roles", ["authorizable_id", "authorizable_type"], name: "index_roles_on_authorizable_id_and_authorizable_type", using: :btree
-  add_index "roles", ["authorizable_type", "authorizable_id"], name: "index_roles_on_authorizable_type_and_authorizable_id", using: :btree
 
   create_table "roles_users", id: false, force: :cascade do |t|
     t.integer "user_id"
     t.integer "role_id"
+    t.index ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", using: :btree
+    t.index ["role_id"], name: "index_roles_users_on_role_id", using: :btree
+    t.index ["user_id", "role_id"], name: "index_roles_users_on_user_id_and_role_id", using: :btree
+    t.index ["user_id"], name: "index_roles_users_on_user_id", using: :btree
   end
-
-  add_index "roles_users", ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id", using: :btree
-  add_index "roles_users", ["role_id"], name: "index_roles_users_on_role_id", using: :btree
-  add_index "roles_users", ["user_id", "role_id"], name: "index_roles_users_on_user_id_and_role_id", using: :btree
-  add_index "roles_users", ["user_id"], name: "index_roles_users_on_user_id", using: :btree
 
   create_table "sheetcells", force: :cascade do |t|
     t.integer  "datacolumn_id"
@@ -330,12 +310,11 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.integer  "datatype_id"
     t.integer  "status_id",      default: 1
     t.integer  "row_number"
+    t.index ["category_id"], name: "index_sheetcells_on_category_id", using: :btree
+    t.index ["datacolumn_id"], name: "index_sheetcells_on_datacolumn_id", using: :btree
+    t.index ["row_number"], name: "index_sheetcells_on_row_number", using: :btree
+    t.index ["status_id", "datacolumn_id"], name: "index_sheetcells_on_status_id_and_datacolumn_id", using: :btree
   end
-
-  add_index "sheetcells", ["category_id"], name: "index_sheetcells_on_category_id", using: :btree
-  add_index "sheetcells", ["datacolumn_id"], name: "index_sheetcells_on_datacolumn_id", using: :btree
-  add_index "sheetcells", ["row_number"], name: "index_sheetcells_on_row_number", using: :btree
-  add_index "sheetcells", ["status_id", "datacolumn_id"], name: "index_sheetcells_on_status_id_and_datacolumn_id", using: :btree
 
   create_table "taggings", force: :cascade do |t|
     t.integer  "tag_id"
@@ -345,24 +324,22 @@ ActiveRecord::Schema.define(version: 20191204132115) do
     t.string   "tagger_type"
     t.string   "context",       limit: 128
     t.datetime "created_at"
+    t.index ["context"], name: "index_taggings_on_context", using: :btree
+    t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true, using: :btree
+    t.index ["tag_id"], name: "index_taggings_on_tag_id", using: :btree
+    t.index ["taggable_id", "taggable_type", "context"], name: "index_taggings_on_taggable_id_and_taggable_type_and_context", using: :btree
+    t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy", using: :btree
+    t.index ["taggable_id"], name: "index_taggings_on_taggable_id", using: :btree
+    t.index ["taggable_type"], name: "index_taggings_on_taggable_type", using: :btree
+    t.index ["tagger_id", "tagger_type"], name: "index_taggings_on_tagger_id_and_tagger_type", using: :btree
+    t.index ["tagger_id"], name: "index_taggings_on_tagger_id", using: :btree
   end
-
-  add_index "taggings", ["context"], name: "index_taggings_on_context", using: :btree
-  add_index "taggings", ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true, using: :btree
-  add_index "taggings", ["tag_id"], name: "index_taggings_on_tag_id", using: :btree
-  add_index "taggings", ["taggable_id", "taggable_type", "context"], name: "index_taggings_on_taggable_id_and_taggable_type_and_context", using: :btree
-  add_index "taggings", ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy", using: :btree
-  add_index "taggings", ["taggable_id"], name: "index_taggings_on_taggable_id", using: :btree
-  add_index "taggings", ["taggable_type"], name: "index_taggings_on_taggable_type", using: :btree
-  add_index "taggings", ["tagger_id", "tagger_type"], name: "index_taggings_on_tagger_id_and_tagger_type", using: :btree
-  add_index "taggings", ["tagger_id"], name: "index_taggings_on_tagger_id", using: :btree
 
   create_table "tags", force: :cascade do |t|
     t.string  "name"
     t.integer "taggings_count", default: 0
+    t.index ["name"], name: "index_tags_on_name", unique: true, using: :btree
   end
-
-  add_index "tags", ["name"], name: "index_tags_on_name", unique: true, using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "login",                               null: false

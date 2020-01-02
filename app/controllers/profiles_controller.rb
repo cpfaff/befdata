@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class ProfilesController < ApplicationController
-  before_filter :load_current_user
-  skip_before_filter :deny_access_to_all
+  before_action :load_current_user
+  skip_before_action :deny_access_to_all
 
   access_control do
     allow logged_in

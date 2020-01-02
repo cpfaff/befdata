@@ -5,7 +5,7 @@
 ## A Cart is linked to a "User" by a cookie stored on the User's computer.
 ##
 ## A Cart can have one or more Dataset s; they are linked using the CartDataset class.
-class Cart < ActiveRecord::Base
+class Cart < ApplicationRecord
   has_many :cart_datasets
   has_many :datasets, through: :cart_datasets
 end

@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class DataSetTest < ActiveSupport::TestCase
-  self.use_transactional_fixtures = false
+  self.use_transactional_tests = false
 
   test 'any dataset can have zero to many projects linked' do
     assert projects('projects_001').datasets

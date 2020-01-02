@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ExportedFile < ActiveRecord::Base
+class ExportedFile < ApplicationRecord
   belongs_to :dataset
 
   after_create :queued_to_be_exported

@@ -8,7 +8,7 @@ class CategoriesControllerTest < ActionController::TestCase
   test 'show category' do
     login_nadrowski
 
-    get :show, id: 61
+    get :show, params: { id: 61 }
 
     assert_success_no_error
   end
@@ -16,7 +16,7 @@ class CategoriesControllerTest < ActionController::TestCase
   test 'download categories csv' do
     login_nadrowski
 
-    get :index, datagroup_id: 22, format: :csv
+    get :index, params: { datagroup_id: 22, format: :csv }
 
     assert_success_no_error
   end
@@ -24,7 +24,7 @@ class CategoriesControllerTest < ActionController::TestCase
   test 'show sheetcells cvs upload' do
     login_nadrowski
 
-    get :upload_sheetcells, id: 61
+    get :upload_sheetcells, params: { id: 61 }
 
     assert_success_no_error
   end
@@ -32,7 +32,7 @@ class CategoriesControllerTest < ActionController::TestCase
   test 'download sheetcell cvs' do
     login_nadrowski
 
-    get :show, id: 61, format: :csv
+    get :show, params: { id: 61, format: :csv }
 
     assert_success_no_error
   end
@@ -46,7 +46,7 @@ class CategoriesControllerTest < ActionController::TestCase
     category_old_sheetcell_count = category.sheetcells.count
     other_category_old_sheetcell_count = other_category.sheetcells.count
 
-    post :update_sheetcells, id: 61, csvfile: { file: f }
+    post :update_sheetcells, params: { id: 61, csvfile: { file: f } }
 
     category.reload
     other_category.reload

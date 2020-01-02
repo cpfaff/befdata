@@ -3,10 +3,10 @@
 class PaperproposalsController < ApplicationController
   include PaperproposalsHelper
 
-  before_filter :load_proposal, except: %i[index index_csv new create update_vote]
-  before_filter :load_vote, only: [:update_vote]
+  before_action :load_proposal, except: %i[index index_csv new create update_vote]
+  before_action :load_vote, only: [:update_vote]
 
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
 
   access_control do
     actions :index do
@@ -159,7 +159,7 @@ class PaperproposalsController < ApplicationController
     else
       flash[:error] = @vote.errors
     end
-    redirect_to :back
+    redirect_back(fallback_location: root_path)
   end
 
   # let the user only delete in prep-state / otherwise flag for deletion, so admin can delete

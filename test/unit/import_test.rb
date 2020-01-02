@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class ImportTest < ActiveSupport::TestCase
-  self.use_transactional_fixtures = false
+  self.use_transactional_tests = false
 
   test 'upload_import_and_approve_dataset' do
     #========Upload a workbook============#

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   # TODO: update authlogic and use new crypto provider. This code needs to remain
   # in place as it allows to transition old users to the new provider and uses scrypt
   # for new users

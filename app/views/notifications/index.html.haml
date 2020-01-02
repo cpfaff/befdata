@@ -4,7 +4,7 @@
 
 - @notifications.each do |n|
   - read_string = n.read ? 'read' : 'unread'
-  = div_for n, class: read_string do
+  = content_tag n, class: read_string do
     .heading
       %span.subject= n.subject
       %span.delete= link_to 'del', n, method: :delete, data: { confirm: 'Are you sure?' }

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class UserSessionsController < ApplicationController
-  before_filter :require_no_user, only: %i[new create]
+  before_action :require_no_user, only: %i[new create]
 
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
   access_control do
     actions :create do
       allow anonymous
@@ -21,11 +21,11 @@ class UserSessionsController < ApplicationController
         redirect_to session[:return_to]
         session.delete :return_to
       else
-        redirect_back_or_default root_url
+        redirect_back(fallback_location: root_url)
       end
     else
       flash[:error] = @user_session.errors.full_messages.to_sentence
-      redirect_back_or_default root_url
+        redirect_back(fallback_location: root_url)
     end
   end
 

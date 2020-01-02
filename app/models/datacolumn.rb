@@ -16,7 +16,7 @@
 ## "Datatype" of the "Sheetcell" updated to "Category". This results in Datacolumns consisting of more than one "Datatype".
 
 require 'acl_patch'
-class Datacolumn < ActiveRecord::Base
+class Datacolumn < ApplicationRecord
   include PgSearch
   acts_as_authorization_object subject_class_name: 'User', join_table_name: 'roles_users'
   include AclPatch
@@ -85,7 +85,7 @@ class Datacolumn < ActiveRecord::Base
   def accepted_values(count)
     sheetcells.select('case when category_id >0 then (select short from categories where id = sheetcells.category_id) else accepted_value end AS accepted_value')
               .where(status_id: [2, 3, 4])
-              .limit(count).uniq.order('accepted_value')
+              .limit(count).distinct.order('accepted_value')
   end
 
   # saves the accepted values for each "Sheetcell" in the column
@@ -148,7 +148,7 @@ class Datacolumn < ActiveRecord::Base
 
   # returns the unique invalid uploaded sheetcells
   def invalid_values
-    sheetcells.select(:import_value).where(status_id: Sheetcellstatus::INVALID).order(:import_value).uniq
+    sheetcells.select(:import_value).where(status_id: Sheetcellstatus::INVALID).order(:import_value).distinct
   end
 
   # returns any invalid sheetcells with the given value

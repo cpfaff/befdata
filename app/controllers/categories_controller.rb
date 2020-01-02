@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-  before_filter :load_datagroup, only: %i[index new create]
-  before_filter :load_category, only: %i[show destroy upload_sheetcells update_sheetcells]
+  before_action :load_datagroup, only: %i[index new create]
+  before_action :load_category, only: %i[show destroy upload_sheetcells update_sheetcells]
 
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
 
   access_control do
     actions :show, :index, :new, :create, :destroy do
@@ -78,7 +78,7 @@ class CategoriesController < ApplicationController
   def update_sheetcells
     unless params[:csvfile]
       flash[:error] = 'No File given'
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
     f = params[:csvfile][:file].path
 
@@ -90,7 +90,7 @@ class CategoriesController < ApplicationController
       redirect_to category_path @category
     else
       flash[:error] = @category.errors.full_messages.to_sentence
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
   end
 

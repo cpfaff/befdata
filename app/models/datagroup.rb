@@ -5,9 +5,8 @@
 ## A Helper (system) "Datagroup" is the default "Datagroup" when no specific measurement information is included in the "Workbook".
 ##
 ## A "Category" must belong to a "Datagroup" and will be unique within that "Datagroup".
-require 'csv'
 
-class Datagroup < ActiveRecord::Base
+class Datagroup < ApplicationRecord
   has_many :datacolumns
   has_many :categories, dependent: :destroy
   has_many :datasets, through: :datacolumns
@@ -76,7 +75,7 @@ class Datagroup < ActiveRecord::Base
     return false unless validate_categories_csv_for_import?(lines)
 
     lines.each do |l|
-      categories.create(short: l['short'], long: l['long'], description: l['description'])
+      categories.create(short: l['SHORT'], long: l['LONG'], description: l['DESCRIPTION'])
     end
 
     true
@@ -138,7 +137,7 @@ class Datagroup < ActiveRecord::Base
 
   def categories_remain_unique?(updates, merges)
     changed_categories = updates.collect(&:id) | merges.collect { |m| m['ID'].to_i }
-    short_of_unchanged_categories = categories.where('id NOT IN (?)', changed_categories).pluck('lower(short)')
+    short_of_unchanged_categories = categories.where('id NOT IN (?)', changed_categories).pluck('short')
     all_shorts = updates.collect { |u| u.short.downcase } + short_of_unchanged_categories
     all_shorts.uniq!.nil? ? true : false
   end
@@ -159,11 +158,11 @@ class Datagroup < ActiveRecord::Base
 
   def validate_categories_csv_for_import?(csv_lines)
     errors.add(:file, 'is empty') && (return false) if csv_lines.empty?
-    errors.add(:csv, 'header does not match') && (return false) unless (%w[short long description] - csv_lines.headers).empty?
-    errors.add(:base, "category short can't be empty") && (return false) if csv_lines['short'].any?(&:blank?)
+    errors.add(:csv, 'header does not match') && (return false) unless (%w[SHORT LONG DESCRIPTION] - csv_lines.headers).empty?
+    errors.add(:base, "category short can't be empty") && (return false) if csv_lines['SHORT'].any?(&:blank?)
 
-    short = csv_lines['short'].collect(&:downcase)
-    existing_short = categories.pluck('lower(short)')
+    short = csv_lines['SHORT'].collect(&:downcase)
+    existing_short = categories.pluck('short')
     duplicated_shorts = (short + existing_short).group_by { |c| c }.select { |_k, v| v.size > 1 }.keys
     errors.add(:base, 'Duplicated categories found: ' + duplicated_shorts.join(',').to_s) && (return false) unless duplicated_shorts.empty?
 

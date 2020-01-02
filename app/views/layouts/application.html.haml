@@ -24,17 +24,20 @@
     .container
       #header.span-12
         #logo
-        #search
-          = render :partial => 'pages/search'
         #menu
           = render :partial => 'pages/menu'
         #login
           = render :partial => 'user_sessions/login'
       #content
-        - flash.keys.each do |type|
-          .alert{class: "alert-#{type}"}
-            = flash[type]
-            = link_to  "", "#", class: "remove_parent"
+        -# - flash.keys.each do |type|
+          -# .alert{class: "alert-#{type}"}
+            -# = flash[type]
+            -# = link_to  "", "#", class: "remove_parent"
+        - flash.each do |name, msg|
+          - if msg.is_a?(String)
+            %div{:class => "alert alert-#{name.to_s == 'notice' ? 'success' : 'danger'}", :role => "alert"}
+              %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} ×
+              = content_tag :div, msg, :id => "flash_#{name}"
 
         - sidebar_exists = content_for?(:actions) || content_for?(:info)
         #main{:class => sidebar_exists ? "span-8 append-1" : "span-12"}

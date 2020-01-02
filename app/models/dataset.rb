@@ -26,7 +26,7 @@
 #   without reviewing each column individually. The Datacolumn must be correctly described, in
 #   that it must have a Datagroup and a Datatype.
 require 'acl_patch'
-class Dataset < ActiveRecord::Base
+class Dataset < ApplicationRecord
   include PgSearch
   acts_as_authorization_object subject_class_name: 'User', join_table_name: 'roles_users'
   include AclPatch
@@ -51,7 +51,7 @@ class Dataset < ActiveRecord::Base
   has_many :freeformats, as: :freeformattable, dependent: :destroy
 
   has_many :dataset_downloads
-  has_many :downloaders, -> { uniq }, through: :dataset_downloads, source: :user
+  has_many :downloaders, -> { distinct }, through: :dataset_downloads, source: :user
 
   # has_many :dataset_edits, order: 'updated_at DESC', dependent: :destroy
   has_many :dataset_edits, -> { order 'updated_at DESC' }, dependent: :destroy
@@ -62,7 +62,7 @@ class Dataset < ActiveRecord::Base
   has_and_belongs_to_many :projects
   has_many :dataset_paperproposals
   has_many :paperproposals, through: :dataset_paperproposals
-  has_many :proposers, -> { uniq }, through: :paperproposals, source: :author
+  has_many :proposers, -> { distinct }, through: :paperproposals, source: :author
 
   has_many :dataset_tags
   # has_many :all_tags, through: :dataset_tags, source: :tag, order: 'lower(name)'
@@ -298,7 +298,7 @@ class Dataset < ActiveRecord::Base
     if paperproposals.count > 0
       errors.add(:dataset,
                  "can not be deleted while linked paperproposals exist [ids: #{paperproposals.map(&:id).join(', ')}]")
-      false
+      throw :abort
     end
   end
 
@@ -312,7 +312,7 @@ class Dataset < ActiveRecord::Base
       @owner_ids.reject!(&:blank?)
       if @owner_ids.empty?
         errors.add :base, 'The dataset should have at least one author.'
-        false
+        throw :abort
       else
         self.owners = User.find(@owner_ids)
       end

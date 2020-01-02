@@ -9,7 +9,7 @@
 # DatsetPaperproposals do not store access rights directly, which is done by the acl9 gem and the
 # Role class. They contain information if a Dataset is of main or side aspect for the conclusions derived
 # from analysing data according to the Paperproposal.
-class DatasetPaperproposal < ActiveRecord::Base
+class DatasetPaperproposal < ApplicationRecord
   belongs_to :paperproposal
   belongs_to :dataset
 

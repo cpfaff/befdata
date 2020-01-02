@@ -68,7 +68,7 @@ class ExportedExcel < ExportedFile
 
     sheet[*WBF[:meta_datemin_pos]] = dataset.datemin ? dataset.datemin.to_date.to_s : ''
     sheet[*WBF[:meta_datemax_pos]] = dataset.datemax ? dataset.datemax.to_date.to_s : ''
-    sheet[*WBF[:meta_projects_pos]] = dataset.projects.uniq.collect(&:shortname).sort.join(', ')
+    sheet[*WBF[:meta_projects_pos]] = dataset.projects.distinct.collect(&:shortname).sort.join(', ')
 
     c_owners = dataset.owners
     unless c_owners.blank?
@@ -180,6 +180,6 @@ class ExportedExcel < ExportedFile
   end
 
   def query_datacolumns(dataset = nil, column_selection = nil)
-    column_selection || Datacolumn.where(dataset_id: dataset.id).order('columnnr ASC').uniq
+    column_selection || Datacolumn.where(dataset_id: dataset.id).order('columnnr ASC').distinct
   end
 end

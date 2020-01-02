@@ -4,7 +4,7 @@ require 'test_helper'
 
 class ApprovalProcessForDatacolumnTest < ActionDispatch::IntegrationTest
   fixtures :all
-  self.use_transactional_fixtures = false # for datatyoe approval
+  self.use_transactional_tests = false # for datatyoe approval
 
   # mainly checks the approval process and sheetcell status
   test 'completely approve a datacolumn' do
@@ -12,7 +12,7 @@ class ApprovalProcessForDatacolumnTest < ActionDispatch::IntegrationTest
     @datacolumn = Datacolumn.find 33
 
     ## login
-    post user_session_path, user_session: { login: @user.login, password: 'test' }
+    post user_session_path, params: { user_session: { login: @user.login, password: 'test' }}
 
     ## get first approval step
     get next_approval_step_datacolumn_url @datacolumn

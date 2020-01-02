@@ -56,7 +56,7 @@ class ::ApplicationController < ActionController::Base
   def require_no_user
     if current_user
       flash[:error] = 'You must be logged out to access this page'
-      redirect_back_or_default root_url
+      redirect_back(fallback_location: root_url)
       false
     end
   end
@@ -65,7 +65,7 @@ class ::ApplicationController < ActionController::Base
     if request.env['HTTP_REFERER'].blank?
       redirect_to default
     else
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -93,11 +93,11 @@ class ::ApplicationController < ActionController::Base
   def access_denied
     if current_user
       flash[:error] = 'Access denied. You do not have the appropriate rights to perform this operation.'
-      redirect_back_or_default root_url
+      redirect_back(fallback_location: root_url)
     else
       flash[:error] = 'Access denied. Try to log in first.'
       session[:return_to] = request.url if request.get?
-      redirect_back_or_default root_url
+      redirect_back(fallback_location: root_url)
     end
   end
 end

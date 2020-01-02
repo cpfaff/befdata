@@ -1,9 +1,7 @@
-# frozen_string_literal: true
-
-require File.expand_path('boot', __dir__)
+require_relative 'boot'
 
 require 'rails/all'
-# require 'csv'
+require 'csv'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -28,14 +26,14 @@ module Befchina
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
-
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = 'utf-8'
 
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true
+
+    # Halting Callback Chains via throw(:abort)
+    ActiveSupport.halt_callback_chains_on_return_false = false
 
     # Enable the asset pipeline
     config.assets.enabled = true

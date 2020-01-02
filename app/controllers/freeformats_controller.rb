@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class FreeformatsController < ApplicationController
-  before_filter :load_freeformat_and_freeformattable, except: :create
-  before_filter :load_freeformattable, only: :create
-  after_filter  :dataset_edit_message, except: [:download]
+  before_action :load_freeformat_and_freeformattable, except: :create
+  before_action :load_freeformattable, only: :create
+  after_action  :dataset_edit_message, except: [:download]
 
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
 
   access_control do
     actions :download, :update, :create, :destroy do
@@ -25,29 +25,29 @@ class FreeformatsController < ApplicationController
   def create
     freeformat = @freeformattable.freeformats.build(freeformat_params)
     if freeformat.save
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     else
       flash[:error] = freeformat.errors.to_a.first.capitalize.to_s
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
   def update
     if @freeformat.update_attributes(freeformat_params)
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     else
       flash[:error] = @freeformat.errors.to_a.first.capitalize.to_s
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
   def destroy
     @freeformat.destroy
     if @freeformat.destroyed?
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     else
       flash[:error] = @freeformat.errors.to_a.first.capitalize.to_s
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 

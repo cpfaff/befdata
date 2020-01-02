@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PagesController < ApplicationController
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
   access_control do
     actions :home, :imprint, :help, :data, :search do
       allow all
@@ -46,7 +46,7 @@ class PagesController < ApplicationController
     @tags = DatasetTag.tag_counts
 
     @datasets = Dataset.all
-    @filter_params = BefParam.new(params[:filter], checkbox: :access_code, checkbox_two: :project_phase, radio: :f)
+    @filter_params = BefParam.new(params.fetch(:filter, {}), checkbox: :access_code, checkbox_two: :project_phase, radio: :f)
 
     @datasets = @datasets.where(access_code: @filter_params[:access_code]) if @filter_params.has_param? :access_code
 
@@ -58,7 +58,7 @@ class PagesController < ApplicationController
     @datasets = @datasets.where(['datafiles_count > 0 or freeformats_count > 0']) if @filter_params.has_param?(:f, %w[a w])
 
     @datasets = @datasets.select('id, title, updated_at as last_update')
-                         .order("#{params[:sort]} #{params[:direction]}")
+      .order("#{params.fetch(:sort, {})} #{params.fetch(:direction, {})}")
                          .paginate(page: params.fetch(:page, 1), per_page: 25)
   end
 

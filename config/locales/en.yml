@@ -25,7 +25,9 @@ en:
   role:
     role: "Role"
     pi: "Principle investigator"
+    # TODO: we have dublicate categories. Check where they come from.
     co-pi: "2nd Principle investigator"
+    co_pi: "2nd Principle investigator"
     phd student: "PhD student"
     speaker: "Speaker"
     technician: "Technician"

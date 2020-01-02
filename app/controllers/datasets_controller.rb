@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 class DatasetsController < ApplicationController
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
 
-  before_filter :load_dataset,
+  before_action :load_dataset,
                 except: %i[new create create_with_datafile importing index download_excel_template]
 
-  before_filter :redirect_if_without_workbook,
+  before_action :redirect_if_without_workbook,
                 only: %i[download download_page approve approve_predefined batch_update_columns approval_quick]
 
-  before_filter :redirect_unless_import_succeed,
+  before_action :redirect_unless_import_succeed,
                 only: %i[download_page download approve approve_predefined approval_quick batch_update_columns]
 
-  before_filter :redirect_while_importing,
+  before_action :redirect_while_importing,
                 only: %i[edit_files update_workbook destroy]
 
-  after_filter :edit_message_datacolumns,
+  after_action :edit_message_datacolumns,
                only: %i[batch_update_columns approve_predefined]
 
   access_control do
@@ -50,7 +50,7 @@ class DatasetsController < ApplicationController
       current_user.has_role! :owner, @dataset
     else
       flash[:error] = @dataset.errors.full_messages.to_sentence
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -58,13 +58,13 @@ class DatasetsController < ApplicationController
   def create_with_datafile
     unless params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers')
       flash[:error] = 'No data file given for upload'
-      redirect_back_or_default(root_url) && return
+      redirect_back(fallback_location: root_url) && return
     end
 
     datafile = Datafile.new(params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers'))
     unless datafile.save
       flash[:error] = datafile.errors.full_messages.to_sentence
-      redirect_back_or_default(root_url) && return
+      redirect_back(fallback_location: root_url) && return
     end
 
     attributes = datafile.general_metadata_hash
@@ -80,7 +80,7 @@ class DatasetsController < ApplicationController
     else
       datafile.destroy
       flash[:error] = @dataset.errors.full_messages.to_sentence
-      redirect_back_or_default root_url
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -163,7 +163,7 @@ class DatasetsController < ApplicationController
       flash[:non_auto_approved] = still_unapproved_columns.map(&:id)
     end
     ExportedFile.invalidate(@dataset.id, :all)
-    redirect_to :back
+    redirect_back(fallback_location: root_url)
   end
 
   def show
@@ -171,7 +171,7 @@ class DatasetsController < ApplicationController
 
     @contacts = @dataset.owners.order('alumni')
     @projects = @dataset.projects
-    @freeformats = @dataset.freeformats order: :file_file_name
+    @freeformats = @dataset.freeformats.order('file_file_name')
     @datacolumns = @dataset.datacolumns.includes(:datagroup, :tags)
     @tags = @dataset.all_tags
 
@@ -248,7 +248,7 @@ class DatasetsController < ApplicationController
   def update_workbook
     unless params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers')
       flash[:error] = 'No filename given'
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
     new_datafile = Datafile.new(params.require(:datafile).permit(:utf8, :authenticity_token, :title, :file, :'@tempfile', :'@original_filename', :'@content_type', :'@headers'))
     if new_datafile.save
@@ -259,7 +259,7 @@ class DatasetsController < ApplicationController
       redirect_to(action: 'show')
     else
       flash[:error] = new_datafile.errors.full_messages.to_sentence
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -269,7 +269,7 @@ class DatasetsController < ApplicationController
       redirect_to data_path
     else
       flash[:error] = @dataset.errors.full_messages.to_sentence
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -333,7 +333,7 @@ class DatasetsController < ApplicationController
       send_file file.path, options
     else
       flash[:error] = "The file is not found on the server. Maybe it's being generated, Please wait till it's finished."
-      redirect_back_or_default download_page_dataset_path(@dataset)
+      redirect_back(fallback_location: download_page_dataset_path(@dataset))
     end
   end
 end

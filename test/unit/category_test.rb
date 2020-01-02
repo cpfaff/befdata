@@ -23,7 +23,7 @@ class CategoryTest < ActiveSupport::TestCase
 
     Category.find(category_id).update_attributes(comment: 'test triggers')
 
-    assert dataset.exported_excel(true).invalidated_at > orig_invalidated_at_excel
-    assert dataset.exported_csv(true).invalidated_at > orig_invalidated_at_csv
+    assert dataset.reload_exported_excel.invalidated_at > orig_invalidated_at_excel
+    assert dataset.reload_exported_csv.invalidated_at > orig_invalidated_at_csv
   end
 end

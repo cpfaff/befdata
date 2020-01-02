@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class DatafilesController < ApplicationController
-  skip_before_filter :deny_access_to_all
-  before_filter :load_dataset_and_datafile
+  skip_before_action :deny_access_to_all
+  before_action :load_dataset_and_datafile
   access_control do
     action :download, :destroy do
       allow :admin
@@ -16,7 +16,7 @@ class DatafilesController < ApplicationController
 
   def destroy
     flash[:error] = @datafile.errors.full_messages.to_sentence unless @datafile.destroy
-    redirect_to :back
+    redirect_back(fallback_location: root_url)
   end
 
   private

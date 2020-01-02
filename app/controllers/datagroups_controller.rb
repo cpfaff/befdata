@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 class DatagroupsController < ApplicationController
-  skip_before_filter :deny_access_to_all
-  before_filter :load_datagroup, except: %i[index new create]
+  skip_before_action :deny_access_to_all
+  before_action :load_datagroup, except: %i[index new create]
 
   access_control do
     actions :index, :show, :import_categories, :new, :create, :datacolumns do
@@ -41,7 +39,7 @@ class DatagroupsController < ApplicationController
   end
 
   def show
-    @datasets = @datagroup.datasets.select('datasets.id, datasets.title').order(:title).uniq
+    @datasets = @datagroup.datasets.select('datasets.id, datasets.title').order(:title).distinct
   end
 
   def update
@@ -55,13 +53,13 @@ class DatagroupsController < ApplicationController
   def destroy
     unless @datagroup.datasets.empty?
       flash[:error] = "Datagroup has associated datasets thus can't be deleted"
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
     if @datagroup.destroy
       redirect_to datagroups_path, notice: "Deleted #{@datagroup.title}"
     else
       flash[:error] = @datagroup.errors.full_messages.to_sentence
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -72,7 +70,7 @@ class DatagroupsController < ApplicationController
   def update_categories
     unless csv_params
       flash[:error] = 'No File given'
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
 
     f = csv_params[:file].path
@@ -84,21 +82,21 @@ class DatagroupsController < ApplicationController
       redirect_to datagroup_path(@datagroup)
     else
       flash[:error] = @datagroup.errors.full_messages.to_sentence
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
   end
 
   def import_categories
     unless csv_params
       flash[:error] = 'No File given'
-      redirect_to(:back) && return
+      redirect_back(fallback_location: root_url) && return
     end
 
     if @datagroup.import_categories_with_csv(csv_params.path)
-      redirect_to :back, notice: 'Categories are successfully imported'
+      redirect_back(fallback_location: root_url, notice: 'Categories are successfully imported')
     else
       flash[:error] = @datagroup.errors.full_messages.to_sentence
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
@@ -122,6 +120,6 @@ class DatagroupsController < ApplicationController
   end
 
   def csv_params
-    params.require(:csvfile).permit!
+    params.require(:csvfile)
   end
 end

@@ -5,7 +5,7 @@
 #
 # The accepted value of the data is stored in the accepted_value field unless
 # the "Datatype" is a "Category" where the category id is stored instead.
-class Sheetcell < ActiveRecord::Base
+class Sheetcell < ApplicationRecord
   belongs_to :datacolumn
   belongs_to :category
 

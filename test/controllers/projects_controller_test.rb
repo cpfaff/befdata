@@ -5,7 +5,7 @@ require 'test_helper'
 class ProjectsControllerTest < ActionController::TestCase
   setup :activate_authlogic
   test 'should get show project' do
-    get :show, id: Project.first.id
+    get :show, params: { id: Project.first.id  }
     assert_success_no_error
   end
   test 'not show link to create new project for public' do
@@ -41,32 +41,32 @@ class ProjectsControllerTest < ActionController::TestCase
     assert_success_no_error
   end
   test "project can't be edited by public" do
-    get :edit, id: Project.first
+    get :edit, params: { id: Project.first }
     assert_response :redirect
     assert_not_nil flash[:error]
   end
   test "project can't be edited by non-admin" do
     login_user('Phdstudentnutrientcycling')
-    get :edit, id: Project.first
+    get :edit, params: { id: Project.first }
     assert_response :redirect
     assert_not_nil flash[:error]
   end
   test 'project can be edited by admin' do
     login_nadrowski
     assert User.find_by_login('nadrowski').has_role?(:admin)
-    get :edit, id: Project.first
+    get :edit, params: { id: Project.first }
     assert_success_no_error
   end
   test "don't show link to delete a project for project in use" do
     login_nadrowski
-    get :show, id: Project.first
+    get :show, params: { id: Project.first }
     assert_select 'a[href=?]', "/projects/#{Project.first}", false
     assert_select 'a[data-method=?]', 'delete', false
   end
   test 'show link to delete a project for obsolete project' do
     login_nadrowski
     p = Project.create(name: 'test', shortname: 'test')
-    get :show, id: p
+    get :show, params: { id: p }
     assert_success_no_error
     assert_select 'a[href=?]', "/projects/#{p.id}", true, 'link to delete a obsolete project should be seen'
     assert_select 'a[data-method=?]', 'delete', true, 'link to delete a obsolete project should be seen'
@@ -84,7 +84,7 @@ class ProjectsControllerTest < ActionController::TestCase
              { type: 'student', value: %w[1 5] }]
     # no matter what the member was before, the final membership should honest params from user inputs
     login_nadrowski
-    post :update, id: p, project: project, roles: roles
+    post :update, params: { id: p, project: project, roles: roles }
     assert_success_no_error
     p.reload
     assert_empty p.pi, 'there should not be pi for this project after updating'

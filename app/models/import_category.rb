@@ -4,7 +4,7 @@
 ## These are the user-defined categories that will be used during the validation process if "Category" does not already exist in the portal
 ## within the correct "Datagroup".
 
-class ImportCategory < ActiveRecord::Base
+class ImportCategory < ApplicationRecord
   belongs_to :datacolumn
 
   validates_presence_of :datacolumn, :short, :long, :description

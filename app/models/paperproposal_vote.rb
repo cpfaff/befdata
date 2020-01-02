@@ -23,7 +23,7 @@
 # attribute "project_board vote" is set to false, but the procedure is
 # the same: all votes have to be set to "accept" for the datasets to
 # allow access for the proponets.
-class PaperproposalVote < ActiveRecord::Base
+class PaperproposalVote < ApplicationRecord
   belongs_to :user
   belongs_to :paperproposal
 

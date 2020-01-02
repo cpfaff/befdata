@@ -1,8 +1,25 @@
-%ul
-  %li.first= link_to 'Home', root_path
-  %li= link_to 'Projects', projects_path
-  %li= link_to 'Staff', users_path
-  %li= link_to 'Data', data_path
-  %li= link_to 'Papers', :paperproposals
-  - if current_user
-    %li= link_to 'Cart', current_cart_url
+.container
+  %nav.navbar.navbar-expand-lg.navbar-light.bg-light
+    %a.navbar-brand
+      = link_to 'BEFdata', root_path
+    %button.navbar-toggler{"aria-controls" => "navbarSupportedContent",
+      "aria-expanded" => "false", "aria-label" => "Toggle navigation",
+      "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
+      \☰
+      %span.navbar-toggler-icon
+    #navbarSupportedContent.collapse.navbar-collapse
+      %ul.navbar-nav.mr-auto
+        %li.nav-item
+          = link_to 'Projects', projects_path, class: "nav-link"
+        %li.nav-item
+          = link_to 'Staff', users_path, class: "nav-link"
+        %li.nav-item
+          = link_to 'Data', data_path, class: "nav-link"
+        %li.nav-item
+          = link_to 'Papers', :paperproposals, class: "nav-link"
+        - if current_user
+          %li.nav-item
+            = link_to 'Cart', current_cart_url, class: "nav-link"
+      = form_tag "/search", method: :get, class: 'form-inline my-2 my-lg-0'  do
+        = search_field_tag :q, params[:q], aria: "Search", placeholder: "Search", type: "search", class: "form-control mr-sm-2"
+        = submit_tag 'Search', name: nil, class: "btn btn-outline-success my-2 my-sm-0", type: "submit"

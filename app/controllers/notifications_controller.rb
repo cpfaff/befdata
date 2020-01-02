@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class NotificationsController < ApplicationController
-  before_filter :load_notification, except: [:index]
+  before_action :load_notification, except: [:index]
 
-  skip_before_filter :deny_access_to_all
+  skip_before_action :deny_access_to_all
   # this has been moved over from the model with strong params it
   # is not neccessary anymore
   # attr_accessible :message, :read, :subject, :user_id
@@ -35,6 +35,6 @@ class NotificationsController < ApplicationController
 
   def load_notification
     @notification = current_user.notifications.where(id: params[:id]).first
-    redirect_to(:back) && return unless @notification
+    redirect_back(fallback_location: root_url) && return unless @notification
   end
 end

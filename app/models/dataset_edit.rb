@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class DatasetEdit < ActiveRecord::Base
+class DatasetEdit < ApplicationRecord
   belongs_to :dataset
   # attr_accessible :description, :submitted
 

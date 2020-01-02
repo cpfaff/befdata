@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class DatacolumnTest < ActiveSupport::TestCase
-  self.use_transactional_fixtures = false
+  self.use_transactional_tests = false
 
   # uploaded_values should return the first n unique uploaded values for the datacolumn.
   test 'imported_values_test_number_returned' do

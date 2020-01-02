@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AuthorPaperproposal < ActiveRecord::Base
+class AuthorPaperproposal < ApplicationRecord
   belongs_to :user
   belongs_to :paperproposal
 

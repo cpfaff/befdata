@@ -8,22 +8,23 @@ class PaperproposalTest < ActiveSupport::TestCase
     assert paperproposal.authored_by_project
   end
 
-  # test 'calculating authorship works' do
-  # TODO: That is unreliable as the order in the strings can change
-  # a regex match on the string might be better
-  # paperproposal = Paperproposal.find(2)
-  # author = User.find(6)
-  # senior = User.find(4)
-  # data_provider = User.find(5)
-  # acknowledged = User.find(1)
-  # foreign = User.find(2)
+  test 'calculating the authorship for paperproposals' do
+    paperproposal = Paperproposal.find(2)
+    author = User.find(6)
+    senior = User.find(4)
+    data_provider = User.find(5)
+    acknowledged = User.find(1)
+    foreign = User.find(2)
 
-  # assert paperproposal.calc_authorship(author) == 'Author, Main aspect data provider, and Proponent'
-  # assert paperproposal.calc_authorship(senior) == 'Proponent'
-  # assert paperproposal.calc_authorship(data_provider) == 'Main aspect data provider'
-  # assert paperproposal.calc_authorship(acknowledged) == 'Acknowledged'
-  # assert paperproposal.calc_authorship(foreign) == ''
-  # end
+    assert_match('Author', paperproposal.calc_authorship(author))
+    assert_match('Main aspect data provider', paperproposal.calc_authorship(author))
+    assert_match('Main aspect data provider', paperproposal.calc_authorship(author))
+    assert_match('Proponent', paperproposal.calc_authorship(author))
+    assert_match('Proponent', paperproposal.calc_authorship(senior))
+    assert_match('Main aspect data provider', paperproposal.calc_authorship(data_provider))
+    assert_match('Acknowledged', paperproposal.calc_authorship(acknowledged))
+    assert_match('', paperproposal.calc_authorship(foreign))
+  end
 
   test 'expired download rights are removed' do
     old_roles_count = Role.count

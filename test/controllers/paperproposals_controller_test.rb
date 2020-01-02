@@ -12,19 +12,19 @@ class PaperproposalsControllerTest < ActionController::TestCase
 
   test 'should get index as csv' do
     login_nadrowski
-    get :index, format: :csv
+    get :index, params: { format: :csv }
     assert_success_no_error
   end
 
   test 'without login should not be able to edit' do
     @request.env['HTTP_REFERER'] = root_url
-    get :edit, id: Paperproposal.first.id
+    get :edit, params: { id: Paperproposal.first.id }
     assert_match /.*Access denied.*/, flash[:error]
   end
 
   test 'admin can administrate votes' do
     login_nadrowski
-    get :administrate_votes, id: 5
+    get :administrate_votes, params: { id: 5 }
     assert_success_no_error
   end
 
@@ -32,16 +32,16 @@ class PaperproposalsControllerTest < ActionController::TestCase
     @request.env['HTTP_REFERER'] = root_url
     paperproposal = Paperproposal.find 5
     login_nadrowski
-    get :update_vote, id: paperproposal.paperproposal_votes.first.id, paperproposal_vote: { vote: 'accept' } # vote something
-    assert_equal 1, paperproposal.paperproposal_votes(true).select { |v| v.vote == 'none' }.count
-    get :admin_reset_all_votes, id: paperproposal.id
-    assert_equal 2, paperproposal.paperproposal_votes(true).select { |v| v.vote == 'none' }.count
+    get :update_vote, params: { id: paperproposal.paperproposal_votes.first.id, paperproposal_vote: { vote: 'accept' } }# vote something
+    assert_equal 1, paperproposal.paperproposal_votes.reload.select { |v| v.vote == 'none' }.count
+    get :admin_reset_all_votes, params: { id: paperproposal.id }
+    assert_equal 2, paperproposal.paperproposal_votes.reload.select { |v| v.vote == 'none' }.count
   end
 
   test 'admin can approve all votes' do
     paperproposal = Paperproposal.find 5
     login_nadrowski
-    get :admin_approve_all_votes, id: paperproposal.id
+    get :admin_approve_all_votes, params: { id: paperproposal.id }
     assert_success_no_error
     paperproposal.reload
     paperproposal.board_state = 'accept'
@@ -54,13 +54,13 @@ class PaperproposalsControllerTest < ActionController::TestCase
     login_nadrowski
 
     # make paperproposal final
-    get :update_state, id: paperproposal.id, paperproposal: { board_state: 'submit' }
-    get :admin_approve_all_votes, id: paperproposal.id
-    get :admin_approve_all_votes, id: paperproposal.id
+    get :update_state, params: { id: paperproposal.id, paperproposal: { board_state: 'submit' } }
+    get :admin_approve_all_votes, params: { id: paperproposal.id }
+    get :admin_approve_all_votes, params: { id: paperproposal.id }
     assert_not_equal User.find(paperproposal.author.id).roles.count, old_roles_count
 
     # and now reset
-    get :admin_hard_reset, id: paperproposal.id
+    get :admin_hard_reset, params: { id: paperproposal.id }
 
     assert_equal old_votes_count, PaperproposalVote.all.count
     assert_equal old_roles_count, User.find(paperproposal.author.id).roles.count
@@ -73,12 +73,12 @@ class PaperproposalsControllerTest < ActionController::TestCase
     login_nadrowski
     old_notification_count = Notification.count
 
-    post :update_state, id: paperproposal.id, paperproposal: { board_state: 'submit' }
+    post :update_state, params: { id: paperproposal.id, paperproposal: { board_state: 'submit' } }
 
     paperproposal.reload
     assert_equal 1, paperproposal.project_board_votes.where("vote = 'accept'").count
 
-    get :admin_approve_all_votes, id: paperproposal.id
+    get :admin_approve_all_votes, params: { id: paperproposal.id }
 
     paperproposal.reload
     assert_equal paperproposal.board_state, 'final'
@@ -91,9 +91,9 @@ class PaperproposalsControllerTest < ActionController::TestCase
     user = login_nadrowski
     old_notifications_count = Notification.count
 
-    get :admin_approve_all_votes, id: paperproposal.id # bring to next stage
+    get :admin_approve_all_votes, params: { id: paperproposal.id }# bring to next stage
 
-    get :update_vote, id: user.paperproposal_votes.where(vote: 'none').first.id, paperproposal_vote: { vote: 'reject' }
+    get :update_vote, params: { id: user.paperproposal_votes.where(vote: 'none').first.id, paperproposal_vote: { vote: 'reject' } }
 
     paperproposal.reload
     assert_equal 'data_rejected', paperproposal.board_state
@@ -104,13 +104,13 @@ class PaperproposalsControllerTest < ActionController::TestCase
     @request.env['HTTP_REFERER'] = root_url
     paperproposal = Paperproposal.find 5
     user = login_nadrowski
-    get :admin_approve_all_votes, id: paperproposal.id # bring to next stage
+    get :admin_approve_all_votes, params: { id: paperproposal.id } # bring to next stage
     vote = user.paperproposal_votes.where(vote: 'none').first
 
-    get :update_vote, id: vote.id, paperproposal_vote: { vote: 'accept' }
-    post :update_datasets, id: paperproposal.id, datasets: [{ id: 6, aspect: 'main' }, { id: 7, aspect: 'main' }, { id: 8, aspect: 'side' }]
+    get :update_vote, params: { id: vote.id, paperproposal_vote: { vote: 'accept' } }
+    post :update_datasets, params: { id: paperproposal.id, datasets: [{ id: 6, aspect: 'main' }, { id: 7, aspect: 'main' }, { id: 8, aspect: 'side' }] }
 
-    voters = paperproposal.for_data_request_votes(true).collect(&:user_id).sort
+    voters = paperproposal.for_data_request_votes.reload.collect(&:user_id).sort
     vote.reload
 
     assert_equal [1, 3, 5], voters
@@ -126,7 +126,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'create new paperproposal' do
     login_nadrowski
 
-    post :create, paperproposal: { title: 'Test', rationale: 'Rational', author_id: 1 }
+    post :create, params: { paperproposal: { title: 'Test', rationale: 'Rational', author_id: 1 } }
     assert_success_no_error
     paperproposal = Paperproposal.find_by_title('Test')
 
@@ -136,7 +136,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'should have initial title same as the title after creation process' do
     login_nadrowski
 
-    post :create, paperproposal: { title: 'Test', rationale: 'Rational', author_id: 1 }
+    post :create, params: { paperproposal: { title: 'Test', rationale: 'Rational', author_id: 1 } }
     assert_success_no_error
     paperproposal = Paperproposal.find_by_title('Test')
 
@@ -145,25 +145,25 @@ class PaperproposalsControllerTest < ActionController::TestCase
 
   test 'show paperproposal' do
     login_nadrowski
-    get :show, id: 1
+    get :show, params: { id: 1 }
     assert_success_no_error
   end
 
   test 'show metadata edit' do
     login_nadrowski
-    get :edit, id: 1
+    get :edit, params: { id: 1 }
     assert_success_no_error
   end
 
   test 'show manage datasets' do
     login_nadrowski
-    get :edit_datasets, id: 1
+    get :edit_datasets, params: { id: 1 }
     assert_success_no_error
   end
 
   test 'show manage freeformat files' do
     login_nadrowski
-    get :edit_files, id: 1
+    get :edit_files, params: { id: 1 }
     assert_success_no_error
   end
 
@@ -171,19 +171,18 @@ class PaperproposalsControllerTest < ActionController::TestCase
     login_nadrowski
     paperproposal = Paperproposal.find 1
     old_authors_count = paperproposal.all_authors_ordered.count
-    post :update, id: paperproposal.id, paperproposal: { envisaged_journal: 'testjournal' }, people: [5, 3, 4]
+    post :update, params: { id: paperproposal.id, paperproposal: { envisaged_journal: 'testjournal' }, people: [5, 3, 4] }
     paperproposal.reload
     assert old_authors_count > paperproposal.all_authors_ordered.count
   end
 
-  # TODO: Fixme: that is actually working but the test fails for now
   test 'vote on paperproposal is reflected in ui' do
     @request.env['HTTP_REFERER'] = root_url
     login_nadrowski
     paperproposal = Paperproposal.find 5
     vote = PaperproposalVote.find 1
-    get :update_vote, id: vote.id, paperproposal_vote: { vote: 'accept' }
-    get :show, id: paperproposal.id
+    get :update_vote, params: { id: vote.id, paperproposal_vote: { vote: 'accept' } }
+    get :show, params: { id: paperproposal.id }
     assert_success_no_error
     assert_select 'img[alt="Arrow right accept"]'
   end
@@ -192,7 +191,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     login_and_load_paperproposal 'nadrowski', 'Step 3 Paperproposal'
     dataset_count_before = @paperproposal.datasets.count
     assert dataset_count_before > 0
-    post :update_datasets, id: @paperproposal.id
+    post :update_datasets, params: { id: @paperproposal.id }
     @paperproposal.reload
     dataset_count_after = @paperproposal.datasets.count
     assert_equal dataset_count_after, 0
@@ -203,24 +202,24 @@ class PaperproposalsControllerTest < ActionController::TestCase
     @dataset_with_michael = Dataset.find_by_title('Test species name import second version')
     old_authors_count = @paperproposal.all_authors_ordered.count
 
-    get :edit_datasets, id: @paperproposal.id
+    get :edit_datasets, params: { id: @paperproposal.id }
     assert_select 'tbody tr', count: 0
 
-    post :update_datasets, id: @paperproposal.id, datasets: [{ id: @dataset_with_michael.id, aspect: 'main' }]
+    post :update_datasets, params: { id: @paperproposal.id, datasets: [{ id: @dataset_with_michael.id, aspect: 'main' }] }
     assert_redirected_to paperproposal_path(@paperproposal)
 
     @paperproposal.reload
     assert_equal 1, @paperproposal.datasets.count
     assert old_authors_count < @paperproposal.all_authors_ordered.count
 
-    get :show, id: @paperproposal.id
+    get :show, params: { id: @paperproposal.id }
     assert_select 'span.comma-separated-list', /.*Michael.*/, response.body
   end
 
   test 'should not send to board if no dataset is set' do
     login_and_load_paperproposal 'nadrowski', 'Step 1 Paperproposal'
 
-    get :edit, id: @paperproposal.id
+    get :edit, params: { id: @paperproposal.id }
     assert_success_no_error
 
     assert_select 'form#update_state_edit', false, 'Without any dataset you can not send to board'
@@ -229,7 +228,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'should send to board if it is possible' do
     login_and_load_paperproposal 'pinutrientcycling', 'Step 2 Paperproposal'
 
-    post :update_state, id: @paperproposal.id, paperproposal: { board_state: 'submit' }
+    post :update_state, params: { id: @paperproposal.id, paperproposal: { board_state: 'submit' }  }
     @paperproposal.reload
 
     assert (@paperproposal.board_state == 'submit')
@@ -239,9 +238,9 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'should show [Submitted to board, waiting for acceptance.] after send to project board' do
     login_and_load_paperproposal 'pinutrientcycling', 'Step 2 Paperproposal'
 
-    post :update_state, id: @paperproposal.id, paperproposal: { board_state: 'submit' }
+    post :update_state, params: { id: @paperproposal.id, paperproposal: { board_state: 'submit' } }
 
-    get :show, id: @paperproposal.id
+    get :show, params: { id: @paperproposal.id }
 
     assert_success_no_error
     assert_select 'div', text: /submitted to board, waiting for acceptance/
@@ -258,7 +257,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'it should be possible to edit a rejected paperproposal' do
     login_and_load_paperproposal 'nadrowski', 'Step 3 Paperproposal rejected'
 
-    get :edit, id: @paperproposal.id
+    get :edit, params: { id: @paperproposal.id }
 
     assert_success_no_error
   end
@@ -266,7 +265,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'it should not be possible to edit a paperproposal in vote' do
     login_and_load_paperproposal 'Piproductivity', 'Step 3 Paperproposal'
 
-    get :edit, id: @paperproposal.id
+    get :edit, params: { id: @paperproposal.id }
 
     assert_response :redirect
   end
@@ -300,7 +299,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'should download paperproposal datasets csv' do
     login_and_load_paperproposal 'Phdstudentnutrientcycling', 'Nutrient cycling and diversity in subtropical forests'
 
-    get :show, id: @paperproposal.id, format: :csv
+    get :show, params: { id: @paperproposal.id, format: :csv }
 
     assert_success_no_error
   end
@@ -309,7 +308,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     login_and_load_paperproposal 'Phdstudentnutrientcycling', 'Nutrient cycling and diversity in subtropical forests'
     old_pp_count = Paperproposal.all.count
 
-    get :safe_delete, id: @paperproposal.id
+    get :safe_delete, params: { id: @paperproposal.id }
 
     assert_equal Paperproposal.all.count + 1, old_pp_count
   end
@@ -318,11 +317,11 @@ class PaperproposalsControllerTest < ActionController::TestCase
     login_and_load_paperproposal 'Phdstudentnutrientcycling', 'Nutrient cycling and diversity in subtropical forests'
     old_pp_count = Paperproposal.all.count
 
-    get :update_state, id: @paperproposal.id
+    get :update_state, params: { id: @paperproposal.id }
     @paperproposal.reload
     assert @paperproposal.lock
 
-    get :safe_delete, id: @paperproposal.id
+    get :safe_delete, params: { id: @paperproposal.id }
 
     assert_equal Paperproposal.all.count, old_pp_count
     @paperproposal.reload
@@ -337,7 +336,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     end
     login_and_load_paperproposal 'nadrowski', 'Final Paperproposal'
 
-    get :safe_delete, id: @paperproposal.id
+    get :safe_delete, params: { id: @paperproposal.id }
 
     after = {}
     models.each do |model|

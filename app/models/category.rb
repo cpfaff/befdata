@@ -3,7 +3,7 @@
 ## Categories store naming conventions that are referenced by an instance of a "Sheetcell".
 ##
 ## Categories are linked to "Datagroup"s. The validation process ensures that Categories are unique within a "Datagroup".
-class Category < ActiveRecord::Base
+class Category < ApplicationRecord
   belongs_to :datagroup, class_name: 'Datagroup', foreign_key: 'datagroup_id'
   has_many :sheetcells
 

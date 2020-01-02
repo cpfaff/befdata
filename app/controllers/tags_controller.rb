@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class TagsController < ApplicationController
-  skip_before_filter :deny_access_to_all
-  before_filter :load_keywords, only: %i[delete pre_rename pre_merge merge]
+  skip_before_action :deny_access_to_all
+  before_action :load_keywords, only: %i[delete pre_rename pre_merge merge]
   access_control do
     allow all, to: %i[index show]
     actions :manage, :pre_rename, :rename, :delete, :pre_merge, :merge do
@@ -42,7 +42,7 @@ class TagsController < ApplicationController
   def delete
     @keywords.each(&:destroy)
     flash[:notice] = "Deleted #{@keywords.count} keywords."
-    redirect_to :back
+    redirect_back(fallback_location: root_url)
   end
 
   def pre_rename; end

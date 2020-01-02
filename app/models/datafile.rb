@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Datafile < ActiveRecord::Base
+class Datafile < ApplicationRecord
   belongs_to :dataset, counter_cache: true
 
   has_attached_file :file, basename: 'basename', path: ':rails_root/files/uploaded/:id_:filename', validate_media_type: false

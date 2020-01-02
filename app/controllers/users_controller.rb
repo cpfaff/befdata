@@ -3,8 +3,8 @@
 # This controller handles all calls for staff information.
 
 class UsersController < ApplicationController
-  before_filter :load_user, only: %i[show edit destroy update]
-  skip_before_filter :deny_access_to_all
+  before_action :load_user, only: %i[show edit destroy update]
+  skip_before_action :deny_access_to_all
   access_control do
     actions :index, :show do
       allow all
@@ -63,7 +63,7 @@ class UsersController < ApplicationController
       redirect_to users_path, notice: "Successfully deleted #{user_name}"
     else
       flash[:error] = @user.errors.full_messages.to_sentence
-      redirect_to :back
+      redirect_back(fallback_location: root_url)
     end
   end
 
