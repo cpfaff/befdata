@@ -16,6 +16,23 @@
           = link_to 'Data', data_path, class: "nav-link"
         %li.nav-item
           = link_to 'Papers', :paperproposals, class: "nav-link"
+        %li.nav-item.dropdown
+          %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+            Acount
+          .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+            - if current_user
+              = link_to "Notifications (#{current_user.notifications.where(:read => false).count})", notifications_path, class: "dropdown-item"
+              = link_to 'Logout', logout_path, class: "dropdown-item"
+              - if current_user.open_votes_count > 0
+                = link_to "Data requests (#{current_user.open_votes_count})", votes_profile_path, class: "dropdown-item"
+                = link_to 'Profile', profile_path, class: "dropdown-item"
+            - else
+              %a.dropdown-item
+                = bootstrap_form_for(UserSession.new, :url => user_session_path) do |f|
+                  = f.text_field :login
+                  = f.password_field :password
+                  = f.check_box :remember_me
+                  = f.submit "Log In"
         - if current_user
           %li.nav-item
             = link_to 'Cart', current_cart_url, class: "nav-link"

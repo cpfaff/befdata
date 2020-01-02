@@ -63,6 +63,9 @@ GEM
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 1.14.3, < 2)
       sassc-rails (>= 2.0.0)
+    bootstrap_form (4.3.0)
+      actionpack (>= 5.0)
+      activemodel (>= 5.0)
     builder (3.2.4)
     bullet (6.0.2)
       activesupport (>= 3.0.0)
@@ -291,6 +294,7 @@ DEPENDENCIES
   better_errors (~> 2.5.1)
   binding_of_caller (~> 0.8.0)
   bootstrap (~> 4.4.1)
+  bootstrap_form (~> 4.0)
   bullet
   byebug
   coffee-rails (~> 4.1.0)

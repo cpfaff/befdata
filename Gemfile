@@ -54,6 +54,7 @@ gem 'sass-rails', '~> 5.0.0'
 
 # bootstrap for new ui
 gem 'bootstrap', '~> 4.4.1'
+gem 'bootstrap_form', '~> 4.0'
 
 # jQuery and the jQuery-ujs driver for your Rails
 gem 'jquery-rails', '~> 4.3.0'
