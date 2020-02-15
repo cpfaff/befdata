@@ -1,19 +1,55 @@
-- gemma_id = 181
+// variables
+- gemma_rutten_id = 181
 
-%h2 Welcome to the Data portal of the BEF-China project.
+// body
+.div.pl-1.pr-1.pt-2
+  %h3
+    Welcome to the Data portal of the BEF-China project.
 
-%p
+  %p
+    .text-justify
+      This data portal presents the data collected within the BEF-China project and
+      makes it available to researchers as well as the interested public.
+      For more information on the project itself, go here:
+      = link_to "www.bef-china.de", "http://www.bef-china.de"
+      If you are interested in a collaboration you can make contact with
+      = link_to "Dr. Gemma Rutten", { controller: :users, action: :show, id: gemma_rutten_id}
 
-  This data portal presents the data collected within the BEF-China project and
-  makes it available to researchers as well as the interested public.
-  For more information on the project itself, go here:
-  = link_to "www.bef-china.de", "http://www.bef-china.de"
-  If you are interested in a collaboration you can make contact with
-  = link_to "Dr. Gemma Rutten", {:controller => :users, :action => :show, :id => gemma_id}
+  %p
+    .text-justify
+      The Chinese-​European DFG Research Unit “BEF China” (FOR 891) has
+      started a new forest Biodiversity and Ecosystem Functioning (BEF)
+      experiment in subtropical forests in China. The objective of this
+      experiment is to analyze the influence of tree and shrub species
+      diversity on ecosystem functioning and services in one of the most
+      prominent diversity hotspots in the northern hemisphere. The studies are
+      carried out in the border region between the two Chinese provinces
+      Jiangxi and Zhejiang (Xingangshan and Gutianshan). A range of
+      biodiversity and ecosystem variables will be measured to assess community
+      dynamics and its relation to primary productivity, carbon and nitrogen
+      storage, nutrient cycling, and prevention of soil erosion. In parallel,
+      the experimental approach is combined with comparative studies in
+      existing forests.
 
-%p
-  The Chinese-​European DFG Research Unit “BEF China” (FOR 891) has started a new forest Biodiversity and Ecosystem Functioning (BEF) experiment in subtropical forests in China.
-  The objective of this experiment is to analyze the influence of tree and shrub species diversity on ecosystem functioning and services in one of the most prominent diversity
-  hotspots in the northern hemisphere. The studies are carried out in the border region between the two Chinese provinces Jiangxi and Zhejiang (Xingangshan and Gutianshan).
-  A range of biodiversity and ecosystem variables will be measured to assess community dynamics and its relation to primary productivity, carbon and nitrogen storage, nutrient
-  cycling, and prevention of soil erosion. In parallel, the experimental approach is combined with comparative studies in existing forests.
+// TODO: Think about if we should show images as impressions on the main page
+-# #carouselExampleIndicators.carousel.slide{"data-ride" => "carousel"}
+  -# %ol.carousel-indicators
+    -# %li.active{"data-slide-to" => "0", "data-target" => "#carouselExampleIndicators"}
+    -# %li{"data-slide-to" => "1", "data-target" => "#carouselExampleIndicators"}
+    -# %li{"data-slide-to" => "2", "data-target" => "#carouselExampleIndicators"}
+  -# .carousel-inner
+    -# .carousel-item.active.img-fluid
+      -# %img.d-block.w-50
+        -# = image_tag 'impressions/site_1.jpg_small.jpg'
+    -# .carousel-item.img-fluid
+      -# %img.d-block.w-50
+        -# = image_tag 'impressions/site_2.jpg_small.jpg'
+    -# .carousel-item.img-fluid
+      -# %img.d-block.w-50
+        -# = image_tag 'impressions/site_3.jpg_small.jpg'
+  -# %a.carousel-control-prev{"data-slide" => "prev", :href => "#carouselExampleIndicators", :role => "button"}
+    -# %span.carousel-control-prev-icon{"aria-hidden" => "true"}
+    -# %span.sr-only Previous
+  -# %a.carousel-control-next{"data-slide" => "next", :href => "#carouselExampleIndicators", :role => "button"}
+    -# %span.carousel-control-next-icon{"aria-hidden" => "true"}
+    -# %span.sr-only Next
