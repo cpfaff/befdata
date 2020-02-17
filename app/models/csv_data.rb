@@ -5,9 +5,9 @@ class CsvData
   validate :check_csvfile
 
   # define 'strip' and 'upcase' converters
-  CSV::Converters[:strip] = ->(f) { f.try(:squish) }
-  CSV::HeaderConverters[:strip] = ->(f) { f.try(:squish) }
-  CSV::HeaderConverters[:upcase] = ->(f) { f.try(:upcase) }
+  CSV::Converters[:strip] = ->(f) { f.to_s.try(:squish) }
+  CSV::HeaderConverters[:strip] = ->(f) { f.to_s.try(:squish) }
+  CSV::HeaderConverters[:upcase] = ->(f) { f.to_s.try(:upcase) }
 
   OPTS = {
     headers: true,

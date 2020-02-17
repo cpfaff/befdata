@@ -45,7 +45,7 @@ class DatasetsController < ApplicationController
 
   # create dataset with only a title
   def create
-    @dataset = Dataset.new(title: params.require(:dataset)[:title].squish)
+    @dataset = Dataset.new(title: params.require(:dataset)[:title].to_s.squish)
     if @dataset.save
       current_user.has_role! :owner, @dataset
     else
@@ -68,7 +68,7 @@ class DatasetsController < ApplicationController
     end
 
     attributes = datafile.general_metadata_hash
-    attributes[:title] = params.slice(:title)[:title].squish if params[:title]
+    attributes[:title] = params.slice(:title)[:title].to_s.squish if params[:title]
 
     @dataset = Dataset.new(attributes)
     if @dataset.save

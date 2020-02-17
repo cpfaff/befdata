@@ -95,7 +95,7 @@ class Workbook
 
     return projects if project_string.blank?
 
-    project_string.split(',').map(&:squish).uniq.each do |p|
+    project_string.split(',').map(&:to_s).map(&:squish).uniq.each do |p|
       projects << Project.find_by_converting_to_tag(p) unless p.blank?
     end
     projects.compact
@@ -172,7 +172,7 @@ class Workbook
     @header_info_lookup ||= begin
       hash = {}
       raw_data_sheet.row(0).each_with_index do |header, columnr|
-        hash[header.squish] = columnr unless header.blank?
+        hash[header.to_s.squish] = columnr unless header.blank?
       end
       hash
     end
@@ -280,7 +280,7 @@ class Workbook
   def add_acknowledged_people
     rows = []
     data_responsible_person_sheet.each(1) do |row|
-      rows << row.take(3).collect { |c| c.try(:squish) } unless row[0].blank?
+      rows << row.take(3).collect { |c| c.to_s.try(:squish) } unless row[0].blank?
     end
 
     rows.group_by { |r| r[0].downcase }.each do |header, row|
@@ -376,6 +376,6 @@ class Workbook
     # this allows users to omit datagroup description to avoid unconscious typo.
     return false if test_string.blank?
 
-    !datagroup_string.squish.casecmp(test_string.squish.downcase).zero?
+    !datagroup_string.to_s.squish.casecmp(test_string.to_s.squish.downcase).zero?
   end
 end
