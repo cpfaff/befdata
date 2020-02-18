@@ -1,41 +1,118 @@
-.container
-  %nav.navbar.navbar-expand-lg.navbar-light.bg-light
-    %a.navbar-brand
-      = link_to 'BEFdata', root_path
-    %button.navbar-toggler{"aria-controls" => "navbarSupportedContent",
-      "aria-expanded" => "false", "aria-label" => "Toggle navigation",
-      "data-target" => "#navbarSupportedContent", "data-toggle" => "collapse", :type => "button"}
-      %span.navbar-toggler-icon
-    #navbarSupportedContent.collapse.navbar-collapse
-      %ul.navbar-nav.mr-auto
-        %li.nav-item
+%nav.navbar.navbar-expand-lg.navbar-light.border-bottom.pb-0.pl-0.pr-0.pt-0
+  -# {:style => "background-color: #F5F5F5;"}.
+  -# .navbar-brand
+    -# = link_to 'BEF-Data', root_path, class: "font-weight-bold text-muted"
+  %button.navbar-toggler{"aria-controls" => "navigation_bar",
+    "aria-expanded" => "false", "aria-label" => "Toggle navigation",
+    "data-target" => "#navigation_bar", "data-toggle" => "collapse", :type => "button"}
+    %span.navbar-toggler-icon
+  #navigation_bar.collapse.navbar-collapse
+    %ul.navbar-nav.mr-auto
+      #navigation_root_path
+        %li.nav-item{class: current_page?(root_path) && 'active'}
+          = link_to 'Home', root_path, class: "nav-link"
+      #navigation_projects_path
+        %li.nav-item{class: current_page?(projects_path) && 'active'}
           = link_to 'Projects', projects_path, class: "nav-link"
-        %li.nav-item
+      #navigation_users_path
+        %li.nav-item{class: current_page?(users_path) && 'active'}
           = link_to 'Staff', users_path, class: "nav-link"
-        %li.nav-item
-          = link_to 'Data', data_path, class: "nav-link"
-        %li.nav-item
+      #navigation_datasets_path
+        %li.nav-item{class: current_page?(datasets_path) && 'active'}
+          = link_to 'Datasets', datasets_path, class: "nav-link"
+      - if current_user
+        #navigation_datagroups_path
+          %li.nav-item{class: current_page?(datagroups_path) && 'active'}
+            = link_to 'Datagroups', datagroups_path, class: "nav-link"
+      #navigation_paperproposals_path
+        %li.nav-item{class: current_page?(paperproposals_path) && 'active'}
           = link_to 'Papers', :paperproposals, class: "nav-link"
-        %li.nav-item.dropdown
-          %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
-            Acount
-          .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-            - if current_user
-              = link_to "Notifications (#{current_user.notifications.where(:read => false).count})", notifications_path, class: "dropdown-item"
-              = link_to 'Logout', logout_path, class: "dropdown-item"
-              - if current_user.open_votes_count > 0
-                = link_to "Data requests (#{current_user.open_votes_count})", votes_profile_path, class: "dropdown-item"
-                = link_to 'Profile', profile_path, class: "dropdown-item"
-            - else
-              %a.dropdown-item
-                = bootstrap_form_for(UserSession.new, :url => user_session_path) do |f|
-                  = f.text_field :login
-                  = f.password_field :password
-                  = f.check_box :remember_me
-                  = f.submit "Log In"
-        - if current_user
-          %li.nav-item
-            = link_to 'Cart', current_cart_url, class: "nav-link"
-      = form_tag "/search", method: :get, class: 'form-inline my-2 my-lg-0'  do
-        = search_field_tag :q, params[:q], aria: "Search", placeholder: "Search", type: "search", class: "form-control mr-sm-2"
-        = submit_tag 'Search', name: nil, class: "btn btn-outline-success my-2 my-sm-0", type: "submit"
+    .div
+      - if current_user
+        .btn-group
+          = link_to "<i class='fas fa-user' style='font-size:13px; vertical-align: middle;'></i>".html_safe, profile_path,
+            { class: "btn btn-outline-light darkgray-border text-muted",
+            'data-toggle': "tooltip",
+            'title': "Logged in as: #{current_user}",
+            'data-placement': "auto"}
+          - if current_user.open_votes_count > 0
+            = link_to "<i class='fas fa-vote-yea' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.open_votes_count}".html_safe, votes_profile_path,
+              { class: "btn btn-outline-light darkgray-border text-primary",
+              'data-toggle': "tooltip",
+              'title': "Data requests",
+              'data-placement': "auto"}
+          - else
+            = link_to "<i class='fas fa-vote-yea' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.open_votes_count}".html_safe, votes_profile_path,
+              { class: "btn btn-outline-light darkgray-border text-muted",
+              'data-toggle': "tooltip",
+              'title': "Data requests",
+              'data-placement': "auto"}
+          - if current_user.notifications.where(:read => false).count > 0
+            = link_to "<i class='fas fa-bell' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.notifications.where(:read => false).count}".html_safe, notifications_path,
+              { class: "btn btn-outline-light darkgray-border text-primary",
+              'data-toggle': "tooltip",
+              'title': "Notifications",
+              'data-placement': "auto"}
+          - else
+            = link_to "<i class='fas fa-bell' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.notifications.where(:read => false).count}".html_safe, notifications_path,
+              { class: "btn btn-outline-light darkgray-border text-muted",
+              'data-toggle': "tooltip",
+              'title': "Notifications",
+              'data-placement': "auto"}
+          // also highlight how many items are in the cart and if there are any at all
+          = link_to "<i class='fas fa-shopping-cart' style='font-size:13px; vertical-align: middle;'></i> # 0".html_safe, current_cart_url,
+            { class: "btn btn-outline-light darkgray-border text-muted",
+            'data-toggle': "tooltip",
+            'title': "Cart",
+            'data-placement': "auto"}
+          = link_to "<i class='fas fa-sign-out-alt' style='font-size:13px; vertical-align: middle;'></i>".html_safe, logout_path,
+            { class: "btn btn-outline-light darkgray-border text-muted",
+            'data-toggle': "tooltip",
+            'title': "Logout",
+            'data-placement': "auto"}
+      - else
+        = link_to "<i class='fas fa-sign-in-alt' style='font-size:13px; vertical-align: middle;'></i> Login".html_safe, "#",
+          { class: "btn btn-outline-light darkgray-border text-muted",
+            'data-toggle': "modal",
+            'data-target': "#login_form"}
+
+// comment display modal
+#login_form.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-sm
+    .modal-content
+      / Modal Header
+      .modal-header.text-center
+        %h4.modal-title.w-100
+          Login
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        .container
+          .modal-form
+            = simple_form_for UserSession.new, :url => user_session_path do |f|
+              = f.input :login, required: false, label: "Name", input_html: { id: "login_input_field" }
+              = f.input :password, required: false
+              = f.input :remember_me, as: :boolean
+              = f.button :submit, style: "display: none;", class: "btn btn-primary"
+      / Modal footer
+      .modal-footer
+        -# %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          -# Close
+        #submit_login_form.btn.btn-outline-primary
+          Submit
+
+/ modal: when the submit button is clicked on the login form
+:javascript
+  $(document).ready(function() {
+    $('#submit_login_form').click(function () {
+      $('.modal-form').find('input[type=submit]').click();
+    });
+  });
+
+// todo: Add some code which based on the current url set the correct tab to active
+// this is not working:
+-# $(document).ready(function () {
+-# console.log($('a[href="' + this.location.pathname + '"]'))
+-# //$('a[href="' + this.location.pathname + '"]').parent().addClass('active');
+-# });
