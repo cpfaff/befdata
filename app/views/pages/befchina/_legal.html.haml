@@ -1,0 +1,80 @@
+/ variables
+
+// persons for reference
+- gemma_id = 181
+- helge_id = 8
+- claas_id = 108
+
+/ title
+
+- page_title = "Legals"
+
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Show: Legals
+
+// tabs with content
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#legal_tab_1", :role => "tab"} Info
+        .tab-content.equal-height
+          // metadata
+          #legal_tab_1.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              .div.pb-5
+                .div.pb-3
+                  .font-weight-bold.text-dark
+                    Hosted at:
+                    .font-weight-normal.text-dark
+                      = link_to("Institute of Biology / Geobotany and Botanical Garden", "https://www.botanik.uni-halle.de/geobotanik/")
+
+                .div.pb-3
+                  .font-weight-bold.text-dark
+                    Responsible for contents:
+                    .font-weight-normal.text-dark
+                      = link_to "Prof. Dr. Helge Bruelheide", {:controller => :users, :action => :show, :id => helge_id}
+
+                .div.pb-3
+                  .font-weight-bold.text-dark
+                    Adress project related questions to:
+                    .font-weight-normal.text-dark
+                      = link_to "Dr. Gemma Rutten", {:controller => :users, :action => :show, :id => gemma_id}
+
+                .div.pb-3
+                  .font-weight-bold.text-dark
+                    Address it realted questions to:
+                    .font-weight-normal.text-dark
+                      = link_to "Dr. Claas-Thido Pfaff", {:controller => :users, :action => :show, :id => claas_id}
+
+
+
+                %address
+                  %strong Angaben gemäß § 5 TMG:
+                  %br
+                  Martin Luther University Halle Wittenberg
+                  %br
+                  Am Kirchtor 1
+                  %br
+                  06108 Halle
+                  %br
+                %address
+                  %strong Vertreten durch:
+                  %br/
+                  = link_to "Prof. Dr. Helge Bruelheide", {:controller => :users, :action => :show, :id => helge_id}
+                  %br
+                  Phone: +49 345 55 26222
+                  %br
+                  Fax: +49 345 55 27228
+                  %br
+                  Mail:
+                  = mail_to("helge.bruelheide@botanik.uni-halle.de", nil, :encode => :javascript)
