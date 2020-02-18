@@ -1,5 +1,18 @@
-- page_title "Create a new Project & assign members"
+/ header
 
-%h2 Create a new Project & assign members
+// title
+- page_title "Create new project"
 
-= render partial: "form_for_project", :locals => {:roles => [{name: :pi, id: []},{name: "phd student", id: []}]}
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      New: Project
+
+// partial for projects form
+.div.pl-2
+  .div.pb-3.pt-3
+    = render partial: "form_for_project", locals: { roles: [ { name: :pi, id: [] }, { name: "phd student", id: [] }] }

@@ -1,4 +1,27 @@
-- page_title "Edit Project: #{@project.name}"
+/ header
 
-%h2 Edit Project #{link_to @project.name, @project}
-= render partial: "form_for_project", :locals => {:roles => @roles }
+// title
+- page_title "Edit project: #{@project.name}"
+
+
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Edit: #{@project.name}
+
+// partial for projects roles
+.div.pl-2
+  .div.pb-3.pt-3
+    = render partial: "form_for_project", locals: { roles: @roles }
+
+/ scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_projects_path').find('.nav-item').addClass('active');
+  });

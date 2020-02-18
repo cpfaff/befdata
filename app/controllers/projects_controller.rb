@@ -1,15 +1,39 @@
 # frozen_string_literal: true
 
 class ProjectsController < ApplicationController
-  before_action :load_project, only: %i[show edit update destroy]
-  skip_before_action :deny_access_to_all
+
+  # acess control
   access_control do
     allow all, to: %i[index show]
     allow :admin, to: %i[new create edit update destroy]
   end
 
+  # actions
+  before_action :load_project,
+    only: %i[show edit update destroy]
+
+  skip_before_action :deny_access_to_all
+
+  # helpers
+  helper_method :sort_column, :sort_direction
+
+  # methods
   def index
-    @projects = Project.select('id, name, shortname, comment').order('shortname')
+    # get
+    @projects = Project.all
+
+    # order
+    @projects = @projects.order(sort_column + " " + sort_direction)
+
+    # paginate
+    @pagy, @projects = pagy(@projects)
+
+    # TODO:
+    # This has been used in datagroups and might help here as well
+    # in order to sort for the user count and the count of datasets
+    # @datagroups = Datagroup.select('id, title, description, created_at,
+    # datacolumns_count, (select count(*) from categories where datagroup_id
+    # = datagroups.id) as categories_count')
   end
 
   def show
@@ -66,7 +90,17 @@ class ProjectsController < ApplicationController
 
   private
 
+  def sort_column
+    # defines default sort column
+    Project.column_names.include?(params[:sort]) ? params[:sort] : "shortname"
+  end
+
+  def sort_direction
+    # defines default sort direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+  end
+
   def load_project
-    @project = Project.find_by_id(params[:id])
+    @project = Project.find(params[:id])
   end
 end

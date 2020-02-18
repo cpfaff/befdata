@@ -1,55 +1,145 @@
-= form_for @project do |f|
-  = f.error_messages
-  = f.label :shortname, class: "required"
-  = f.text_field :shortname
-  = f.label :name, class: "required"
-  = f.text_field :name
-  = f.label :description
-  = f.text_area :description
-  = f.label :comment
-  = f.text_area :comment
-  = field_set_tag "Manage members" do
-    #roles
-      %noscript
-        %p you need javascript enabled to manage membership. Please enable javascript and refresh page.
-      = render :partial => 'role', :collection => roles
-    = link_to "+ Add role", "#", id: "add_role"
-  %div
-    = f.submit
+/ head
 
+// variables
+
+// crate from fields from partial
 - new_fields = j render(:partial => 'role', :locals => { :role => {name: nil, id: [] } })
+
+// define maximum allowed roles
 - max_num = all_project_roles.length
+
+/ body
+
+// partial
+= simple_form_for(@project) do |f|
+  = f.error_notification
+  %body
+    %div
+      %ul.nav.nav-tabs
+        %li.nav-item
+          %a.nav-link.active{"data-toggle" => "tab", :href => "#tab-1", :role => "tab"} Basics
+        %li.nav-item
+          %a.nav-link{"data-toggle" => "tab", :href => "#tab-2", :role => "tab"} Roles
+      .tab-content.equal-height
+        #tab-1.tab-pane.active{:role => "tabpanel"}
+          .container
+            %br
+            = field_set_tag "Metadata" do
+              = f.input :shortname,
+                require: true,
+                hint: "A short name for the project (e.g. z1, sp2, ...)"
+              = f.input :name,
+                require: true,
+                hint: "A full name or title for the project."
+              = f.input :description,
+                hint: "A detailed description.",
+                input_html: { rows: 10 }
+              = f.input :comment,
+                hint: "It is only visible to admins, and project board members!",
+                input_html: { rows: 10 }
+        #tab-2.tab-pane{:role => "tabpanel"}
+          .container
+            %br
+            = field_set_tag "Manage members" do
+              .text-justify.pb-3
+                Here you can add all users which are involved with the
+                project and assign them to roles. Simply select a role and
+                pick existing users who fill the roles. Note: You can only
+                have unique roles. And only one principle and one second
+                principle investigator.
+              #roles
+                %noscript
+                  %p Please enable javascript and refresh the page to manage membership.
+                = render :partial => 'role', :collection => roles
+              .pt-2
+                #add_role.btn.btn-sm.btn-outline-success
+                  = fa_icon('plus', text: "Add Role")
+  .container
+    .pt-5.pb-2
+      - if @project.new_record?
+        = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, projects_path,
+          { class: "btn btn-outline-primary" }
+      - else
+        = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, project_path(@project),
+          { class: "btn btn-outline-primary" }
+      = f.button :submit, class: "btn btn-outline-primary", data: { disable_with: false }
+
+/ modals
+
+// warning about maximum roles
+#maximum_roles.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Note
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        You alredy reached the maximum number of roles.
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+// warning about duplicate roles
+#duplicate_roles.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Note
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        You selected duplicated roles. Please remove or change.
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+/ scripts
+
+// handle roles
 :javascript
   $(function(){
-    $("select.select2").select2({
-      placeholder: "Select users"
-    });
+    // add a role
     $("#add_role").click(function(){
       if ($(".role").length < "#{max_num}")
       {
-        $("#{new_fields}").appendTo("#roles").find("select.select2").select2({
-          placeholder: "Select users"
-        });
+        $("#roles").append("#{new_fields}");
       }
       else {
-        alert("Currently, At most #{max_num} role groups allowed.");
+        $('#maximum_roles').modal('show');
       }
       return(false);
     });
-    $("#roles").on("click", "a.empty", function(){
-      $(this).prev("select.select2").select2("val","");
-      return(false);
-    });
+
     $("form.edit_project, form.new_project").submit(function(e){
       var roles = $(this).find("select[name='roles[][type]']").map(function(){
         return $(this).val();
       });
+
       $.each(roles, function(i, v){
         if($.inArray(v, roles) != i) {
-          alert("Found duplicated role groups!\nplease check your membership configuration.");
+          $('#duplicate_roles').modal('show');
           e.preventDefault();
-          return false;
+          return(false);
         }
       });
     })
   })
+
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content .tab-pane:first").addClass("active");
+    $(".tab-content").height(maxHeight);
+  });

@@ -1,23 +1,178 @@
+/ title
+
 - page_title "Projects"
 
-- if current_user && current_user.has_role?(:admin)
-  = content_for :actions do
-    = link_to new_project_path do
-      = image_tag "add.png"
-      Create a new project
-%h2 Projects
-%ul.projects
-  - @projects.each do |project|
-    %li.project
-      = link_to project.name, project_path(project)
-      (
-      %abbr{title: "Short name for '#{project.name}'", style: 'cursor:text;'}<>
-        = project.shortname
-      )
-      = show_to :admin, :data_admin, :project_board do
-        .help-block= project.comment
+/ body
 
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Index: projects
+
+/ sidebar
+
+= content_for :actions do
+  #actions.pt-1
+    // scroll up
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Up" ,
+      'data-placement': "auto"}
+    // actions
+    .div.pt-2.pb-2
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      / section tools
+      - if current_user
+        - if current_user.has_role?(:admin).present?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        = show_to :admin do
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Add new project', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-plus'></i>".html_safe, new_project_path,
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+      // add a separator if more actions are appended
+      -# .div.pb-4
+    // scroll down
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+
+// filters
+.div.pl-2
+  .div.pb-3.pt-3
+    %h5
+      Filter:
+
+    .input-group
+      %input#filter_input_projects.form-control{:placeholder => "Type..", :type => "text"}
+      .input-group-append
+        = link_to "Reset", "#",
+          { class: "btn btn-outline-primary", id: "button_clear_projects_filter",
+          'data-turbolinks': false, }
+
+  // sorting
+  .div.pb-4
+    %h5
+      Sort:
+    .btn-group
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "name"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "shortname"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "created_at", "Created", "numeric"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "updated_at", "Updated", "numeric"
+
+  // content
+
+  - if @projects.present?
+    #filter_target_projects.card-columns.single
+      - @projects.each do |project|
+        = render partial: project
+  - else
+    No information avialable
+
+  #filter_target_projects_empty_note.d-none
+    No information available
+
+  // pagination
+  %br
+  != pagy_bootstrap_nav @pagy
+
+
+/ scripts
+
+// filter the projects
 :javascript
-  $("abbr").hover(function(){
-    selectElementText(this);
-  })
+  $(document).ready(function() {
+    $('#filter_input_projects').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_projects').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_projects").find('.card').is(':visible')) {
+            $("#filter_target_projects_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_projects_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_projects_filter').click(function(){
+      $('#filter_input_projects').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_projects').find('.card').removeClass('d-none');
+      $("#filter_target_projects_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_projects').each(function(){
+        $(this).val('');
+        $('#filter_target_projects').find('.card').removeClass('d-none');
+        $("#filter_target_projects_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// resubmit the form on changes in the selection menu
+:javascript
+  $(document).ready(function() {
+    $('select').on('change', function() {
+      var $form = $(this).closest('form');
+      $form.find('input[type=submit]').click();
+    });
+  });
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// scolling on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body to 0px on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });

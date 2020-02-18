@@ -1,0 +1,46 @@
+// partial for projects
+= link_to project do
+  .card.shadow-sm.mb-4
+    .card-body
+      %h4.card-title
+        = project.shortname += ":"
+        = project.name
+      %p.card-text
+        .font-weight-bold.text-dark
+          Description:
+        - if project.description.blank?
+          .font-weight-normal.text-dark
+            No information available
+        - else
+          .font-weight-normal.text-dark
+            = project.description.truncate(250)
+      .pt-2.pb-3
+        .float-left
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if project.users.count
+                = fa_icon('user')
+                Users:
+                = project.users.count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              = fa_icon('file')
+              Datasets:
+              = project.datasets.count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              = fa_icon('newspaper')
+              Proposals:
+              = project.authored_paperproposals.count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if project.created_at
+                = fa_icon('calendar')
+                Created at:
+                = project.created_at.strftime("%F")
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if project.updated_at
+                = fa_icon('calendar')
+                Updated at:
+                = project.updated_at.strftime("%F")
