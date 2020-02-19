@@ -1,15 +1,49 @@
-/ possible parameters for avatar: :none, :small, :medium, :large
-/ possible parameters for name: :show, :full
-/ extra text like role names can also be include
-.user
-  - avatar ||= :small
-  - name ||= :show
-  = link_to user do
-    - if (avatar != :none)
-      = image_tag(user.avatar.url(avatar))
-    - if (name == :show)
-      %span.username= user
-    - if (name == :full)
-      %span.username= user.full_name
-  - if defined?(extra) && !extra.blank?
-    %span.userextra= extra
+/ variables
+
+// possible parameters for avatar: :none, :small, :medium, :large
+- avatar_size ||= :medium
+
+// possible parameters for name: :show, :full
+- name ||= :show
+
+// we can overwrite the toles
+- role ||= nil
+
+// display users
+.card.shadow-sm.text-center
+  .card-body
+    .div.pt-2
+      = image_tag(user.avatar.url(avatar_size), class: "mx-auto d-block rounded")
+    %br
+    %h4.card-title
+      = link_to user do
+        %p.text-center
+          = user.firstname
+          %br
+          = user.lastname
+    %p.card-text
+      - if role
+        .text-muted
+          Roles:
+          %br
+          = role
+      - else
+        .text-muted
+          Roles:
+          %br
+          = user.roles.pluck(:name).uniq.map(&:humanize).join(", ")
+    %p.card-text
+      .text-muted
+        Owner of:
+        %br
+        = user.datasets_owned.count
+        Datasets
+    %p.card-text
+      .text-muted
+        Involved in:
+        %br
+        = user.projects.count
+        Projects
+    .dropdown-divider.pb-2
+    = mail_to user.email, "E-Mail", class: "btn btn-outline-primary"
+    = link_to "Profile", user_path(user), class: "btn btn-outline-primary"

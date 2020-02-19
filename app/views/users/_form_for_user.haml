@@ -1,49 +1,105 @@
-= form_for @user do |f|
-  = f.error_messages
-  = field_set_tag "Profile" do
-    = f.label :login, class: "required"
-    = f.text_field :login
-    = f.label :password, class: "required"
-    = f.password_field :password
-    = f.label :password_confirmation, 'Password confirm', class: "required"
-    = f.password_field :password_confirmation
-    = f.label :firstname, class: "required"
-    = f.text_field :firstname
-    = f.label :middlenames
-    = f.text_field :middlenames
-    = f.label :lastname, class: "required"
-    = f.text_field :lastname
-    = f.label :salutation
-    = f.text_field :salutation
-    = f.label :email, class: "required"
-    = f.text_field :email
-    .group
-      = f.label :project_board
-      = f.check_box :project_board
-    .group
-      = f.label :admin
-      = f.check_box :admin
-    .group
-      = f.label :data_admin
-      = f.check_box :data_admin
-    .group
-      = f.label :alumni
-      = f.check_box :alumni
-    .avatar
-      = f.label :avatar,"Change Avatar"
-      = image_tag @user.avatar.url(:small)
-      = f.file_field :avatar
-  = field_set_tag "Belongs to project" do
-    #roles
-      %noscript
-        %p you need javascript enabled to manage user roles. Please enable javascript and refresh page.
-      = render :partial => 'role', collection: project_roles
-    = link_to "+ Add role", "#", id: "add_role"
-  = f.submit class: "pull-left"
+/ variables
 
-- role_form = j render :partial => "role", :locals => { role: {role_name: nil, project_id: nil}}
+// role form from partial
+- role_form = j render :partial => "role", :locals => { role: { role_name: nil, project_id: nil }}
+
+/ body
+
+// form user
+= simple_form_for @user, wrapper_mappings: { check_boxes: :vertical_collection, radio_buttons: :vertical_collection, file: :custom_file, boolean: :custom_boolean_switch } do |f|
+  = f.error_notification
+  %body
+    %div
+      %ul.nav.nav-tabs
+        %li.nav-item
+          %a.nav-link.active{"data-toggle" => "tab", :href => "#tab-1", :role => "tab"} Basics
+        %li.nav-item
+          %a.nav-link{"data-toggle" => "tab", :href => "#tab-2", :role => "tab"} Affiliation
+        %li.nav-item
+          %a.nav-link{"data-toggle" => "tab", :href => "#tab-3", :role => "tab"} Projects
+        %li.nav-item
+          %a.nav-link{"data-toggle" => "tab", :href => "#tab-4", :role => "tab"} Extras
+      .tab-content.equal-height
+        #tab-1.tab-pane.active{:role => "tabpanel"}
+          .container
+            %br
+            = field_set_tag "Profile" do
+              = f.input :salutation
+              = f.input :firstname, required: true
+              = f.input :middlenames
+              = f.input :lastname, required: true
+              = image_tag @user.avatar.url(:small)
+              = f.input :avatar, as: :file
+            = field_set_tag "Login" do
+              = f.input :email, required: true
+              = f.input :login, required: true
+              = f.input :password, required: true
+              = f.input :password_confirmation, required: true
+            - if current_user
+              - if current_user.has_role?(:admin)
+                = field_set_tag "Roles" do
+                  %div.pl-3
+                    = f.input :project_board, as: :boolean
+                    = f.input :admin, as: :boolean
+                    = f.input :data_admin, as: :boolean
+                    = f.input :alumni, as: :boolean
+        #tab-2.tab-pane{:role => "tabpanel"}
+          .container
+            %br
+            = field_set_tag "Institution" do
+              = f.input :institution_name
+              = f.input :institution_url, as: :url
+              = f.input :institution_phone, as: :tel
+              = f.input :institution_fax, as: :tel
+              = f.input :street
+              // TODO: This field throws an error
+              -# = f.input :country
+              = f.input :city
+        #tab-3.tab-pane{:role => "tabpanel"}
+          .container
+            %br
+            = field_set_tag "Associate to project" do
+              #roles
+                %noscript
+                  %p you need javascript enabled to manage user roles. Please enable javascript and refresh page.
+                = render :partial => 'role', collection: project_roles
+              #btn_add_role.btn.btn-sm.btn-outline-success
+                = fa_icon('plus', text: "Add Project")
+        #tab-4.tab-pane{:role => "tabpanel"}
+          .container
+            %br
+            = field_set_tag "Administrative" do
+              = f.input :comment, hint: "Only admins and the project board can see this comment.", input_html: { rows: 10 }
+
+  .container
+    %div.pt-5.pb-2
+      - if @user.new_record?
+        = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, users_path,
+          { class: "btn btn-outline-primary" }
+      - else
+        = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, user_path(@user),
+          { class: "btn btn-outline-primary" }
+      = f.button :submit, class: "btn btn-outline-primary"
+
+/ scripts
+
+// append a role form
 :javascript
-  $("#add_role").click(function(){
+  $("#btn_add_role").click(function(){
     $("#roles").append("#{role_form}");
     return(false);
   })
+
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content.equal-height .tab-pane:first").addClass("active");
+    $(".tab-content.equal-height").height(maxHeight);
+  });

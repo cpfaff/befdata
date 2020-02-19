@@ -1,55 +1,675 @@
-- page_title @user
+// TODO: Now that users can edit their only their own profiles
+// we can move over content from profiles page.
 
-= show_to :admin do
-  = content_for :actions do
-    = link_to edit_user_path(@user) do
-      = image_tag "edit.png"
-      Edit User
-    -if @user.destroyable?
-      = link_to user_path(@user), :method => :delete, data: { confirm: "Are you sure to delete #{@user.to_label}" } do
-        = image_tag "trash.png"
-        Delete User
-- unless @project_roles.blank?
-  = content_for :info do
-    %h3 Projects
-    %ul
-      - @project_roles.each do |role|
-        %li
-          = link_to role.authorizable, project_path(role.authorizable)
-          ="(#{@user.alumni ? 'Former ' : ''}#{t("role."+role.name)})"
+/ header
 
-%h2
-  .user
-    = image_tag(@user.avatar.url(:large))
-    %span.username= @user
+//title
+- page_title "Profile of: #{@user.full_name}"
 
-%p
-  - unless @user.institution_phone.blank?
-    = "#{t("address.phone")}: #{@user.institution_phone}"
-    %br
-  - unless @user.email.blank?
-    Email:
-    = mail_to(@user.email, nil, :encode => :javascript)
-    %br
-  - unless @user.url.blank?
-    = "#{t("address.url")}:"
-    = link_to @user.url, @user.url, :target => "_blank"
-    %br
-  - unless @user.comment.blank?
-    = @user.comment
+/ body
 
-- unless @datasets_owned.empty?
-  %h3 Datasets
-  %ul
-    - @datasets_owned.each do |ds|
-      %li
-        = render :partial => ds, :locals => {:with_cart => true, :with_comment => true}
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Show: #{@user.full_name}
 
-- unless @datasets_with_responsible_datacolumns_not_owned.count==0
-  %h3 Involved with data columns within the following datasets
-  %ul
-    - @datasets_with_responsible_datacolumns_not_owned.each do |ds|
-      %li
-        = render :partial => ds, :locals => {:with_cart => true, :with_comment => false}
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
 
-= render :partial => 'paperproposals/associated_paperproposals', :locals => {:paperproposals => @paperproposals, :authorship_user => @user}
+    // actions
+    .div.pt-2.pb-2
+
+      // placeholder if action bar is empty
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      // section info
+      - if current_user
+        - if @user.comment.present?
+          = show_to :admin, :data_admin, :project_board do
+            .border-top.border-right.border-left.rounded.top-2.pb-1
+              %span{'data-toggle': 'tooltip', title: 'Info section', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-info'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                    'data-turbolinks': false }
+      // section info content
+      - if current_user
+        - if @user.comment.present?
+          = show_to :admin, :data_admin, :project_board do
+            .div.pt-2
+              %span{'data-toggle': 'tooltip', title: 'Show comment', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-comments'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-success",
+                    'data-toggle': "modal",
+                    'data-target': "#comment_user"}
+            .div.pb-4
+
+      / section edit
+      - if current_user
+        - if current_user.has_role?(:admin) || @user == current_user
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Edit section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section edit content
+      - if current_user
+        - if current_user.has_role?(:admin) || @user == current_user
+          .div.pt-2
+            = link_to "<i class='fas fa-tag'></i>".html_safe, edit_user_path(@user),
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Edit user metadata" ,
+              'data-placement': "auto"}
+            .div.pb-4
+
+      / section tools
+      - if current_user
+        - if current_user.has_role?(:admin)
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        - if current_user.has_role?(:admin)
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Delete user', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-success",
+                'data-toggle': "modal",
+                'data-target': "#delete_user"}
+      - if current_user
+        .div.pt-2
+          = link_to "<i class='fas fa-file-alt'></i>".html_safe, new_dataset_path,
+            { class: "btn btn-sm btn-block btn-outline-light text-success",
+            'data-toggle': "tooltip",
+            title: "Add new dataset" ,
+            'data-placement': "auto"}
+        .div.pt-2
+          = link_to "<i class='fas fa-newspaper'></i>".html_safe, new_paperproposal_path,
+            { class: "btn btn-sm btn-block btn-outline-light text-success",
+            'data-toggle': "tooltip",
+            title: "Add new paperproposal" ,
+            'data-placement': "auto"}
+      - if current_user
+        - if current_user.has_role?(:admin) || @user == current_user
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Show comment', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-key'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-success",
+                  'data-toggle': "modal",
+                  'data-target': "#credentials_user"}
+
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+// tabs with content
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#user_tab_1", :role => "tab"} Metadata
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#user_tab_2", :role => "tab"} Projects
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#user_tab_3", :role => "tab"} Datasets
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#user_tab_4", :role => "tab"} Datacolumns
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#user_tab_5", :role => "tab"} Proposals
+        .tab-content.equal-height
+          // metadata
+          #user_tab_1.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              .row
+                .col-2
+                  %br
+                  = image_tag(@user.avatar.url(:large), class: "mx-auto d-block float-left rounded")
+                .col-10
+                  %br
+                  - if current_user
+                    - if current_user.has_role?(:admin)
+                      .div.pb-3
+                        .font-weight-bold.text-dark
+                          Last login:
+                        - if @user.last_login_at.present?
+                          .font-weight-normal.text-dark
+                            = @user.last_login_at.to_date
+                        - else
+                          .font-weight-normal.text-muted
+                            No information available
+
+                  .div.pb-3
+                    .font-weight-bold.text-dark
+                      Salutation:
+                    - if @user.salutation.present?
+                      .font-weight-normal.text-dark
+                        = @user.salutation
+                    - else
+                      .font-weight-normal.text-muted
+                        No information available
+
+                  .div.pb-3
+                    .font-weight-bold.text-dark
+                      Name:
+                    - if @user.full_name.present?
+                      .font-weight-normal.text-dark
+                        = @user.full_name
+                    - else
+                      .font-weight-normal.text-muted
+                        No information available
+
+                  .div.pb-3
+                    .font-weight-bold.text-dark
+                      Phone:
+                    - if @user.institution_phone.present?
+                      .font-weight-normal.text-dark
+                        = @user.institution_phone
+                    - else
+                      .font-weight-normal.text-muted
+                        No information available
+
+                  .div.pb-3
+                    .font-weight-bold.text-dark
+                      Email:
+                    - if @user.email.present?
+                      .font-weight-normal.text-dark
+                        = mail_to(@user.email, nil, :encode => :javascript)
+                    - else
+                      .font-weight-normal.text-muted
+                        No information available
+
+                  .div.pb-3
+                    .font-weight-bold.text-dark
+                      URL:
+                    - if @user.url.present?
+                      .font-weight-normal.text-dark
+                        = link_to @user.url, @user.url, :target => "_blank"
+                    - else
+                      .font-weight-normal.text-muted
+                        No information available
+
+                  .div.pb-3
+                    - unless @project_roles.blank?
+                      .font-weight-bold.text-dark
+                        Roles:
+                        - @project_roles.each do |role|
+                          .font-weight-normal.text-dark
+                            = link_to role.authorizable, project_path(role.authorizable)
+                            ="(#{@user.alumni ? 'Former ' : ''}#{t("role."+role.name)})"
+
+          #user_tab_2.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @user.projects.present?
+                // filter for projects
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_projects.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "#",
+                        { class: "btn btn-outline-primary", id: "button_clear_projects_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing projects
+                #filter_target_projects.card-columns.single
+                  - @user.projects.each do |project|
+                    = render partial: project
+              - else
+                .font-weight-normal.text-dark
+                  No information avialable
+
+              #filter_target_projects_empty_note.d-none
+                No information avialable
+
+          #user_tab_3.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @user.datasets_owned.present?
+                // filter for datasets
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_datasets.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "#",
+                        { class: "btn btn-outline-primary", id: "button_clear_datasets_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_datasets.card-columns.single
+                  - @user.datasets_owned.each do |dataset|
+                    = render partial: dataset, locals: { index: true }
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_datasets_empty_note.d-none
+                No information avialable
+
+          #user_tab_4.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @datasets_with_responsible_datacolumns_not_owned.present?
+                // filter for datasets
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_datacolumns.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "#",
+                        { class: "btn btn-outline-primary", id: "button_clear_datacolumns_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_datacolumns.card-columns.single
+                  - @datasets_with_responsible_datacolumns_not_owned.each do |dataset|
+                    = render partial: dataset, locals: { index: true }
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_datacolumns_empty_note.d-none
+                No information avialable
+
+          #user_tab_5.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              // when you are logged in
+              - if current_user
+                // when proposals is empty
+                - if @user.paperproposals.empty?
+                  .font-weight-normal.text-dark
+                    No information available
+                - else
+                  // filter for proposals
+                  %div.pb-1
+                    .font-weight-bold.text-dark
+                      Filter:
+
+                  %div.pb-3
+                    .input-group
+                      %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
+                      .input-group-append
+                        = link_to "Reset", "#",
+                          { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
+                          'data-toggle': "tooltip",
+                          'data-turbolinks': false,
+                          'title': "Clear Filter" ,
+                          'data-placement': "auto"}
+
+                  // cards listing proposals
+                  #filter_target_proposals.card-columns.single
+                    - @user.paperproposals.each do |paperproposal|
+                      = render partial: paperproposal
+              - else
+                // when proposals is empty
+                - if @user.paperproposals.select{ |p| p.state == 'accepted'}.empty?
+                  .font-weight-normal.text-dark
+                    No information available
+                - else
+                  // filter for proposals
+                  %div.pb-1
+                    .font-weight-bold.text-dark
+                      Filter:
+
+                  %div.pb-3
+                    .input-group
+                      %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
+                      .input-group-append
+                        = link_to "Reset", "#",
+                          { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
+                          'data-toggle': "tooltip",
+                          'data-turbolinks': false,
+                          'title': "Clear Filter" ,
+                          'data-placement': "auto"}
+
+                  // cards listing proposals
+                  #filter_target_proposals.card-columns.single
+                    - @user.paperproposals.select{ |p| p.state == 'accepted'}.each do |paperproposal|
+                      = render partial: paperproposal
+
+              #filter_target_proposals_empty_note.d-none
+                No information avialable
+
+/ modals
+
+// delete confirmation modal
+#delete_user.modal
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Delete Confirmation
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Are you sure?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = link_to 'Delete', user_path(@user), method: :delete, class: 'btn btn-outline-danger'
+
+// comment display modal
+#comment_user.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          Comment
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        - if @user.comment.present?
+          = show_to :admin, :data_admin, :project_board do
+            = @user.comment
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+// comment display modal
+#credentials_user.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          Credentials
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        .div.pb-3
+          .text-justify
+            The rBEFdata R package allows you to access all your data and
+            metadata stored on the portal for analysis purposes. Here you find
+            the credentials to be used in the rBEFdata R package. Your
+            credentials are like passwords. Do not share them with others. In
+            case you shared your credentials on accident (e.g. embedded in an R
+            script you can refresh them here)
+        .div.pb-3
+          .input-group
+            = text_field_tag :single_access_token, @user.try(:single_access_token), :readonly => true, class: "form-control"
+            .input-group-append
+              %button.btn.btn-primary.clipboard-btn{"data-clipboard-action" => "copy", "data-clipboard-target" => "#single_access_token"}
+                Copy
+        .div
+          = link_to "Refresh credentials".html_safe, update_credentials_profile_path, method: :post, remote: true, class: 'btn btn-sm btn-primary'
+          = link_to 'Get rBEFdata', 'http://cran.r-project.org/web/packages/rbefdata',
+            target: '_blank', "original-title" => 'An R package to communicate with BEFdata portal',
+            class: "btn btn-sm btn-primary"
+
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+/ scripts
+
+// copy to clipboard
+:javascript
+  $('.clipboard-btn').tooltip({
+    trigger: 'click',
+    placement: 'bottom'
+  });
+
+  function setTooltip(btn, message) {
+    $(btn).tooltip('show')
+      .attr('data-original-title', message)
+      .tooltip('show');
+  }
+
+  function hideTooltip(btn) {
+    setTimeout(function() {
+      $(btn).tooltip('hide');
+    }, 1000);
+  }
+
+  // Clipboard
+  var clipboard = new Clipboard('.clipboard-btn');
+
+  clipboard.on('success', function(e) {
+    setTooltip(e.trigger, 'Copied!');
+    hideTooltip(e.trigger);
+  });
+
+  clipboard.on('error', function(e) {
+    setTooltip(e.trigger, 'Failed!');
+    hideTooltip(e.trigger);
+  });
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_users_path').find('.nav-item').addClass('active');
+  });
+
+// hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content.equal-height .tab-pane:first").addClass("active");
+    $(".tab-content.equal-height").height(maxHeight);
+  });
+
+// scolling on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body to 0px on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });
+
+// filter the projects
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_projects').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_projects').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_projects").find('.card').is(':visible')) {
+            $("#filter_target_projects_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_projects_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_projects_filter').click(function(){
+      $('#filter_input_projects').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_projects').find('.card').removeClass('d-none');
+      $("#filter_target_projects_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_projects').each(function(){
+        $(this).val('');
+        $('#filter_target_projects').find('.card').removeClass('d-none');
+        $("#filter_target_projects_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the datasets
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datasets').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datasets').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_datasets").find('.card').is(':visible')) {
+            $("#filter_target_datasets_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datasets_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_datasets_filter').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_datasets').find('.card').removeClass('d-none');
+      $("#filter_target_datasets_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+        $('#filter_target_datasets').find('.card').removeClass('d-none');
+        $("#filter_target_datasets_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the datacolumns
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datacolumns').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datacolumns').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_datacolumns").find('.card').is(':visible')) {
+            $("#filter_target_datacolumns_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datacolumns_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_datacolumns_filter').click(function(){
+      $('#filter_input_datacolumns').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_datacolumns').find('.card').removeClass('d-none');
+      $("#filter_target_datacolumns_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_datacolumns').each(function(){
+        $(this).val('');
+        $('#filter_target_datacolumns').find('.card').removeClass('d-none');
+        $("#filter_target_datacolumns_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the proposals
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_proposals').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_proposals').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_proposals").find('.card').is(':visible')) {
+            $("#filter_target_proposals_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_proposals_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_proposals_filter').click(function(){
+      $('#filter_input_proposals').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_proposals').find('.card').removeClass('d-none');
+      $("#filter_target_proposals_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_proposals').each(function(){
+        $(this).val('');
+        $('#filter_target_proposals').find('.card').removeClass('d-none');
+        $("#filter_target_proposals_empty_note").addClass('d-none');
+      });
+    });
+  });

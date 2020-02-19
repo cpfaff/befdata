@@ -1,73 +1,73 @@
 // Place all the styles related to the users controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
-.userextra{
-  font-style: italic;
-  color:#333;
-}
-.edit_user, .new_user {
-  width: 640px;
-  margin-left: 10px;
-  label{
-    display: inline-block;
-    float:left;
-    width: 150px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    margin-right: 20px;
-  }
-  input, textarea {
-    width: 340px;
-  }
-  input[type="checkbox"] {
-    width: auto;
-  }
-  input[type="submit"] {
-    width: auto;
-    margin-left: 160px;
-    margin-top: 20px;
-  }
-  input[type="submit"].pull-left {
-    margin-left: 0px;
-  }
-  textarea {
-    height: 100px;
-    resize: vertical;
-  }
-  .avatar {
-    width: 500px;
-    float:left;
-    margin-right: 20px;
-    display: block;
-  }
-  .avatar input {
-    margin-left: 160px;
-  }
-  fieldset {
-    width: 520px;
-    border:solid 1px rgb(231,231,231);
-    padding: 12px;
-    margin: 5px 0px;
-    legend {
-      padding: 5px;
-    }
-    select.project_id {
-      width: 294px;
-    }
-    select.role_name {
-      width: 164px;
-    }
-    span {
-      position: relative;
-      top: -0.4em;
-      padding: 0px 3px;
-    }
-  }
-}
+// .userextra{
+  // font-style: italic;
+  // color:#333;
+// }
+// .edit_user, .new_user {
+  // width: 640px;
+  // margin-left: 10px;
+  // label{
+    // display: inline-block;
+    // float:left;
+    // width: 150px;
+    // text-overflow: ellipsis;
+    // white-space: nowrap;
+    // overflow: hidden;
+    // margin-right: 20px;
+  // }
+  // input, textarea {
+    // width: 340px;
+  // }
+  // input[type="checkbox"] {
+    // width: auto;
+  // }
+  // input[type="submit"] {
+    // width: auto;
+    // margin-left: 160px;
+    // margin-top: 20px;
+  // }
+  // input[type="submit"].pull-left {
+    // margin-left: 0px;
+  // }
+  // textarea {
+    // height: 100px;
+    // resize: vertical;
+  // }
+  // .avatar {
+    // width: 500px;
+    // float:left;
+    // margin-right: 20px;
+    // display: block;
+  // }
+  // .avatar input {
+    // margin-left: 160px;
+  // }
+  // fieldset {
+    // width: 520px;
+    // border:solid 1px rgb(231,231,231);
+    // padding: 12px;
+    // margin: 5px 0px;
+    // legend {
+      // padding: 5px;
+    // }
+    // select.project_id {
+      // width: 294px;
+    // }
+    // select.role_name {
+      // width: 164px;
+    // }
+    // span {
+      // position: relative;
+      // top: -0.4em;
+      // padding: 0px 3px;
+    // }
+  // }
+// }
 
-#create_user {
-  outline: dashed 1px rgb(10,10,10);
-}
+// #create_user {
+  // outline: dashed 1px rgb(10,10,10);
+// }
 
 

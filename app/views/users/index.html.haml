@@ -1,27 +1,172 @@
-- page_title "Staff"
+/ title
 
-%h2 BEF Staff
+- page_title = "Staff"
 
-%ul.nav-tabs#staff-tab
-  %li.active= link_to 'Members', '#members', {role: 'tab', 'data-toggle' => 'tab'}
-  %li= link_to 'Alumni', '#alumni', {role: 'tab', 'data-toggle' => 'tab'}
-  = show_to :admin do
-    %li.right.link
-      = link_to new_user_path do
-        = image_tag 'add.png', class: 'icon'
-        New User
+/ body
 
-.tab-content
-  #members.tab-pane.active
-    - @users.where(alumni: false).each do |person|
-      .span-4#user-index{:class => cycle('noborder', 'noborder', 'last', :name => 'display_in_columns')}
-        = render :partial => person
-  #alumni.tab-pane
-    - @users.where(alumni: true).each do |person|
-      .span-4#user-index{:class => cycle('noborder', 'noborder', 'last', :name => 'display_in_columns')}
-        = render :partial => person
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Index: staff
 
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
+
+    // actions
+    .div.pt-2.pb-2
+
+      // placeholder if action bar is empty
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      / section tools
+      - if current_user
+        - if current_user.has_role?(:admin).present?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        = show_to :admin do
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Add new user', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-plus'></i>".html_safe, new_user_path,
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+          -# .div.pb-4
+
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+
+// filters
+.div.pl-2
+  .div.pb-3.pt-3
+    %h5
+      Filter:
+
+    .input-group
+      %input#filter_input_users.form-control{:placeholder => "Type..", :type => "text"}
+      .input-group-append
+        = link_to "Reset", "#",
+          { class: "btn btn-outline-primary", id: "button_clear_users_filter",
+          'data-turbolinks': false, }
+
+  // sorting
+  .div.pb-4
+    %h5
+      Sort:
+    .btn-group
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "firstname"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "lastname"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "created_at", "Created", "numeric"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "updated_at", "Updated", "numeric"
+
+  // content
+  - if @users.present?
+    #filter_target_users.card-columns.double
+      - @users.each do |user|
+        // render partial projects
+        = render partial: user
+  - else
+    No information avialable
+
+  #filter_target_users_empty_note.d-none
+    No information available
+
+  // pagination
+  %br
+    .div.pull-right
+      != pagy_bootstrap_nav @pagy
+
+
+/ scripts
+
+// filter the users
 :javascript
-  $(function(){
-    $("#staff-tab").simpleTab();
+  $(document).ready(function() {
+    $('#filter_input_users').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_users').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_users").find('.card').is(':visible')) {
+            $("#filter_target_users_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_users_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_users_filter').click(function(){
+      $('#filter_input_users').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_users').find('.card').removeClass('d-none');
+      $("#filter_target_users_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_users').each(function(){
+        $(this).val('');
+        $('#filter_target_users').find('.card').removeClass('d-none');
+        $("#filter_target_users_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// enable hover shadow on cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// enalbel scroll on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body top on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body bottom on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
   });

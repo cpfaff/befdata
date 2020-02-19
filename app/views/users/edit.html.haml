@@ -1,5 +1,24 @@
-- page_title "Edit user: #{@user}"
+/ title
 
-%h2 Editing profile of #{link_to @user, @user}
+- page_title "Edit profile of: #{@user}"
 
-= render :partial => 'form_for_user', :locals => { :project_roles => @project_roles }
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Edit: #{@user}
+
+/ form
+.div.pl-2
+  .div.pb-3.pt-3
+    = render :partial => 'form_for_user', locals: { project_roles: @project_roles }
+
+
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_users_path').find('.nav-item').addClass('active');
+  });

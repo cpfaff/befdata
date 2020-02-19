@@ -1,48 +1,102 @@
--# This partial sets a link to and opens a modal with a list of email addresses
--# These parameters must be given:
--#   css: to modify the css ids
--#   caption: text for the link
--#   contacts: a collection of users
+/ variables
 
-- modal_id = "#{css}_email_modal"
-- link_id = "show_#{modal_id}"
+// emails as simple string
+- email_string_simple = contacts.map(&:email).join(', ')
 
-- string_simple = contacts.map(&:email).join(', ')
-- string_with_names = contacts.map(&:email_with_name).join(', ')
+// email with names included
+- email_string_with_names = contacts.map(&:email_with_name).join(', ')
 
-%a{:href => '#', :class => 'email_modal_link', :id => link_id}
-  = caption
+/ modals
 
-%div{:class => 'email_modal hidden', :id => modal_id}
-  %h3
-    = caption
-  .menu
-    %a{:href => '#', :class => 'show_simple_email_list'}
-      Simple list
-    %a{:href => '#', :class => 'show_email_list_with_names'}
-      With names
-  %textarea.email_addresses{:readonly => 'readonly'}
-    = string_simple
-  %p.close_hint
-    Click somewhere outside or press ESC to close
+// email modal
+#email_users.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          E-Mails
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        %ul.nav.nav-tabs
+          %li.nav-item
+            %a.nav-link.active{"data-toggle" => "tab", :href => "#tab-1", :role => "tab"}
+              All Plain
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#tab-2", :role => "tab"}
+              All With Names
+        .tab-content.equal-height-modal
+          #tab-1.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              .div.pb-1
+                // show all emails
+                = email_string_simple
+                // copy emails to clipboard
+              %button.btn.btn-sm.btn-outline-primary.clipboard-btn{"data-clipboard-text" => "#{email_string_simple}"}
+                Copy
 
+          #tab-2.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              .div.pb-1
+                // show all emails
+                = email_string_with_names
+                // copy emails to clipboard
+              %button.btn.btn-sm.btn-outline-primary.clipboard-btn{"data-clipboard-text" => "#{email_string_with_names}"}
+                Copy
 
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+/ scripts
+
+// copy to clipboard
 :javascript
-  $("##{link_id}").click(function(e) {
-    $("##{modal_id}").modal(
-      {
-        overlayClose:true,
-        persist:true
-      }
-    );
-    $("##{modal_id} .show_simple_email_list").click(function(e) {
-      $("##{modal_id} .email_addresses").val("#{string_simple}");
-      e.preventDefault();
-    });
-    $("##{modal_id} .show_email_list_with_names").click(function(e) {
-      $("##{modal_id} .email_addresses").val("#{string_with_names}");
-      e.preventDefault();
-    });
-    e.preventDefault();
+  $('.clipboard-btn').tooltip({
+    trigger: 'click',
+    placement: 'bottom'
   });
 
+  function setTooltip(btn, message) {
+    $(btn).tooltip('show')
+      .attr('data-original-title', message)
+      .tooltip('show');
+  }
+
+  function hideTooltip(btn) {
+    setTimeout(function() {
+      $(btn).tooltip('hide');
+    }, 1000);
+  }
+
+  // Clipboard
+  var clipboard = new Clipboard('.clipboard-btn');
+
+  clipboard.on('success', function(e) {
+    setTooltip(e.trigger, 'Copied!');
+    hideTooltip(e.trigger);
+  });
+
+  clipboard.on('error', function(e) {
+    setTooltip(e.trigger, 'Failed!');
+    hideTooltip(e.trigger);
+  });
+
+// tabs: set the tabs in modals to equal height
+:javascript
+  $('#email_users').on('shown.bs.modal', function (e) {
+    var maxHeight=0;
+      $(".tab-content.equal-height-modal .tab-pane").each(function(){
+        $(this).addClass("active");
+          var height = $(this).height();
+          maxHeight = height>maxHeight?height:maxHeight;
+          $(this).removeClass("active");
+      });
+      $(".tab-content.equal-height-modal .tab-pane:first").addClass("active");
+      $(".tab-content.equal-height-modal").height(maxHeight);
+    });
