@@ -81,26 +81,26 @@
   .modal-dialog.modal-dialog-centered.modal-sm
     .modal-content
       / Modal Header
-      .modal-header.text-center
-        %h4.modal-title.w-100
-          Login
-        %button.close{"data-dismiss" => "modal", :type => "button"}
-          ×
+      .modal-header
+        .m-auto
+          %h4.modal-title.w-100
+            Login
       / Modal body
       .modal-body
-        .container
+        .container.pt-1
           .modal-form
             = simple_form_for UserSession.new, :url => user_session_path do |f|
-              = f.input :login, required: false, label: "Name", input_html: { id: "login_input_field" }
-              = f.input :password, required: false
-              = f.input :remember_me, as: :boolean
+              = f.input :login, required: false, label: "Name", input_html: { id: "login_input_field" }, wrapper_html: { class:  'font-weight-bold text-muted' }
+              = f.input :password, required: false, wrapper_html: { class:  'font-weight-bold text-muted' }
+              = f.input :remember_me, as: :boolean, wrapper_html: { class:  'font-weight-bold text-muted' }
               = f.button :submit, style: "display: none;", class: "btn btn-primary"
       / Modal footer
       .modal-footer
-        -# %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
-          -# Close
-        #submit_login_form.btn.btn-outline-primary
-          Submit
+        .m-auto
+          %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+            Close
+          #submit_login_form.btn.btn-outline-primary
+            Submit
 
 / modal: when the submit button is clicked on the login form
 :javascript
