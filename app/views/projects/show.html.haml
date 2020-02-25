@@ -201,7 +201,7 @@
                 // cards listing users
                 #filter_target_users.card-columns.double
                   - @project.users.each do |user|
-                    = render partial: user, locals: { index: true, role: formated_role_text(user, @project) }
+                    = render partial: user, locals: { role: formated_role_text(user, @project) }
               - else
                 .font-weight-normal.text-dark
                   No information available
@@ -234,7 +234,7 @@
                 // cards listing datasets
                 #filter_target_datasets.card-columns.single
                   - @project_datasets.each do |dataset|
-                    = render partial: dataset, locals: { index: true }
+                    = render partial: dataset
               - else
                 .font-weight-normal.text-dark
                   No information available
