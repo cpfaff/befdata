@@ -82,6 +82,7 @@
           { class: "btn btn-outline-primary" }
       = f.button :submit, class: "btn btn-outline-primary"
 
+
 / scripts
 
 // append a role form
@@ -103,4 +104,11 @@
     });
     $(".tab-content.equal-height .tab-pane:first").addClass("active");
     $(".tab-content.equal-height").height(maxHeight);
+  });
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
   });
