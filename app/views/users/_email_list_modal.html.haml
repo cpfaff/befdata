@@ -31,22 +31,24 @@
           #tab-1.tab-pane.active{:role => "tabpanel"}
             .container
               %br
-              .div.pb-1
+              .div
                 // show all emails
                 = email_string_simple
                 // copy emails to clipboard
-              %button.btn.btn-sm.btn-outline-primary.clipboard-btn{"data-clipboard-text" => "#{email_string_simple}"}
-                Copy
+              .pt-2
+                %button.btn.btn-sm.btn-outline-primary.clipboard-btn{"data-clipboard-text" => "#{email_string_simple}"}
+                  Copy
 
           #tab-2.tab-pane{:role => "tabpanel"}
             .container
               %br
-              .div.pb-1
+              .div
                 // show all emails
                 = email_string_with_names
                 // copy emails to clipboard
-              %button.btn.btn-sm.btn-outline-primary.clipboard-btn{"data-clipboard-text" => "#{email_string_with_names}"}
-                Copy
+              .pt-2
+                %button.btn.btn-sm.btn-outline-primary.clipboard-btn{"data-clipboard-text" => "#{email_string_with_names}"}
+                  Copy
 
       / Modal footer
       .modal-footer
