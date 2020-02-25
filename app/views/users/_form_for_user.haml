@@ -52,16 +52,15 @@
               = f.input :institution_phone, as: :tel
               = f.input :institution_fax, as: :tel
               = f.input :street
-              // TODO: This field throws an error
-              -# = f.input :country
               = f.input :city
+              = f.input :country, as: :text
         #tab-3.tab-pane{:role => "tabpanel"}
           .container
             %br
             = field_set_tag "Associate to project" do
               #roles
                 %noscript
-                  %p you need javascript enabled to manage user roles. Please enable javascript and refresh page.
+                  %p You need javascript enabled to manage user roles. Please enable javascript and refresh page.
                 = render :partial => 'role', collection: project_roles
               #btn_add_role.btn.btn-sm.btn-outline-success
                 = fa_icon('plus', text: "Add Project")
