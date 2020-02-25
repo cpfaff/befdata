@@ -29,7 +29,9 @@
               = f.input :middlenames
               = f.input :lastname, required: true
               = image_tag @user.avatar.url(:small)
-              = f.input :avatar, as: :file
+              // todo: add button to reset the avatar
+              // add ajax based uploader to update the image tag with the selected image
+              = f.input :avatar, as: :file, input_html: { id: 'avatar_imagefile' }
             = field_set_tag "Login" do
               = f.input :email, required: true
               = f.input :login, required: true
