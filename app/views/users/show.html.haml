@@ -274,7 +274,7 @@
                 // cards listing datasets
                 #filter_target_datasets.card-columns.single
                   - @user.datasets_owned.each do |dataset|
-                    = render partial: dataset, locals: { index: true }
+                    = render partial: dataset
               - else
                 .font-weight-normal.text-dark
                   No information available
@@ -305,7 +305,7 @@
                 // cards listing datasets
                 #filter_target_datacolumns.card-columns.single
                   - @datasets_with_responsible_datacolumns_not_owned.each do |dataset|
-                    = render partial: dataset, locals: { index: true }
+                    = render partial: dataset
               - else
                 .font-weight-normal.text-dark
                   No information available
