@@ -123,6 +123,7 @@ class UsersController < ApplicationController
                                    :institution_url,
                                    :institution_phone,
                                    :institution_fax,
+                                   :country,
                                    :street,
                                    :city,
                                    :comment)
@@ -140,6 +141,7 @@ class UsersController < ApplicationController
                                    :institution_url,
                                    :institution_phone,
                                    :institution_fax,
+                                   :country,
                                    :street,
                                    :city,
                                    :comment)
