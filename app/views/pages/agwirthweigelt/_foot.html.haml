@@ -1,0 +1,23 @@
+/ foot
+
+// separator
+%p.head-separator
+  %hr.header-footer.separator-lightgray
+  %hr.header-footer.separator-lightgray
+  %hr.header-footer.separator-lightgray
+// content
+.navbar{:style => "background-color: #F5F5F5;"}
+  // height
+  - img_heigt = '60'
+  // link images to institutions
+  = link_to image_tag('logo_dfg.png', :height => img_heigt)
+  -# = link_to image_tag('logo_mlu.png', :height => img_heigt), "https://www.botanik.uni-halle.de/geobotanik"
+  -# = link_to image_tag('logo_ucas.png', :height => img_heigt), "https://www.botanik.uni-halle.de/geobotanik"
+  -# = link_to image_tag('logo_bef.png', :height => img_heigt), "http://www.bef-china.de/"
+  -# = link_to image_tag('logo_treedi.png', :height => img_heigt), "https://www.botanik.uni-halle.de/geobotanik"
+  // the help and imprint pages
+  .float-right
+    = link_to 'Help', help_path, target: '_blank', class: "d-inline font-weight-bold text-muted pr-1"
+    .text-muted.d-inline.font-weight-bold
+      |
+    = link_to 'Legals', legal_path, class: "d-inline font-weight-bold text-muted pl-1"
