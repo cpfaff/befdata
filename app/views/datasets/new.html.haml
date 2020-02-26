@@ -1,70 +1,110 @@
+/ title
+
 - page_title "Create a new dataset"
 
-%h2
-  Create a new dataset
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      New: dataset
 
-.dataset-create-option
-  %h3 Option A: Create from Excel workbook (Recommended)
-  .span-6.colborder
-    = form_for Datafile.new, :url => create_with_datafile_datasets_path, :html => {:multipart => true} do |f|
-      %dl
-        %dt= f.label :file, 'Excel workbook'
-        %dd
-          = f.file_field :file
-          .help-block This should be a Excel-2003(.xls) file
-      = f.submit "Submit", :value => 'Upload'
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        .font-weight-bold
+          Option A:
+        .text-muted
+          Create dataset from Excel workbook (Recommended)
+    .row.mb-3
+      .col.border-right
+        = simple_form_for Datafile.new, url: create_with_datafile_datasets_path,
+          html: { multipart: true, id: "new_dataset_based_on_excel_template"},
+            wrapper_mappings: { file: :custom_file } do |f|
+          = f.input :file, hint: "This should be an Excel-2003 file (.xls).", input_html: { id: "excel_datafile" }
+          = f.button :submit, "Create", class: "btn btn-outline-primary"
+      .col
+        %p.text-justify
+          .container
+            A
+            %b workbook
+            is a customized Excel-2003(.xls) file which contains both the metadata and raw data.
+            You can download the #{link_to "empty workbook template", '/templates/befdata_workbook_empty.xls'}.
+            Documentation and examples can be found  #{link_to "here", help_url}.
+            %p
+              Later, you can
+              %ul
+                %li Confirm the metadata of this dataset
+                %li Approve the data columns
+                %li Attach freeformat files
 
-  .span-5.last
-    %p
-      A
-      %b workbook
-      is a customized Excel-2003(.xls) file which contains both the metadata and raw data. You can download the #{link_to "empty workbook template", '/templates/befdata_workbook_empty.xls'}. Documentation and examples can be found  #{link_to "here", help_url}.
-    %p
-      Later, you can
-      %ul
-        %li Confirm the metadata of this dataset
-        %li Approve the data columns
-        %li Attach freeformat files
+    .row
+      .col
+        .font-weight-bold
+          Option B:
+        .text-muted
+          Create a dataset from CSV file
 
-.dataset-create-option
-  %h3 Option B: Create dataset from CSV file
-  .span-6.colborder
-    = form_for Datafile.new, url: create_with_datafile_datasets_path, html: {multipart: true} do |f|
-      %dl
-        %dt= label_tag :title, 'Title'
-        %dd= text_field_tag :title
-        %dt= f.label :file, 'CSV file'
-        %dd
-          = f.file_field :file
-          .help-block This should be a valid CSV file
-      = f.submit 'Submit', :value => 'Upload'
+    .row.mb-5
+      .col.border-right
+        = simple_form_for Datafile.new, url: create_with_datafile_datasets_path,
+          html: { multipart: true, id: "new_dataset_based_on_csv_file"},
+            wrapper_mappings: { file: :custom_file } do |f|
+          .div.mb-1
+            = label_tag :title, 'Title'
+            = text_field_tag :title, nil, placeholder: "Title", class: 'form-control'
+          = f.input :file, hint: "This should be a CSV file.", input_html: { id: "csv_datafile" }
+          = f.button :submit, "Create", class: "btn btn-outline-primary"
+      .col
+        %p.text-justify
+          .container
+            A
+            %b CSV
+            file which contains the raw data. The first row should contain column headers with variable names.
+            %p
+              Later, you can
+              %ul
+                %li Fill the metadata of this dataset
+                %li Approve the data columns
+                %li Attach freeformat files
 
-  .span-5.last
-    %p A CSV file contains the raw data, of which the first row stores column headers.
-    %p
-      Later, you can
-      %ul
-        %li Fill the metadata of this dataset
-        %li Approve the data columns
-        %li Attach freeformat files
+    .row
+      .col
+        .font-weight-bold
+          Option C:
+        .text-muted
+          Create a document page without data
 
-.dataset-create-option
-  %h3 Option C: Create a document page without data
-  .span-6.colborder
-    = form_for Dataset.new, :url => {:controller => :datasets, :action => :create} do |f|
-      %dl
-        %dt= f.label :title, 'Title'
-        %dd= f.text_field :title
-      = f.submit "Submit"
+    .row
+      .col.border-right
+        = simple_form_for Dataset.new, url: { controller: :datasets, action: :create} do |f|
+          = f.input :title
+          = f.button :submit, "Create", class: "btn btn-outline-primary"
+      .col-6
+        %p.text-justify
+          .container
+            This will create a dataset page with metadata, but no data.
+            Choose this option if your workbook is not prepared right now or you only want to attach files in other formats.
 
-  .span-5.last
-    %p
-      This will create a dataset page with metadata, but no data.
-      Choose this option if your workbook is not prepared right now or you only want to attach files in other formats.
+            %p
+              Later, you can
+              %ul
+                %li Fill the metadata of this dataset
+                %li Attach freeformat files
+                %li Upload Excel-2003 workbook or CSV data file
 
-    %p
-      Later, you can
-      %ul
-        %li Fill the metadata of this dataset
-        %li Attach freeformat files
-        %li Upload Excel-2003 workbook or CSV data file
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
+  });

@@ -1,13 +1,34 @@
-%div#license-body
-  %p
-    Permission is granted to anybody to access, use and publish all open for public data freely.
-    The commercial use of any data is prohibited. The quality and completeness of data cannot be guaranteed.
-    Users employ these data at their own risk. In order to make attribution of use for owners of the data possible,
-    the identifier of ownership of data must be retained with every data record. Users must publicly acknowledge,
-    in conjunction with the use of the data, the data owners.
-  %h4 Cite the data as follows: 
-  %p{style: 'font-style: italic'}
-    %span.authors= f.owners.map(&:short_name).to_sentence
-    %span.year= "(#{f.updated_at.year}):"
-    %span.title= "#{f.title}."
-    = "(Accessed through URL: #{dataset_url(f)})"
+#license_dataset.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          License
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        .font-weight-bold
+          Open Data Acess License
+        %p
+          .text-justify
+            Permission is granted to anybody to access, use and publish all open
+            for public data freely. The commercial use of any data is prohibited.
+            The quality and completeness of data cannot be guaranteed. Users employ
+            these data at their own risk. In order to make attribution of use for
+            owners of the data possible, the identifier of ownership of data must
+            be retained with every data record. Users must publicly acknowledge, in
+            conjunction with the use of the data, the data owners.
+        %br
+          .font-weight-bold
+            Cite the data as follows:
+          .font-italic
+            %span.authors= f.owners.map(&:short_name).to_sentence
+            %span.year= "(#{f.updated_at.year}):"
+            %span.title= "#{f.title}."
+            = "(Accessed through URL: #{dataset_url(f)})"
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close

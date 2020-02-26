@@ -1,4 +1,26 @@
+/ head
+
+// title
 - page_title "Edit meta data of #{@dataset.title}"
 
-%h2 Edit meta data of #{link_to @dataset.title_was, @dataset}
-= render :partial => "form_for_metadata"
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Edit metadata: #{@dataset.title.truncate(80)}
+
+// partial
+.div.pl-2
+  .div.pb-3.pt-3
+    = render :partial => "form_for_metadata"
+
+/ scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });

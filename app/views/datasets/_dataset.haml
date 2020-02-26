@@ -1,9 +1,57 @@
-- with_cart ||= false
-- with_comment ||= false
-
-= link_to dataset.title, dataset_path(dataset)
-- if with_cart && current_user
-  = link_to image_tag("cart.png", :title =>"Add to cart"), create_cart_context_path(:dataset_id => dataset.id), :method => :post
-- if with_comment && !dataset.comment.blank? && may_see_comment?(dataset)
-  %span.dataset-comment
-    = dataset.comment
+= link_to dataset do
+  .card.shadow-sm.mb-4
+    .card-body
+      %h4.card-title
+        = dataset.title
+      %p.card-text
+        .font-weight-bold.text-dark
+          Abstract:
+          - if dataset.abstract.present?
+            .font-weight-normal.text-dark
+              = dataset.abstract.truncate(250)
+          - else
+            .font-weight-normal.text-dark
+              No information avialable
+      .pt-2.pb-3
+        .float-left
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if dataset.users.count
+                = fa_icon('user')
+                Users:
+                = dataset.users.count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if dataset.projects.count
+                = fa_icon('object-group')
+                Projects:
+                = dataset.projects.count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if dataset.datafiles_count
+                = fa_icon('file')
+                Datafiles:
+                = dataset.datafiles_count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if dataset.freeformats_count
+                = fa_icon('paperclip')
+                Attachments:
+                = dataset.freeformats_count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if dataset.created_at
+                = fa_icon('calendar')
+                Created at:
+                = dataset.created_at.strftime("%F")
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if dataset.updated_at
+                = fa_icon('calendar')
+                Updated at:
+                = dataset.updated_at.strftime("%F")
+        - if current_user
+          .float-right
+            .p-1
+              = link_to fa_icon('cart-plus'),
+                create_cart_context_path(dataset_id: dataset.id), method: :post

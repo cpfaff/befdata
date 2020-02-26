@@ -1,137 +1,655 @@
+// TODO: the sidebar needs to go into its own modal. In that way we can simply
+// update it with an ajax call. This is useful e.g. when importing is finished.
+// currently the button for approval is not yet shown before a reload.
+
+/ title
+
 - page_title "#{@dataset.title}"
 
-%h2= @dataset.title
+/ body
 
-- unless current_user || @dataset.visible_for_public
-  #errorExplanation
-    Access denied. Please log in.
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Show: #{@dataset.title.truncate(80)}
 
-- else
-  - content_for :actions do
-    #dataset-menu{:class => !@dataset.finished_import? && 'hidden'}
-      = render :partial => 'edit_download_destroy_links'
-    - unless @dataset.finished_import?
-      = render :partial => 'import_status'
+// sidebar
 
-  - content_for :info do
-    - unless @tags.blank?
-      %h3= link_to "Keywords", keywords_dataset_path(@dataset)
-      = raw  @tags.map{|t| link_to t.name, keyword_path(t.id)}.join(", ")
+= content_for :actions do
+  #dataset_sidebar
+    = render partial: 'sidebar', locals: { dataset: @dataset }
 
-    %h3
-      Last update
-    %p= @dataset.updated_at.localtime.strftime "%Y-%m-%d %H:%M"
+// tabs with content
+#dataset.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#dataset_tab_1", :role => "tab"} Metadata
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_2", :role => "tab"} Data
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_3", :role => "tab"} People
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_4", :role => "tab"} Projects
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_5", :role => "tab"} Proposals
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_6", :role => "tab"} Changes
+        .tab-content.equal-height
+          // metadata
+          #dataset_tab_1.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
 
-    = render :partial => 'dataset_edits/last_edits_in_sidebar' if current_user
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Title:
+                - if @dataset.title.blank?
+                  .font-weight-normal.text-muted
+                    No information available
+                - else
+                  .font-weight-normal.text-dark
+                    = @dataset.title
 
-    - if !@dataset.comment.blank? && may_see_comment?(@dataset)
-      %h3
-        Comment
-      %p= @dataset.comment
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Access rights:
+                - if @dataset.access_rights.blank?
+                  .font-weight-normal.text-muted
+                    No information available
+                - else
+                  .font-weight-normal.text-dark
+                    = @dataset.access_rights
 
-    - unless @contacts.blank?
-      %h3
-        Contact persons
-      %ul
-        - @contacts.each do |c|
-          %li= render partial: c, locals: {extra: c.alumni ? 'Alumni' : nil}
-    - if current_user
-      %h3 Email contact
-      %ul
-        %li
-          = render :partial => "users/email_list_modal",
-            :locals => {:contacts => @contacts, :css => "dataset_owners", :caption => 'Dataset owners'}
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Usage rights:
+                - if @dataset.usagerights.blank?
+                  .font-weight-normal.text-muted
+                    No information available
+                - else
+                  .font-weight-normal.text-dark
+                    = @dataset.usagerights
 
-    - unless @projects.blank?
-      %h3
-        Projects involved
-      %ul
-        - @projects.each do |p|
-          %li= link_to p, project_path(p.id)
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Published:
+                - if @dataset.published.blank?
+                  .font-weight-normal.text-muted
+                    No information available
+                - else
+                  .font-weight-normal.text-dark
+                    = @dataset.published
 
-  %h4 Usage Rights
-  %p This data is #{@dataset.access_rights}.
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Abstract:
+                - if @dataset.abstract.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = @dataset.abstract
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-  = simple_format @dataset.usagerights
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Design:
+                - if @dataset.design.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = @dataset.design
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-  - if @dataset.include_license?
-    = render :partial => 'sample_license', :locals => {f: @dataset}
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Spatial extent:
+                - if @dataset.spatialextent.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = @dataset.spatialextent
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-  - unless @dataset.abstract.blank?
-    %h4 Dataset Abstract
-    = simple_format @dataset.abstract
-  - unless @dataset.design.blank?
-    %h4 Dataset Design
-    = simple_format @dataset.design
-  - unless @dataset.spatialextent.blank?
-    %h4 Spatial Extent
-    = simple_format @dataset.spatialextent
-  - unless @dataset.published.blank?
-    %h4 Published
-    = simple_format @dataset.published
-  - unless @dataset.temporalextent.blank?
-    %h4 Temporal Extent
-    = simple_format @dataset.temporalextent
-  - unless @dataset.taxonomicextent.blank?
-    %h4 Taxonomic Extent
-    = simple_format @dataset.taxonomicextent
-  - unless @dataset.circumstances.blank?
-    %h4 Measurement Circumstances
-    = simple_format @dataset.circumstances
-  - unless @dataset.dataanalysis.blank?
-    %h4 Data Analysis
-    = simple_format @dataset.dataanalysis
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Temporal extent:
+                - if @dataset.temporalextent.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = @dataset.temporalextent
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-  - unless @freeformats.blank?
-    %h4 Freeformat files (#{@freeformats.length})
-    = render :partial => 'freeformats/index'
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Taxonomic extent:
+                - if @dataset.taxonomicextent.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = @dataset.taxonomicextent
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-  = render :partial => 'paperproposals/associated_paperproposals', :locals => {:paperproposals => @dataset.paperproposals}
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Measurement cirumstances:
+                - if @dataset.circumstances.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = @dataset.circumstances
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-  - unless @datacolumns.empty?
-    %h3 Data columns available in the raw data part of this dataset
-    - @datacolumns.each do |column|
-      .span-4.dataset_columns{:class => cycle('border', 'last', :name => 'display_in_columns')}
-        .columnheader= column.columnheader
-        = column.definition
-        - unless column.unit.blank?
-          %br
-          %i
-            Unit:
-            = column.unit
-        %br
-        %i
-          Data group:
-          - if column.datagroup_id
-            = link_to_if current_user, column.datagroup.title, column.datagroup
-          - else
-            Not specified
-        - unless column.tags.empty?
-          %br
-          %i
-            Keywords:
-            = raw column.tags.map{|t| link_to t.name, keyword_path(t.id)}.join(", ")
-        - if column.values_stored?
-          %table.import_values
-            %tr
-              %th.span-4.last= "Values"
-            - column.accepted_values(5).shuffle.each do |sc|
-              %tr
-                %td.span-4.last{:class => cycle('even', 'odd')} #{sc.accepted_value}
-        - else
-          %br
-          = image_tag 'alert.png'
-          - if @dataset.can_edit_by? current_user
-            This column needs to be approved to display sample values. Click
-            = link_to 'here', approval_overview_datacolumn_path(column)
-            to start approving.
-          - else
-            Sample values are not displayed because this column hasn't been approved yet.
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Data analysis:
+                - if @dataset.dataanalysis.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = @dataset.dataanalysis
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-        - u = column.users
-        - unless u.blank? && column.acknowledge_unknown.blank?
-          %div
-            *
-            %i
-              = (u.map{|p| link_to(p.short_name, p)} + [column.acknowledge_unknown]).compact.join(', ').html_safe
-            also contributed to this column.
+          // data
+          #dataset_tab_2.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+                #datacolumns
+                  = render partial: 'datacolumns/datacolumns', locals: { datacolumns: @datacolumns }
+
+          // people
+          #dataset_tab_3.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              // cards with users
+              - if @owners.empty?
+                .font-weight-normal.text-dark
+                  No information available
+              - else
+                // filter for users
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_users.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "#",
+                        { class: "button_clear_user_filter btn btn-outline-primary", id: "button_clear_users_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+
+                // cards listing users
+                #filter_target_users.card-columns.double
+                  - @owners.each do |user|
+                    = render partial: user
+
+                #filter_target_users_empty_note.d-none
+                  No information available
+
+          // projects
+          #dataset_tab_4.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @projects.present?
+                // filter for projects
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_projects.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "#",
+                        { class: "btn btn-outline-primary", id: "button_clear_projects_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                #filter_target_projects.card-columns.single
+                  - @projects.each do |project|
+                    = render partial: project
+              - else
+                .font-weight-normal.text-muted
+                  No information avialable
+
+              #filter_target_projects_empty_note.d-none
+                No information available
+
+          // proposals
+          #dataset_tab_5.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              // when you are logged in
+              - if current_user
+                // when proposals is empty
+                - if @dataset.paperproposals.empty?
+                  .font-weight-normal.text-muted
+                    No information available
+                - else
+                  // filter for proposals
+                  %div.pb-1
+                    .font-weight-bold.text-dark
+                      Filter:
+
+                  %div.pb-3
+                    .input-group
+                      %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
+                      .input-group-append
+                        = link_to "Reset", "#",
+                          { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
+                          'data-toggle': "tooltip",
+                          'data-turbolinks': false,
+                          'title': "Clear Filter" ,
+                          'data-placement': "auto"}
+
+                  // cards listing proposals
+                  #filter_target_proposals.card-columns.single
+                    - @dataset.paperproposals.each do |paperproposal|
+                      = render partial: paperproposal
+
+              - else
+                // when proposals is empty
+                - if @dataset.paperproposals.select{ |p| p.state == 'accepted'}.empty?
+                  .font-weight-normal.text-dark
+                    No information available
+                - else
+                  // filter for proposals
+                  %div.pb-1
+                    .font-weight-bold.text-dark
+                      Filter:
+
+                  %div.pb-3
+                    .input-group
+                      %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
+                      .input-group-append
+                        = link_to "Reset", "#",
+                          { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
+                          'data-toggle': "tooltip",
+                          'data-turbolinks': false,
+                          'title': "Clear Filter" ,
+                          'data-placement': "auto"}
+
+                  // cards listing proposals
+                  #filter_target_proposals.card-columns.single
+                    - @dataset.paperproposals.select{ |p| p.state == 'accepted'}.each do |paperproposal|
+                      = render partial: paperproposal
+
+              #filter_target_proposals_empty_note.d-none
+                No information available
+
+          // changes
+          #dataset_tab_6.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if current_user
+                - if @dataset.dataset_edits.present?
+                  // filter for datasets
+                  %div.pb-1
+                    .font-weight-bold.text-dark
+                      Filter:
+
+                  %div.pb-3
+                    .input-group
+                      %input#filter_input_dataset_edits.form-control{:placeholder => "Type..", :type => "text"}
+                      .input-group-append
+                        = link_to "Reset", "#",
+                          { class: "btn btn-outline-primary", id: "button_clear_dataset_edits_filter",
+                          'data-toggle': "tooltip",
+                          'data-turbolinks': false,
+                          'title': "Clear Filter" ,
+                          'data-placement': "auto"}
+
+                  // cards listing dataset edits
+                  #filter_target_dataset_edits.card-columns.single
+                    - @dataset.dataset_edits.limit(7).each do |e|
+                      .card.shadow-sm{:class => e.submitted ? "" : "border border-warning"}
+                        .card-header
+                          .font-weight-bold.text-muted
+                            Update of:
+                          .font-weight-bold.text-muted
+                            = e.updated_at.localtime.strftime "%Y-%m-%d %H:%M"
+                        .card-body
+                          %p.card-text
+                            - unless e.submitted
+                              = render :partial => 'dataset_edits/submit_modal', :locals => {:dataset_edit => e}
+                            .div.pb-3
+                              .font-weight-bold.text-dark
+                                Information:
+                              - if e.description.present?
+                                .font-weight-normal.text-dark
+                                  = sanitize(simple_format(e.description), :tags => %w(br p))
+                              - else
+                                .font-weight-normal.text-muted
+                                  No information available
+                          .pt-2.pb-3
+                            .float-right
+                              - unless e.submitted
+                                %span{'data-toggle': 'tooltip', title: 'Edit and submit update notice', 'data-placement': 'auto'}
+                                  = link_to "<i class='fas fa-paper-plane'></i>".html_safe, "#",
+                                    { class: "btn btn-sm btn-outline-light text-success",
+                                      'data-toggle': "modal",
+                                      'data-target': "#annotate_changes_dataset"}
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+              - else
+                .font-weight-normal.text-muted
+                  No information available
+
+              #filter_target_dataset_edits_empty_note.d-none
+                No information available
+
+
+/ modals
+
+// delete dataset modal
+#delete_dataset.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Delete Confirmation
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Are you sure?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-secondary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = link_to 'Delete', dataset_path(@dataset), method: :delete, class: 'btn btn-outline-danger'
+
+// if there is a comment let the user see it
+#comment_dataset.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          Comment
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        - unless @dataset.comment.blank?
+          = show_to :admin, :data_admin, :project_board do
+            %p
+              .text-justify
+                = @dataset.comment
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+// user email modal
+- if current_user
+  = render partial: "users/email_list_modal",
+    locals: { contacts: @dataset.users.reject(&:alumni) }
+
+// license modal
+- if @dataset.include_license?
+  = render partial: 'sample_license', locals: { f: @dataset }
+
+// dataset download modal
+= render partial: 'dataset_download', locals: { dataset: @dataset,
+                                                exported_excel: @exported_excel,
+                                                exported_csv: @exported_csv,
+                                                exported_scc_csv: @exported_scc_csv }
+
+// dataset download modal
+#dataset_download_history.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Download history
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        - if @dataset.dataset_downloads_count > 0
+          .container
+            - @dataset.dataset_downloads.includes(:user).order("dataset_downloads.created_at desc").each do |download|
+              .mb-2
+                .row.no-gutters
+                  .col-auto
+                    - if download.user
+                      = image_tag(download.user.avatar.url(:small), class: "mx-auto d-block rounded")
+                    - else
+                      = image_tag('user_avatars/avatar-missing_small.png', class: "mx-auto d-block rounded")
+                  .col
+                    .card-block.px-2
+                      .div.pl-2.pt-2
+                        .font-weight-bold.text-muted.text-monospace
+                          - if download.user
+                            -# = link_to download.user.lastname, download.user
+                            = download.user.lastname
+                          - else
+                            Public
+                        .font-weight-bold.text-muted.text-monospace
+                          = download.created_at.localtime.strftime "%Y-%m-%d %H:%M"
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+/ scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $("#dataset .tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $("#dataset .tab-content.equal-height .tab-pane:first").addClass("active");
+    $("#dataset .tab-content.equal-height").height(maxHeight);
+  });
+
+// scolling on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body to 0px on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });
+
+
+// filter the users
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_users').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_users').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_users").find('.card').is(':visible')) {
+            $("#filter_target_users_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_users_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_users_filter').click(function(){
+      $('#filter_input_users').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_users').find('.card').removeClass('d-none');
+      $("#filter_target_users_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_users').each(function(){
+        $(this).val('');
+        $('#filter_target_users').find('.card').removeClass('d-none');
+        $("#filter_target_users_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the projects
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_projects').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_projects').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_projects").find('.card').is(':visible')) {
+            $("#filter_target_projects_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_projects_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_projects_filter').click(function(){
+      $('#filter_input_projects').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_projects').find('.card').removeClass('d-none');
+      $("#filter_target_projects_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_projects').each(function(){
+        $(this).val('');
+        $('#filter_target_projects').find('.card').removeClass('d-none');
+        $("#filter_target_projects_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the proposals
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_proposals').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_proposals').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_proposals").find('.card').is(':visible')) {
+            $("#filter_target_proposals_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_proposals_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_proposals_filter').click(function(){
+      $('#filter_input_proposals').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_proposals').find('.card').removeClass('d-none');
+      $("#filter_target_proposals_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_proposals').each(function(){
+        $(this).val('');
+        $('#filter_target_proposals').find('.card').removeClass('d-none');
+        $("#filter_target_proposals_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the dataset_edits
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_dataset_edits').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_dataset_edits').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_dataset_edits").find('.card').is(':visible')) {
+            $("#filter_target_dataset_edits_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_dataset_edits_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_dataset_edits_filter').click(function(){
+      $('#filter_input_dataset_edits').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_dataset_edits').find('.card').removeClass('d-none');
+      $("#filter_target_dataset_edits_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_dataset_edits').each(function(){
+        $(this).val('');
+        $('#filter_target_dataset_edits').find('.card').removeClass('d-none');
+        $("#filter_target_dataset_edits_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+
+// tabs: set the tabs in modals to equal height
+:javascript
+  $('#email_users').on('shown.bs.modal', function (e) {
+    var maxHeight=0;
+      $(".tab-content.equal-height-modal .tab-pane").each(function(){
+        $(this).addClass("active");
+          var height = $(this).height();
+          maxHeight = height>maxHeight?height:maxHeight;
+          $(this).removeClass("active");
+      });
+      $(".tab-content.equal-height-modal .tab-pane:first").addClass("active");
+      $(".tab-content.equal-height-modal").height(maxHeight);
+    });

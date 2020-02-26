@@ -1,9 +1,64 @@
-.status
-  = image_tag "spinner.gif", :class => ['queued', 'started'].include?(exported_file.status) ? "indicator" : 'indicator hidden'
-  Status:
-  %span{class: exported_file.status}= exported_file.status
+#dataset_export
+  // remove as this is not used anymore
+  .export_status.d-none
+    = exported_file.status
+  .export_animation{ class: ['queued', 'started'].include?(exported_file.status) ? "" : 'd-none' }
+    %span{ 'data-toggle': 'tooltip', title: 'Exporting', 'data-placement': 'auto' }
+      %span
+      The file is currently built for download ...
+      %button.btn.text-success{:type => "button"}
+        %span.spinner-border.spinner-border-sm{"aria-hidden" => "true", :role => "status" }
+        %span.sr-only Loading...
+  -# todo: maybe reintegrate them when you modularized the javascript ajax call
+  -# #on_export_success.d-none
+    -# %span{'data-toggle': 'tooltip', title: 'Dataset export success', 'data-placement': 'auto'}
+      -# = link_to "<i class='fas fa-file-alt'></i>".html_safe, "#",
+        -# { class: "text-success",
+          -# 'data-turbolinks': false }
+  -# #on_export_error.d-none
+    -# %span{'data-toggle': 'tooltip', title: 'Dataset export error', 'data-placement': 'auto'}
+      -# = link_to "<i class='fas fa-file-alt'></i>".html_safe, "#",
+        -# { class: "text-danger",
+          -# 'data-turbolinks': false }
+  %noscript
+    %p
+      Javascript is disabled - Reload the page to see updates.
 
-= content_tag :div, class: exported_file.status.outdated? ? 'warning outdated-notice' : 'warning hidden outdated-notice' do
-  This file is outdated. Usually, it will be regenerated within about 10 minutes. You could wait for a while, or you could also #{link_to("regenerated download", regenerate_download_exported_file_path(exported_file.id))} manually rightnow.
-= content_tag :div, class: %w{queued started}.include?(exported_file.status) ? 'warning ongoing-notice' : 'warning hidden ongoing-notice' do
-  This file is being regenerated, please wait till it is finished.
+:javascript
+  // interval for ajax call
+  var intervalTime = 5000;
+
+  // check for finished status
+  function is_finished(status) {
+    return status == "finished";
+  }
+
+  $.ajaxSetup({
+    url: "#{download_status_dataset_url(@dataset, :json)}",
+    dataType: "json",
+    success: function(data) {
+      // TODO: modularize this. Then we can enable the separate downloads when they are finished
+      // instead. Currently the user has to wait for all to finish.
+      var status_array = [Object.values(data)[0], Object.values(data)[1], Object.values(data)[2]];
+      console.log(status_array)
+
+      if(status_array.every(is_finished)) {
+        // when all export is finished
+       $('.export_animation').addClass('d-none')
+       $('.disable_on_export').find('.btn').removeClass('disabled')
+      } else {
+       // while the export is not finished
+       $('.export_animation').removeClass('d-none')
+       $('.disable_on_export').find('.btn').addClass('disabled')
+      }
+    }
+  });
+
+  // on error reset the interval
+  var intervalId = setInterval(function() {
+    $.ajax({
+      error: function() {
+        clearInterval(intervalId);
+      }
+    });
+  }, intervalTime);

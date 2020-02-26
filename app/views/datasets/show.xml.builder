@@ -14,7 +14,7 @@ xml.dataset(id: @dataset.id, version: 1) do
     xml.design @dataset.design
     xml.uploaded_at @dataset.created_at
     xml.authors do
-      @contacts.each do |u|
+      @owners.each do |u|
         xml.person(id: u.id) do
           xml.name u.full_name
           xml.email u.email

@@ -1,0 +1,38 @@
+// TODO: include the license if this free for public
+-# - if @dataset.include_license?
+  -# %div.license{style: 'margin-bottom: 1em;'}
+    -# This data set is published under
+    -# = link_to 'Open Data Access License', '#', id: 'toggle-license', :onclick => '$("#license-wrapper").slideToggle();return(false);'
+    -# , Please read the license before you download it.
+
+    -# %div#license-wrapper.hidden{style: 'border: dotted 1px green;padding:5px;'}
+      -# = render :partial => 'sample_license', :locals => {f: @dataset}
+
+// dataset download
+#dataset_download.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          Download
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#dataset_download_tab_1", :role => "tab"} Excel
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_download_tab_2", :role => "tab"} CSV
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_download_tab_3", :role => "tab"} CSV2
+        #dataset_download_tabs
+          = render partial: 'dataset_download_tabs', locals: { dataset: dataset,
+                                                          exported_excel: exported_excel,
+                                                          exported_csv: exported_csv,
+                                                          exported_scc_csv: exported_scc_csv}
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close

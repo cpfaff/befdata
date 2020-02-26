@@ -3,7 +3,7 @@
   %dataset{:id => @dataset.id}
     %alternateIdentifier= dataset_url(@dataset)
     %title= @dataset.title
-    - @contacts.each do |creator|
+    - @owners.each do |creator|
       %creator{:id => creator.login}
         %individualName
           %givenName= creator.firstname
@@ -64,7 +64,7 @@
             %taxonomicClassification
               %commonName
                 = @dataset.taxonomicextent
-    - @contacts.each do |contact|
+    - @owners.each do |contact|
       %contact
         %references= contact.login
     %methods

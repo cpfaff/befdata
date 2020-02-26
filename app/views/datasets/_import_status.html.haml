@@ -1,70 +1,88 @@
-- is_error = @dataset.import_status.starts_with?('error')
-- may_edit = current_user && (current_user.has_role?(:owner, @dataset) || current_user.has_role?(:admin))
-
-#dataset-import
-  %h3#import-head
-    - if is_error
-      Import Error
-    -else
-      Importing Data
-  - unless is_error
-    %p#import-animation
-      = image_tag 'ajax-loader.gif'
-  %p#import-status
+#dataset_import
+  #import_status.d-none
     = @dataset.import_status
-  - if may_edit
-    %p#import-error-hint{:class => !is_error && 'hidden'}
-      = link_to edit_files_dataset_path(@dataset) do
-        = image_tag("edit.png")
-        Exchange the workbook
-      = link_to dataset_path(@dataset), method: :delete, data: { confirm: "Do you really want to delete this dataset?" } do
-        = image_tag("trash.png")
-        Delete
+  #import_animation
+    %span{'data-toggle': 'tooltip', title: 'Importing', 'data-placement': 'auto'}
+      %button.btn.btn-sm.btn-block.btn-outline-light.text-success{:type => "button"}
+        %span.spinner-border.spinner-border-sm{"aria-hidden" => "true", :role => "status"}
+        %span.sr-only Loading...
+  #on_import_success.d-none
+    %span{'data-toggle': 'tooltip', title: 'Dataset import success', 'data-placement': 'auto'}
+      = link_to "<i class='fas fa-file-alt'></i>".html_safe, "#",
+        { class: "btn btn-sm btn-block btn-outline-light text-success",
+          'data-turbolinks': false }
+  #on_import_error.d-none
+    %span{'data-toggle': 'tooltip', title: 'Dataset impot error', 'data-placement': 'auto'}
+      = link_to "<i class='fas fa-file-alt'></i>".html_safe, "#",
+        { class: "btn btn-sm btn-block btn-outline-light text-danger",
+          'data-turbolinks': false }
   %noscript
     %p
       Javascript is disabled - Reload the page to see updates.
 
-- unless is_error
+- unless @dataset.import_status.starts_with?('error')
   :javascript
-    var statusElement = $("#import-status");
-    var hideAfterFinishElement = $("#dataset-import");
-    var showAfterFinishElement = $("#dataset-menu");
-    var changeAfterErrorElement = $("#import-head");
-    var hideAfterErrorElement = $("#import-animation");
-    var showAfterErrorElement = $("#import-error-hint");
-
-    var intervalTime = 5000;
-
-    $.ajaxSetup({
-      url: "#{importing_dataset_url @dataset.id}",
-      dataType: "text",
-      contentType: "text/plain",
-      success: function(data) {
-        updateStatus(data);
-      }
+    // when importing disable buttons
+    $(document).ready(function() {
+      $('.disable_on_import').find('.btn').addClass('disabled');
+      console.log("importing data: disabling buttons");
     });
 
-    var intervalId = setInterval(function() {
-      $.ajax({
-        error: function() {
-          statusElement.text("Retrieving import status failed.");
-          clearInterval(intervalId);
-        }
-      });
-    }, intervalTime);
+    // set elements for betterhandling
+    let status_element = $("#import_status");
+    let element_to_show_on_success = $("#on_import_success");
+    let element_to_hide_on_success = $("#import_animation");
+    let element_to_show_on_error = $("#on_import_error");
+    let element_to_hide_on_error = $("#import_animation");
 
-    function updateStatus(data) {
-      statusElement.text(data);
-      if(data == "finished" || data == "unknown") {
-        clearInterval(intervalId);
-        hideAfterFinishElement.addClass('hidden');
-        showAfterFinishElement.removeClass('hidden');
-        showAlert('Importing is finished, please refresh the page.', 'notice')
-      }
-      if(data.slice(0,5) == 'error') {  //String starts with 'error'
-        changeAfterErrorElement.text("Import Error");
-        hideAfterErrorElement.addClass('hidden');
-        showAfterErrorElement.removeClass('hidden');
-        clearInterval(intervalId);
-      }
-    }
+    let is_success = false;
+    (function poll_import_status() {
+        let timeout = setTimeout(function() {
+            $.ajax({
+                url: "#{importing_dataset_url @dataset.id}",
+                success: function(data) {
+                    status_element.text(data);
+
+                    if (data == "finished" || data == "unknown") {
+                        element_to_hide_on_success.addClass('d-none');
+                        element_to_show_on_success.removeClass('d-none');
+                        is_success = true;
+                    }
+
+                    if(data.slice(0,5) == 'error') {  //String starts with 'error'
+                      element_to_hide_on_error.addClass('d-none');
+                      element_to_show_on_error.removeClass('d-none');
+                      is_success = true;
+                    }
+
+                },
+                dataType: "text",
+                contentType: "text/plain",
+                complete: poll_import_status,
+                timeout: 2000
+            })
+        }, 5000);
+
+        if (is_success) {
+            console.log("importing finished: disable polling");
+            window.clearTimeout(timeout);
+
+            $.ajax({
+              url: "#{dataset_url @dataset.id}.js",
+              dataType: 'script',
+              success: function() {
+                var maxHeight=0;
+                $(".tab-content.equal-height .tab-pane").each(function(){
+                  $(this).addClass("active");
+                    var height = $(this).height();
+                    maxHeight = height>maxHeight?height:maxHeight;
+                    $(this).removeClass("active");
+                });
+                $(".tab-content.equal-height .tab-pane:first").addClass("active");
+                $(".tab-content.equal-height").height(maxHeight);
+                console.log("importing finished: enabling button");
+                $('.disable_on_import').find('.btn').removeClass('disabled');
+              },
+            });
+        }
+    })();

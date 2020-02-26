@@ -7,10 +7,10 @@ class DatasetsController < ApplicationController
                 except: %i[new create create_with_datafile importing index download_excel_template]
 
   before_action :redirect_if_without_workbook,
-                only: %i[download download_page approve approve_predefined batch_update_columns approval_quick]
+                only: %i[download approve approve_predefined batch_update_columns approval_quick]
 
   before_action :redirect_unless_import_succeed,
-                only: %i[download_page download approve approve_predefined approval_quick batch_update_columns]
+                only: %i[ download approve approve_predefined approval_quick batch_update_columns]
 
   before_action :redirect_while_importing,
                 only: %i[edit_files update_workbook destroy]
@@ -30,7 +30,7 @@ class DatasetsController < ApplicationController
       allow :owner, of: :dataset
     end
 
-    actions :download, :download_page, :freeformats_csv do
+    actions :download, :freeformats_csv do
       allow :admin, :data_admin
       allow :owner, :proposer, of: :dataset
       allow logged_in, if: :dataset_is_free_for_members
@@ -42,6 +42,8 @@ class DatasetsController < ApplicationController
       allow logged_in
     end
   end
+
+  helper_method :sort_column, :sort_direction
 
   # create dataset with only a title
   def create
@@ -87,7 +89,7 @@ class DatasetsController < ApplicationController
   # update the metatadata of a file
   def update
     if @dataset.update_attributes(params.require(:dataset).permit(:authenticity_token,
-                                                                  :title, :project_phase, :access_code, :usagerights, :tag_list,
+                                                                  :title, :project_phase, :access_code, :include_license, :usagerights, :tag_list,
                                                                   :abstract, :published, :spatialextent, :'datemin(1i)', :'datemin(2i)',
                                                                   :'datemin(3i)', :'datemax(1i)', :'datemax(2i)', :'datemax(3i)', :temporalextent,
                                                                   :taxonomicextent, :design, :dataanalysis, :circumstances, :comment, owner_ids: [],
@@ -167,35 +169,96 @@ class DatasetsController < ApplicationController
   end
 
   def show
+    # tigger import on visit
     trigger_import_if_nessecary
 
-    @contacts = @dataset.owners.order('alumni')
+    # owners of the dataset
+    @owners = @dataset.owners.order('alumni')
+
+    # projects the dataset belongs to
     @projects = @dataset.projects
+
+    # freeformats attached to the dataset
     @freeformats = @dataset.freeformats.order('file_file_name')
+
+    # datacolumns of the dataset
     @datacolumns = @dataset.datacolumns.includes(:datagroup, :tags)
+
+    # all tags of the dataset
     @tags = @dataset.all_tags
 
-    respond_to do |format|
-      format.html
-      format.xml
-      format.eml
-    end
-  end
-
-  def index
-    datasets = Dataset.select('id, title').order(:id)
-
-    respond_to do |format|
-      format.json { render json: datasets }
-      format.xml { render xml: datasets }
-    end
-  end
-
-  def download_page
+    # get the exported files
     @exported_excel = @dataset.exported_excel || @dataset.create_exported_excel
     @exported_csv = @dataset.exported_csv || @dataset.create_exported_csv
     @exported_scc_csv = @dataset.exported_scc_csv || @dataset.create_exported_scc_csv
     @freeformats = @dataset.freeformats
+
+    # when there is need to create them do so (it may be better to handle this
+    # in a javascript function calling for the status and if necessary trigger
+    # the correct action in the datafiles related controller.
+    if @exported_excel.status.eql? 'new'
+       @exported_excel.queued_to_be_exported
+    end
+
+    if @exported_excel.invalidated_at.present? && @exported_excel.generated_at.present?
+      if @exported_excel.invalidated_at > @exported_excel.generated_at
+         @exported_excel.queued_to_be_exported
+      end
+    end
+
+
+    if @exported_csv.status.eql? 'new'
+       @exported_csv.queued_to_be_exported
+    end
+
+    if @exported_csv.invalidated_at.present? && @exported_csv.generated_at.present?
+      if @exported_csv.invalidated_at > @exported_csv.generated_at
+         @exported_csv.queued_to_be_exported
+      end
+    end
+
+    if @exported_scc_csv.status.eql? 'new'
+       @exported_scc_csv.queued_to_be_exported
+    end
+
+    if @exported_scc_csv.invalidated_at.present? && @exported_scc_csv.generated_at.present?
+      if @exported_scc_csv.invalidated_at > @exported_scc_csv.generated_at
+         @exported_scc_csv.queued_to_be_exported
+      end
+    end
+
+    # answer to
+    respond_to do |format|
+      format.html
+      format.xml
+      format.eml
+      format.js
+    end
+  end
+
+  def index
+    @datasets = Dataset.all
+    @tagged_datasets = DatasetTag.all
+
+    if params[:search]
+      @filter = params.fetch(:search).permit(:query, project_phase: [], access_code: [], tag: [])
+      @datasets = @datasets.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+      @datasets = @datasets.where(access_code: @filter.fetch(:access_code)) unless @filter.fetch(:access_code).all?(&:blank?)
+      @datasets = @datasets.where(project_phase: @filter.fetch(:project_phase)) unless @filter.fetch(:project_phase).all?(&:blank?)
+      @datasets = @datasets.tagged_with(Dataset.all_tags.where(id: @filter.fetch(:tag)).pluck(:name), any: true) unless @filter.fetch(:tag).all?(&:blank?)
+    end
+
+    if params[:sort]
+      @datasets = @datasets.order(sort_column + " " + sort_direction)
+    end
+
+    @pagy, @datasets = pagy(@datasets)
+
+    respond_to do |format|
+      format.html
+      format.xml { render xml: @datasets }
+      format.json { render json: @datasets }
+    end
   end
 
   def download_status
@@ -221,7 +284,7 @@ class DatasetsController < ApplicationController
     @dataset.log_download(current_user)
     respond_to do |format|
       format.html do
-        send_file_if_exists @dataset.exported_excel, filename: "#{@dataset.filename}.xls"
+        send_file_if_exists @dataset.exported_excel, filename: "#{@dataset.filename}.xls", disposition: 'attachment'
       end
       format.csv do
         if params[:separate_category_columns] =~ /true/i
@@ -281,6 +344,14 @@ class DatasetsController < ApplicationController
 
   private
 
+  def sort_column
+    Dataset.column_names.include?(params[:sort]) ? params[:sort] : "name"
+  end
+
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+  end
+
   def generate_freeformats_csv(_user)
     CSV.generate do |csv|
       csv << %w[Filename URL Description]
@@ -332,8 +403,8 @@ class DatasetsController < ApplicationController
     if file&.path && File.file?(file.path)
       send_file file.path, options
     else
-      flash[:error] = "The file is not found on the server. Maybe it's being generated, Please wait till it's finished."
-      redirect_back(fallback_location: download_page_dataset_path(@dataset))
+      flash[:error] = "The file is not found on the server. Likely it's being created at the moment, Please wait till it's finished."
+      redirect_back(fallback_location: dataset_path(@dataset))
     end
   end
 end

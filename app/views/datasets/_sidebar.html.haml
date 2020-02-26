@@ -1,0 +1,164 @@
+#actions.pt-1
+  // scroll to top
+  = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+    { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+    'data-toggle': "tooltip",
+    'data-turbolinks': false,
+    'title': "Up" ,
+    'data-placement': "auto"}
+
+  // actions
+  .div.pt-2.pb-2
+
+    // placeholder if action bar is empty
+    -# - unless current_user
+      -# .btn.btn-sm.btn-outline-light.disabled
+        -# .text-muted
+          -# o
+
+    // section info
+    - if current_user || dataset.include_license?
+      - if dataset.comment.present? || !dataset.finished_import? || dataset.include_license? || dataset.dataset_downloads_count > 0
+        .border-top.border-right.border-left.rounded.top-2.pb-1
+          %span{'data-toggle': 'tooltip', title: 'Info section', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-info'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                'data-turbolinks': false }
+    // section info content
+    - if current_user || dataset.include_license?
+      - if dataset.comment.present?
+        = show_to :admin, :data_admin, :project_board do
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Show comment', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-comments'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-success",
+                  'data-toggle': "modal",
+                  'data-target': "#comment_dataset"}
+      - if dataset.include_license?
+        %span{'data-toggle': 'tooltip', title: 'Show license', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-passport'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "modal",
+              'data-target': "#license_dataset"}
+    - if current_user
+      - if dataset.dataset_downloads_count > 0
+        %span{'data-toggle': 'tooltip', title: 'Show download history', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-history'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "modal",
+              'data-target': "#dataset_download_history"}
+    // import status
+    - if current_user
+      - unless dataset.finished_import?
+        = render :partial => 'import_status'
+    // spacer only if something is here
+    - if dataset.comment.present? || !dataset.finished_import? || dataset.include_license? || dataset.dataset_downloads_count > 0
+      .div.pb-4
+
+    // section download
+    .border-top.border-right.border-left.rounded-top.pb-1
+      %span{'data-toggle': 'tooltip', title: 'Download section', 'data-placement': 'auto'}
+        = link_to "<i class='fas fa-download'></i>".html_safe, "#",
+          { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+            'data-turbolinks': false }
+    // section content
+    .div.pt-2
+      // download metadata
+      .disable_on_import
+        %span{'data-toggle': 'tooltip', title: 'Download metadata', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-tag'></i>".html_safe, dataset_path(id: dataset, format: :eml),
+            { class: "btn btn-sm btn-block btn-outline-light text-success"}
+      // download data
+      - if dataset.can_be_downloaded_by? current_user
+        %span{'data-toggle': 'tooltip', title: 'Download data', 'data-placement': 'auto'}
+          #download_button.disable_on_import
+            = link_to "<i class='fas fa-file-alt'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-success ",
+                'data-toggle': "modal",
+                'data-target': "#dataset_download"}
+    - if current_user
+      .div.pb-4
+
+    / section collaboration
+    - if current_user
+      .border-top.border-right.border-left.rounded.top-2.pb-1
+        %span{'data-toggle': 'tooltip', title: 'Collaboration section', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-handshake'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+              'data-turbolinks': false }
+    // section content
+    - if current_user
+      .div.pt-2
+        - unless dataset.users.empty?
+          .disable_on_import
+            %span{'data-toggle': 'tooltip', title: 'Email users', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-envelope'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-success",
+                'data-toggle': "modal",
+                'data-target': "#email_users"}
+      - if current_user
+        .disable_on_import
+          %span{'data-toggle': 'tooltip', title: 'Add dataset to cart', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-cart-plus'></i>".html_safe, create_cart_context_path(dataset_id: dataset.id),
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+                method: :post }
+      .div.pb-4
+
+    / section edit
+    - if current_user
+      - if dataset.can_be_edited_by? current_user
+        .border-top.border-right.border-left.rounded.top-2.pb-1
+          %span{'data-toggle': 'tooltip', title: 'Edit section', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                'data-turbolinks': false }
+    // section edit content
+    - if current_user
+      - if dataset.can_be_edited_by? current_user
+        .div.pt-2
+          .disable_on_import
+            %span{'data-toggle': 'tooltip', title: 'Edit metadata', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-tag'></i>".html_safe, edit_dataset_path(dataset),
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+          .disable_on_import
+            %span{'data-toggle': 'tooltip', title: 'Edit datasets', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-file-alt'></i>".html_safe, edit_files_dataset_path(dataset),
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+        .div.pb-4
+
+    / section tools
+    - if current_user
+      - if dataset.can_be_edited_by? current_user
+        - if dataset.paperproposals.empty? || dataset.has_research_data?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // todo: this should appear when
+    // section tools content
+    - if current_user
+      - if dataset.can_be_edited_by? current_user
+        - if dataset.paperproposals.empty?
+          .div.pt-2
+            .disable_on_import
+              %span{'data-toggle': 'tooltip', title: 'Delete dataset', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-success",
+                  'data-toggle': "modal",
+                  'data-target': "#delete_dataset" }
+        - if dataset.has_research_data?
+          - if dataset.datacolumns.present?
+            .disable_on_import
+              %span{'data-toggle': 'tooltip', title: 'Approve dataset', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-thumbs-up'></i>".html_safe, approval_overview_datacolumn_url(dataset.datacolumns.first),
+                  { class: "btn btn-sm btn-block btn-outline-light text-success" }
+        .div.pb-4
+
+  // scroll down
+  = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+    { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+    'data-toggle': "tooltip",
+    'data-turbolinks': false,
+    title: "Down" ,
+    'data-placement': "auto"}

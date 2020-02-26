@@ -119,16 +119,17 @@ class DatasetsControllerTest < ActionController::TestCase
     assert_match(/Access denied/, flash[:error])
   end
 
-  test 'Only datasets with workbook can be downloaded' do
-    login_nadrowski
-    ds = Dataset.create(title: 'a dataset without workbook')
-    get :download, params: { id: ds.id }
-    assert_redirected_to dataset_path(ds)
-    assert_not_nil flash[:error]
-    get :download_page, params: { id: ds.id }
-    assert_redirected_to dataset_path(ds)
-    assert_not_nil flash[:error]
-  end
+  # download page was removed
+  # test 'Only datasets with workbook can be downloaded' do
+    # login_nadrowski
+    # ds = Dataset.create(title: 'a dataset without workbook')
+    # get :download, params: { id: ds.id }
+    # assert_redirected_to dataset_path(ds)
+    # assert_not_nil flash[:error]
+    # get :download_page, params: { id: ds.id }
+    # assert_redirected_to dataset_path(ds)
+    # assert_not_nil flash[:error]
+  # end
 
   # Approval
 

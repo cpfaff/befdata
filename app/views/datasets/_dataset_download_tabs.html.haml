@@ -1,0 +1,95 @@
+.tab-content
+  // excel tab
+  #dataset_download_tab_1.tab-pane.active{ role: "tabpanel" }
+    .container
+      %br
+        #xls
+          = render partial: 'datasets/status_indicator', locals: { exported_file: exported_excel }
+          %p
+            .text-justify.pb-2
+              Provides: Excel workbook with data and metadata.
+
+          .btn-group
+            .disable_on_export
+              - excel_download = download_dataset_url(dataset)
+              = link_to "Download", download_dataset_path(dataset),
+                { class: 'btn btn-sm btn-outline-primary', rel: 'nofollow', 'data-turbolinks': false }
+            .pl-2
+              .disable_on_export
+                %button.btn.btn-sm.btn-outline-primary.clipboard-btn{ "data-clipboard-text": "#{excel_download}" }
+                  Copy URL
+
+  // csv tab
+  #dataset_download_tab_2.tab-pane{ role: "tabpanel" }
+    .container
+      %br
+        #csv
+          = render partial: 'datasets/status_indicator', locals: { exported_file: exported_csv }
+          %p
+            .text-justify.pb-2
+              Provides: The raw csv research data.
+
+          .btn-group
+            .disable_on_export
+              - csv_download = download_dataset_url(dataset, :csv, user_credentials: current_user.try(:single_access_token))
+              = link_to "Download", download_dataset_path(dataset, :csv),
+                { class: 'btn btn-sm btn-outline-primary', rel: 'nofollow', 'data-turbolinks': false }
+            .pl-2
+              .disable_on_export
+                %button.btn.btn-sm.btn-outline-primary.clipboard-btn{ "data-clipboard-text": "#{csv_download}"}
+                  Copy URL
+
+  // csv 2 tab
+  #dataset_download_tab_3.tab-pane{ role: "tabpanel" }
+    .container
+      %br
+        #csv2
+          = render partial: 'datasets/status_indicator', locals: { exported_file: exported_scc_csv }
+          %p
+            .text-justify.pb-2
+              Provides: Csv with invalid values separated.
+
+          .btn-group
+            .disable_on_export
+              - scc_csv_download = download_dataset_url(dataset, :csv, separate_category_columns: true, user_credentials: current_user.try(:single_access_token))
+              = link_to "Download",
+                download_dataset_path(dataset, :csv, separate_category_columns: true),
+                { class: 'btn btn-sm btn-outline-primary', rel: 'nofollow', 'data-turbolinks': false }
+            .pl-2
+              .disable_on_export
+                %button.btn.btn-sm.btn-outline-primary.clipboard-btn{ "data-clipboard-text": "#{scc_csv_download}"}
+                  Copy URL
+
+/ scripts
+
+// copy to clipboard
+:javascript
+  $('.clipboard-btn').tooltip({
+    trigger: 'click',
+    placement: 'bottom'
+  });
+
+  function setTooltip(btn, message) {
+    $(btn).tooltip('show')
+      .attr('data-original-title', message)
+      .tooltip('show');
+  }
+
+  function hideTooltip(btn) {
+    setTimeout(function() {
+      $(btn).tooltip('hide');
+    }, 1000);
+  }
+
+  // Clipboard
+  var clipboard = new Clipboard('.clipboard-btn');
+
+  clipboard.on('success', function(e) {
+    setTooltip(e.trigger, 'Copied!');
+    hideTooltip(e.trigger);
+  });
+
+  clipboard.on('error', function(e) {
+    setTooltip(e.trigger, 'Failed!');
+    hideTooltip(e.trigger);
+  });

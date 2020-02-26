@@ -27,12 +27,4 @@ module DatasetsHelper
 
     false
   end
-
-  def dropdown_list_to_sort_datasets
-    options_for_select(
-      { 'Title' => 'title-asc',
-        'Newest' => 'id-desc',
-        'Recently Updated' => 'last_update-desc' }, selected: "#{params.permit(:sort)}-#{params.permit(:direction)}"
-    )
-  end
 end
