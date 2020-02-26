@@ -14,14 +14,415 @@
  * require jquery-ui/autocomplete
  * require jquery-ui/tabs
  * require select2
- * require tipsy
  * require_tree .
  */
 
-@import 'jquery-ui/accordion';
-@import 'jquery-ui/autocomplete';
-@import 'jquery-ui/tabs';
-@import 'select2';
-@import 'tipsy';
+// color schema 
+// $link-color: rgb(0, 153, 0);
+// $component-active-bg: rgb(0, 153, 0);
+
+$primary:       darkgreen !default;
+// $secondary:     $gray-700 !default;
+// $success:       $green !default;
+// $info:          $cyan !default;
+// $warning:       $yellow !default;
+// $danger:        $red !default;
+// $light:         $gray-500 !default;
+// $dark:          $gray-800 !default;
+
+//
+// Color system
+//
+
+// $white:    #fff !default;
+// $gray-100: #f8f9fa !default;
+// $gray-200: #ebebeb !default;
+// $gray-300: #dee2e6 !default;
+// $gray-400: #ced4da !default;
+// $gray-500: #adb5bd !default;
+// $gray-600: #888 !default;
+// $gray-700: #444 !default;
+// $gray-800: #303030 !default;
+// $gray-900: #222 !default;
+// $black:    #000 !default;
+
+// $blue:    #375a7f !default;
+// $indigo:  #6610f2 !default;
+// $purple:  #6f42c1 !default;
+// $pink:    #e83e8c !default;
+// $orange:  #fd7e14 !default;
+// $yellow:  #F39C12 !default;
+// $green:   #00bc8c !default;
+// $teal:    #20c997 !default;
+// $cyan:    #3498DB !default;
+
+
+// $yiq-contrasted-threshold:  175 !default;
+
+// // Body
+
+// $body-bg:                   $gray-900 !default;
+// $body-color:                $white !default;
+
+// // Links
+
+// $link-color:                $success !default;
+
+// // Fonts
+
+// $font-family-sans-serif:      "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+
+// $font-size-base:              0.9375rem !default;
+
+// $h1-font-size:                3rem !default;
+// $h2-font-size:                2.5rem !default;
+// $h3-font-size:                2rem !default;
+
+// $text-muted:                  $gray-600 !default;
+
+// // Tables
+
+// $table-accent-bg:             $gray-800 !default;
+
+// $table-border-color:          $gray-700 !default;
+
+// // Forms
+
+// $input-border-color:                    $body-bg !default;
+
+// $input-group-addon-color:               $gray-500 !default;
+// $input-group-addon-bg:                  $gray-700 !default;
+
+// $custom-file-color:                 $gray-500 !default;
+// $custom-file-border-color:          $body-bg !default;
+
+// // Dropdowns
+
+// $dropdown-bg:                       $gray-900 !default;
+// $dropdown-border-color:             $gray-700 !default;
+// $dropdown-divider-bg:               $gray-700 !default;
+
+// $dropdown-link-color:               $white !default;
+// $dropdown-link-hover-color:         $white !default;
+// $dropdown-link-hover-bg:            $primary !default;
+
+// // Navs
+
+// $nav-link-padding-x:                2rem !default;
+// $nav-link-disabled-color:           $gray-500 !default;
+
+// $nav-tabs-border-color:             $gray-700 !default;
+// $nav-tabs-link-hover-border-color:  $nav-tabs-border-color $nav-tabs-border-color transparent !default;
+// $nav-tabs-link-active-color:        $white !default;
+// $nav-tabs-link-active-border-color: $nav-tabs-border-color $nav-tabs-border-color transparent !default;
+
+// // Navbar
+
+// $navbar-padding-y:                  1rem !default;
+
+// $navbar-dark-color:                rgba($white,.6) !default;
+// $navbar-dark-hover-color:          $white !default;
+
+// $navbar-light-color:                rgba($gray-900, .7) !default;
+// $navbar-light-hover-color:          $gray-900 !default;
+// $navbar-light-active-color:         $gray-900 !default;
+// $navbar-light-toggler-border-color: rgba($gray-900, .1) !default;
+
+// // Pagination
+
+// $pagination-color:                  $white !default;
+// $pagination-bg:                     $success !default;
+// $pagination-border-width:           0 !default;
+// $pagination-border-color:           transparent !default;
+
+// $pagination-hover-color:            $white !default;
+// $pagination-hover-bg:               lighten($success, 10%) !default;
+// $pagination-hover-border-color:     transparent !default;
+
+// $pagination-active-bg:              $pagination-hover-bg !default;
+// $pagination-active-border-color:    transparent !default;
+
+// $pagination-disabled-color:         $white !default;
+// $pagination-disabled-bg:            darken($success, 15%) !default;
+// $pagination-disabled-border-color:  transparent !default;
+
+// // Jumbotron
+
+// $jumbotron-bg:                      $gray-800 !default;
+
+// // Cards
+
+// $card-cap-bg:                       $gray-700 !default;
+// $card-bg:                           $gray-800 !default;
+
+// // Popovers
+
+// $popover-bg:                        $gray-800 !default;
+
+// $popover-header-bg:                 $gray-700 !default;
+
+// // Toasts
+
+// $toast-background-color:            $gray-700 !default;
+
+// $toast-header-background-color:     $gray-800 !default;
+
+// // Modals
+
+// $modal-content-bg:                  $gray-800 !default;
+// $modal-content-border-color:        $gray-700 !default;
+
+// $modal-header-border-color:         $gray-700 !default;
+
+// // Progress bars
+
+// $progress-height:                   0.625rem !default;
+// $progress-font-size:                0.625rem !default;
+// $progress-bg:                       $gray-700 !default;
+
+// // List group
+
+// $list-group-bg:                     $gray-800 !default;
+// $list-group-border-color:           $gray-700 !default;
+
+// $list-group-hover-bg:               $gray-700 !default;
+
+// // Breadcrumbs
+
+// $breadcrumb-bg:                     $gray-700 !default;
+
+// // Close
+
+// $close-color:                       $white !default;
+// $close-text-shadow:                 none !default;
+
+// // Code
+
+// $pre-color:                         inherit !default;
+
+
+
+
+
+
+// import
 @import 'bootstrap';
-@import 'rails_bootstrap_forms';
+@import 'tagsinput';
+@import 'bootstrap-select';
+@import 'font_awesome5_webfont';
+@import 'datatables';
+// todo: remove select2 when done
+@import 'select2';
+
+// font size
+html {
+  font-size: 13px;
+}
+
+// the body
+
+// height
+html, body {
+  height: 100%;
+}
+
+// main content fill body 
+#wrap {
+  min-height: 100%;
+}
+
+// main content let footer free
+#main {
+  overflow:auto;
+  padding-bottom:150px; /* this needs to be bigger than footer height*/
+}
+
+// footer to bottom
+#footer {
+  position: relative;
+  margin-top: -150px; /* negative value of footer height */
+  height: 150px;
+  clear:both;
+  padding-top:20px;
+} 
+
+
+// the navigation bar 
+
+// links
+#navigation_bar li {
+    text-align: center;
+    padding: 10px 10px;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+// links on hover
+#navigation_bar li:hover {
+  background-color: #F5F5F5;
+  color: black;
+}
+
+// links active
+#navigation_bar li.active {
+  background-color: #F5F5F5;
+  color: white;
+}
+
+// buttons
+.btn-outline-light.gray-border {
+ border-color: lightgray;
+}
+
+.btn-outline-light.darkgray-border {
+ border-color: lightgray;
+}
+
+// remove underlines on hover over link
+a:hover {
+  text-decoration: none;
+}
+
+// head and foot elements
+hr.header-footer { 
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+}
+
+// paragraph in head without spaces
+p.head-separator
+ {
+  margin: 0;
+  padding: 0;
+}
+
+// paragraph in footer without spaces
+p.foot-separator
+ {
+  margin: 0;
+  padding: 0;
+}
+
+// horizotal lines header and footer
+hr.header-footer.separator-green {
+  border: 2px solid green;
+  border-radius: 5px;
+}
+
+hr.header-footer.separator-darkgray {
+  border: 2px solid gray;
+  border-radius: 5px;
+}
+
+//
+hr.header-footer.separator-lightgray {
+  border: 2px solid lightgray;
+  border-radius: 5px;
+}
+
+// cards column layouts
+.card-columns.single {
+  @include media-breakpoint-only(sm) {
+    column-count: 1;
+  }
+  @include media-breakpoint-only(md) {
+    column-count: 1;
+  }
+  @include media-breakpoint-only(lg) {
+    column-count: 1;
+  }
+  @include media-breakpoint-only(xl) {
+    column-count: 1;
+  }
+}
+
+.card-columns.double {
+  @include media-breakpoint-only(sm) {
+    column-count: 1;
+  }
+  @include media-breakpoint-only(md) {
+    column-count: 1;
+  }
+  @include media-breakpoint-only(lg) {
+    column-count: 2;
+  }
+  @include media-breakpoint-only(xl) {
+    column-count: 2;
+  }
+}
+
+.card-columns.triple {
+  @include media-breakpoint-only(sm) {
+    column-count: 1;
+  }
+  @include media-breakpoint-only(md) {
+    column-count: 1;
+  }
+  @include media-breakpoint-only(lg) {
+    column-count: 3;
+  }
+  @include media-breakpoint-only(xl) {
+    column-count: 3;
+  }
+}
+
+
+
+
+// Library:
+
+// break words apart instead of hiding them on overflow
+// p {
+  // word-break: break-all;
+// }
+
+
+// FIXME: This is a not yet working 
+// and supposed to make all tabs the 
+// same height in bootstrap
+// html,
+// body {
+  // height: 100%;
+// }
+//
+
+// .tab-content>.tab-pane{
+    // display:block;
+    // visibility:hidden;
+// }
+
+
+// .tab-content>.active{
+    // visibility:visible;
+// }
+
+// .tab-content {
+  // height: calc(100vh - (75px)) !important;
+  // width: calc(100vw - (40px)) !important
+// }
+
+// .tab-content>.active {
+  // display: inline-flex;
+  // height: 100%;
+  // width: 100%
+// }
+
+// .tab-content>.active>.row {
+  // display: contents
+// }
+
+// .tab-content>.active>.row>div {
+  // padding-left: 0;
+  // width: 100%;
+  // display: contents;
+// }
+
+// .tab-content>.active>.row>div>.w-100 {
+  // width: 99% !important
+// }
+//
