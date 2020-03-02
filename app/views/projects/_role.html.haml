@@ -1,6 +1,6 @@
 // seletction for roles and
 .role.pb-2
-  = select_tag "roles[][type]", options_for_select(all_project_roles, selected: role[:name])
+  = select_tag "roles[][type]", options_for_select(all_project_roles_for_select, selected: role[:name])
   = select_tag "roles[][value]", options_for_select(all_users_names_and_ids_for_select, role[:id]), multiple: true, id: "user_selection"
   .remove_button.btn.btn-sm.btn-outline-danger
     = fa_icon('trash', text: "Remove Role")

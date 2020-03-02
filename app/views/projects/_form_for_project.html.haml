@@ -3,10 +3,10 @@
 // variables
 
 // crate from fields from partial
-- new_fields = j render(:partial => 'role', :locals => { :role => {name: nil, id: [] } })
+- new_fields = j render(partial: 'role', locals: { role: { name: nil, id: [] } })
 
 // define maximum allowed roles
-- max_num = all_project_roles.length
+- max_num = all_project_roles_for_select.length
 
 / body
 
@@ -42,14 +42,16 @@
             %br
             = field_set_tag "Manage members" do
               .text-justify.pb-3
-                Here you can add all users which are involved with the
-                project and assign them to roles. Simply select a role and
-                pick existing users who fill the roles. Note: You can only
-                have unique roles. And only one principle and one second
-                principle investigator.
+                Here you can add all users which are involved with the project
+                and assign them to roles. Simply select a role and pick
+                existing users who fill the roles. Note: You can only have
+                unique roles. And only one principle and one second principle
+                investigator.
               #roles
                 %noscript
-                  %p Please enable javascript and refresh the page to manage membership.
+                  %p
+                    Please enable javascript and refresh the page to manage
+                    membership.
                 = render :partial => 'role', :collection => roles
               .pt-2
                 #add_role.btn.btn-sm.btn-outline-success
