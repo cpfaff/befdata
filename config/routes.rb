@@ -68,9 +68,9 @@ Rails.application.routes.draw do
 
   resources :paperproposals do
     member do
-      get :edit_datasets, :edit_files, :safe_delete,
-          :administrate_votes, :admin_approve_all_votes, :admin_reset_all_votes, :admin_hard_reset
+      get :edit_datasets, :edit_files, :administrate_votes, :admin_approve_all_votes, :admin_reset_all_votes, :admin_hard_reset
       post :update_datasets
+      delete :safe_delete
     end
   end
   match 'paperproposals/update_vote/:id' => 'paperproposals#update_vote', :as => :update_vote, via: %i[get post patch]
