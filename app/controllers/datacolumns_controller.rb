@@ -209,9 +209,6 @@ class DatacolumnsController < ApplicationController
            elsif params[:term_id].present?
              Vocab.find(params.require(:term_id))
            end
-
-    @datacolumn.update_attribute(:semantic_term, term)
-    redirect_back(fallback_location: root_url, notice: 'Semantic tag was updated')
   end
 
   private
