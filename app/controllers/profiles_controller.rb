@@ -26,7 +26,7 @@ class ProfilesController < ApplicationController
   def update_credentials
     @user.reset_single_access_token!
     respond_to do |format|
-      format.html { redirect_to :profile, notice: 'Your login credentials was updated successfully!' }
+      format.html { redirect_to :profile, notice: 'Credentials were updated successfully!' }
       format.js
     end
   end
