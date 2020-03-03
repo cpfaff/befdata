@@ -21,12 +21,7 @@ class CategoriesController < ApplicationController
         send_data render_categories_csv, type: 'text/csv', filename: "#{@datagroup.title}_categories.csv", disposition: 'attachment'
       end
       format.js do
-        validate_sort_params(collection: %w[short long description count], default: 'short')
-        @categories = @datagroup.categories
-                                .select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
-                                .search(params[:search])
-                                .order("#{params[:sort]} #{params[:direction]}")
-                                .paginate(page: params.fetch(:page, 1), per_page: 20)
+        @categories = @datagroup.categories.select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
       end
     end
   end
