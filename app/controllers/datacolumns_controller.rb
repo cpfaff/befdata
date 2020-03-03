@@ -81,7 +81,7 @@ class DatacolumnsController < ApplicationController
   end
 
   def create_and_update_datagroup
-    @datagroup = Datagroup.new(params.require(:new_datagroup).permit(:title, :description))
+    @datagroup = Datagroup.new(params.require(:datagroup).permit(:title, :description))
 
     if @datagroup.save
       @datacolumn.approve_datagroup(@datagroup)
@@ -137,7 +137,7 @@ class DatacolumnsController < ApplicationController
     unless @datacolumn.update_attributes(params.require(:datacolumn).permit(:id, :utf8, :authenticity_token, :columnheader,
                                                                             :definition, :unit,
                                                                             :tag_list, :instrumentation,
-                                                                            :informationsource, :comment, :person_id, people: []))
+                                                                            :informationsource, :comment, people: [] ))
       flash[:error] = @datacolumn.errors.to_a.first.capitalize
       redirect_back(fallback_location: root_url) && return
     end
