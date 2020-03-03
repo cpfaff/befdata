@@ -153,12 +153,12 @@
         = sortable "updated_at", "Updated", "numeric"
 
   // cards listing datasets
-  .card-columns.single
-    - if @datasets.present?
+  - if @datasets.present?
+    .card-columns.single
       - @datasets.each do |dataset|
         = render partial: dataset
-    - else
-      There are no results for your query
+  - else
+    There are no results for your query
 
   // pagination
   .div
