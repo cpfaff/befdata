@@ -35,15 +35,15 @@ class ProfilesController < ApplicationController
     @project_board_votes = @user.project_board_votes.includes(:paperproposal).pending.select do |vote|
       %w[submit re_prep].include? vote.paperproposal.board_state
     end
+
     @project_board_votes.sort_by!(&:paperproposal)
 
     @dataset_votes = @user.for_paperproposal_votes.includes(:paperproposal).pending.select do |vote|
       vote.paperproposal.board_state == 'accept'
     end
-    @dataset_votes.sort_by!(&:paperproposal)
-  end
 
-  def votes_history
+    @dataset_votes.sort_by!(&:paperproposal)
+
     @given_votes = @user.paperproposal_votes.where("vote <> 'none'").order('updated_at DESC')
   end
 

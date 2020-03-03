@@ -1,19 +1,314 @@
-- page_title "Data requests"
+/ header
 
-= content_for :actions do
-  = link_to votes_history_profile_url do
-    = image_tag "list-ordered.png"
-    Data request history
+// title
 
-- if @project_board_votes.empty? && @dataset_votes.empty?
-  %p Currently there are no votes to give for you.
+- page_title 'Data requests'
 
-- unless @project_board_votes.empty?
-  %h2 Project Board Votes
-  - @project_board_votes.each do |vote|
-    = render :partial => 'paperproposals/open_vote', :locals => {:vote => vote}
+/ body
 
-- unless @dataset_votes.empty?
-  %h2 Data requests
-  - @dataset_votes.each do |vote|
-    = render :partial => 'paperproposals/open_vote', :locals => {:vote => vote}
+// sidebar
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Index: requests
+
+
+// tabs with content
+
+// filters
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.nav-link.active{"data-toggle" => "tab", :href => "#votes_tab_1", :role => "tab"} Board votes
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#votes_tab_2", :role => "tab"} Dataset votes
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#votes_tab_3", :role => "tab"} Vote history
+        .tab-content.equal-height
+          // tab metadata
+          #votes_tab_1.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              - if @project_board_votes.present?
+
+                // filter for board votes
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_board_votes.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_board_votes_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                #filter_target_board_votes.card-columns.single
+                  - @project_board_votes.each do |vote|
+                    = render partial: 'paperproposals/open_vote', locals:  { vote: vote }
+
+                #filter_target_board_votes_empty_note.d-none
+                  .font-weight-normal.text-dark
+                    No information available
+
+              - else
+                .font-weight-normal.text-muted
+                  There is no requests to vote on at the moment.
+
+          #votes_tab_2.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @dataset_votes.present?
+
+                // filter for dataset votes
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_dataset_votes.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_dataset_votes_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                #filter_target_dataset_votes.card-columns.single
+                  - @dataset_votes.each do |vote|
+                    = render partial: 'paperproposals/open_vote', locals:  { vote: vote }
+
+                #filter_target_dataset_votes_empty_note.d-none
+                  .font-weight-normal.text-dark
+                    No information available
+
+              - else
+                .font-weight-normal.text-muted
+                  There is no requests to vote on at the moment.
+
+          #votes_tab_3.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+
+              - if @given_votes.present?
+                // filter for votes history
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_votes_history.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_votes_history_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                #filter_target_votes_history.card-columns.single
+                  - @given_votes.each do |vote|
+                    .card.shadow-sm.mb-4
+                      .card-body
+                        %h4.card-title
+                          Vote
+                        %p.card-text
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              Vote date:
+                            - if vote.updated_at.present?
+                              .font-weight-normal.text-dark
+                                = vote.updated_at
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              Vote type:
+                            - if vote.project_board_vote.present?
+                              .font-weight-normal.text-dark
+                                = vote.project_board_vote ? 'Project board vote' : 'Data request'
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              Your vote was:
+                            - if vote.vote.present?
+                              .font-weight-normal.text-dark
+                                = vote.vote
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                          = render :partial => 'paperproposals/summary_for_vote', :locals => {:paperproposal => vote.paperproposal}
+
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              State:
+                            - if vote.paperproposal.calc_board_state.present?
+                              .font-weight-normal.text-dark
+                                = vote.paperproposal.calc_board_state
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                #filter_target_votes_history_empty_note.d-none
+                  .font-weight-normal.text-dark
+                    No information available
+
+              - else
+                .font-weight-normal.text-muted
+                  You have not voted on anything yet.
+
+// enable hover shadow on cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content.equal-height .tab-pane:first").addClass("active");
+    $(".tab-content.equal-height").height(maxHeight);
+  });
+
+
+// filter the board votes
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_board_votes').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_board_votes').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_board_votes").find('.card').is(':visible')) {
+            $("#filter_target_board_votes_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_board_votes_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_board_votes_filter').click(function(){
+      $('#filter_input_board_votes').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_board_votes').find('.card').removeClass('d-none');
+      $("#filter_target_board_votes_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_board_votes').each(function(){
+        $(this).val('');
+        $('#filter_target_board_votes').find('.card').removeClass('d-none');
+        $("#filter_target_board_votes_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the dataset votes
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_dataset_votes').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_dataset_votes').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_dataset_votes").find('.card').is(':visible')) {
+            $("#filter_target_dataset_votes_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_dataset_votes_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_dataset_votes_filter').click(function(){
+      $('#filter_input_dataset_votes').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_dataset_votes').find('.card').removeClass('d-none');
+      $("#filter_target_dataset_votes_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_dataset_votes').each(function(){
+        $(this).val('');
+        $('#filter_target_dataset_votes').find('.card').removeClass('d-none');
+        $("#filter_target_dataset_votes_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+// filter the votes history
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_votes_history').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_votes_history').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_votes_history").find('.card').is(':visible')) {
+            $("#filter_target_votes_history_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_votes_history_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_votes_history_filter').click(function(){
+      $('#filter_input_votes_history').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_votes_history').find('.card').removeClass('d-none');
+      $("#filter_target_votes_history_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_votes_history').each(function(){
+        $(this).val('');
+        $('#filter_target_votes_history').find('.card').removeClass('d-none');
+        $("#filter_target_votes_history_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+
+
+
+
