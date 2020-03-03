@@ -28,6 +28,11 @@ class ::ApplicationController < ActionController::Base
     false
   end
 
+  def user_may_edit_profile?
+    return false unless @user && current_user
+    @user == current_user
+  end
+
   def get_all_paperproposal_years
     years = Paperproposal.pluck(:created_at).map(&:year)
     years.uniq.sort.reverse
