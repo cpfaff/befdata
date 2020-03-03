@@ -198,7 +198,7 @@ class PaperproposalsController < ApplicationController
     csv = CSV.generate(force_quotes: true) do |csv|
       csv << ['ID', 'Title', 'Dataset Url', 'CSV download']
       @paperproposal.datasets.order('title ASC').each do |ds|
-        next unless ds.can_download_by?(current_user)
+        next unless ds.can_be_downloaded_by?(current_user)
 
         csv << [ds.id, ds.title, dataset_url(ds),
                 download_dataset_url(ds, :csv, separate_category_columns: true, user_credentials: current_user.try(:single_access_token))]
