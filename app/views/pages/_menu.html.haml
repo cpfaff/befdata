@@ -59,12 +59,19 @@
               'data-toggle': "tooltip",
               'title': "Notifications",
               'data-placement': "auto"}
-          // also highlight how many items are in the cart and if there are any at all
-          = link_to "<i class='fas fa-shopping-cart' style='font-size:13px; vertical-align: middle;'></i> # 0".html_safe, current_cart_url,
-            { class: "btn btn-outline-light darkgray-border text-muted",
-            'data-toggle': "tooltip",
-            'title': "Cart",
-            'data-placement': "auto"}
+          - if current_cart.datasets.count > 0
+            // also highlight how many items are in the cart and if there are any at all
+            = link_to "<i class='fas fa-shopping-cart' style='font-size:13px; vertical-align: middle;'></i> # #{current_cart.datasets.count}".html_safe, current_cart_url,
+              { class: "btn btn-outline-light gray-border text-primary",
+              'data-toggle': "tooltip",
+              'title': "Cart",
+              'data-placement': "auto"}
+          - else
+            = link_to "<i class='fas fa-shopping-cart' style='font-size:13px; vertical-align: middle;'></i> # #{current_cart.datasets.count}".html_safe, current_cart_url,
+              { class: "btn btn-outline-light gray-border text-muted",
+              'data-toggle': "tooltip",
+              'title': "Cart",
+              'data-placement': "auto"}
           = link_to "<i class='fas fa-sign-out-alt' style='font-size:13px; vertical-align: middle;'></i>".html_safe, logout_path,
             { class: "btn btn-outline-light gray-border text-muted",
             'data-toggle': "tooltip",
