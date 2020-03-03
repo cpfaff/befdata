@@ -1,82 +1,175 @@
-- page_title 'Data groups'
+/ head
 
-= show_to :admin, :data_admin do
-  .right
-    = link_to new_datagroup_path, class: 'button' do
-      = image_tag 'add.png'
-      Create New Datagroup
-%h2
-  Datagroups
+// title
+- page_title 'Datagroups'
 
-.datagroup-filter
-  .group
-    Sort:
-    = select_tag "sort", dropdown_list_to_sort_datagroups, class: 'js-select-menu'
-  .group
-    = label_tag "hide_detail", "Compact View"
-    = check_box_tag "hide_detail", "yes", checked=true
+/ body
 
-  .right#search_form
-    = form_tag datagroups_path, :method => :get do
-      - unless params[:search].blank?
-        = link_to "Clear search", datagroups_path(params.merge(search: nil, utf8: nil)), :id => "clear_search"
-      = search_field_tag :search, params[:search]
-      = submit_tag "Filter", :name => nil
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Index: datagroups
 
-- authorized_to_edit_and_delete = current_user.admin? || current_user.data_admin?
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll up
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Up" ,
+      'data-placement': "auto"}
+    // actions
+    .div.pt-2.pb-2
+      - unless current_user.has_role?(:admin) || current_user.has_role?(:data_admin)
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
 
-%table#datagroups-table
-  %colgroup
-    %col.indicator
-    %col.title
-    - if authorized_to_edit_and_delete
-      %col.action
-  %thead
-    %tr
-      %th
-      %th Title
-      - if authorized_to_edit_and_delete
-        %th Action
-  %tbody
-    - @datagroups.each do |dg|
-      %tr.datagroup
-        %td
-          .indicator-icon
-        %td.info
-          .title-description
-            = link_to dg do
-              = highlight dg.title, params[:search]
-            .description
-              = highlight dg.description, params[:search]
-          .comment
-            = pluralize(dg.categories_count, 'category')
-            |
-            = pluralize(dg.datacolumns_count, 'datacolumn')
-            .right
-              Added at #{dg.created_at}
-        - if authorized_to_edit_and_delete
-          %td
-            = link_to "Edit", edit_datagroup_path(dg)
-            - if dg.datacolumns_count.to_i == 0
-              = link_to 'Delete', datagroup_path(dg), :method => :delete,  data: { confirm: "Are you sure to delete datagroup: #{dg.title} ?" }
+      / section tools
+      - if current_user
+        - if current_user.has_role?(:admin) || current_user.has_role?(:data_admin)
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        - if current_user.has_role?(:admin) || current_user.has_role?(:data_admin)
+          .div.pt-2
+            = link_to "<i class='fas fa-plus'></i>".html_safe, new_datagroup_path,
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Add new datagroup" ,
+              'data-placement': "auto"}
+      // add a separator if more actions are appended
+      -# .div.pb-4
+    // scroll down
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
 
-= will_paginate @datagroups
 
+// filter
+.div.pl-2
+  .div.pb-3.pt-3
+    %h5
+      Filter:
+
+    .input-group
+      %input#filter_input_datagroups.form-control{:placeholder => "Type..", :type => "text"}
+      .input-group-append
+        = link_to "Reset", "javascript:void(0)".html_safe,
+          { class: "btn btn-outline-primary", id: "button_clear_datagroups_filter",
+          'data-turbolinks': false, }
+
+  // sorting
+  .div.pb-4
+    %h5
+      Sort:
+    .btn-group
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "title"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "categories_count", "Categories", "numeric"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "datacolumns_count", "Columns", "numeric"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "created_at", "Created", "numeric"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "updated_at", "Updated", "numeric"
+
+
+  // content
+  - if @datagroups.present?
+    #filter_target_datagroups.card-columns.single
+      - @datagroups.each do |datagroup|
+        = render partial: datagroup
+  - else
+    No information avialable
+
+  #filter_target_datagroups_empty_note.d-none
+    No information available
+
+  // pagination
+  %br
+  != pagy_bootstrap_nav @pagy
+
+
+/ scripts
+
+// setup hover shadow on the cards
 :javascript
-  $(function(){
-    $("#hide_detail").click(function(){
-      if($(this).is(":checked")){
-        $("tr.datagroup").removeClass("expanded");
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
       }
-      else {
-        $("tr.datagroup").addClass("expanded");
+    );
+  });
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
       }
+    );
+  });
+
+// scolling on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
     });
-    $(".indicator-icon").click(function(){
-      $(this).closest("tr.datagroup").toggleClass("expanded");
+
+    // scroll body to 0px on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
     });
-    $(".js-select-menu").change(function(){
-      var value = $(this).val();
-      window.location.href = value;
+  });
+
+// filter the datagroups
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datagroups').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datagroups').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_datagroups").find('.card').is(':visible')) {
+            $("#filter_target_datagroups_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datagroups_empty_note").addClass('d-none');
+          };
+      });
     });
-  })
+
+  $(document).ready(function() {
+    $('#button_clear_datagroups_filter').click(function(){
+      $('#filter_input_datagroups').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_datagroups').find('.card').removeClass('d-none');
+      $("#filter_target_datagroups_empty_note").addClass('d-none');
+    });
+  });
