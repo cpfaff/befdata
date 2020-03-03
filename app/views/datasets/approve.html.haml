@@ -1,6 +1,6 @@
 - page_title "Approve #{@dataset.title}"
 
-%table#columns-table.tablesorter
+%table#columns-table
   %thead
     %tr
       %th= "#"
@@ -37,3 +37,12 @@
         process can be too slow to be tolerable. We suggest you approving the data columns one by one.
   = form_tag :action => 'approve_predefined', :controller => 'datasets' , :id => @dataset.id do
     = submit_tag 'Auto-approve', data: { confirm: "Are you sure you want to automatically approve #{@predefined_columns.count} columns?" }
+
+
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
