@@ -180,7 +180,7 @@
                   .input-group
                     %input#filter_input_users.form-control{:placeholder => "Type..", :type => "text"}
                     .input-group-append
-                      = link_to "Reset", "#",
+                      = link_to "Reset", "javascript:void(0)".html_safe,
                         { class: "button_clear_user_filter btn btn-outline-primary", id: "button_clear_users_filter",
                         'data-toggle': "tooltip",
                         'data-turbolinks': false,
@@ -210,7 +210,7 @@
                   .input-group
                     %input#filter_input_projects.form-control{:placeholder => "Type..", :type => "text"}
                     .input-group-append
-                      = link_to "Reset", "#",
+                      = link_to "Reset", "javascript:void(0)".html_safe,
                         { class: "btn btn-outline-primary", id: "button_clear_projects_filter",
                         'data-toggle': "tooltip",
                         'data-turbolinks': false,
@@ -247,7 +247,7 @@
                     .input-group
                       %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
                       .input-group-append
-                        = link_to "Reset", "#",
+                        = link_to "Reset", "javascript:void(0)".html_safe,
                           { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
                           'data-toggle': "tooltip",
                           'data-turbolinks': false,
@@ -274,7 +274,7 @@
                     .input-group
                       %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
                       .input-group-append
-                        = link_to "Reset", "#",
+                        = link_to "Reset", "javascript:void(0)".html_safe,
                           { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
                           'data-toggle': "tooltip",
                           'data-turbolinks': false,
@@ -304,7 +304,7 @@
                     .input-group
                       %input#filter_input_dataset_edits.form-control{:placeholder => "Type..", :type => "text"}
                       .input-group-append
-                        = link_to "Reset", "#",
+                        = link_to "Reset", "javascript:void(0)".html_safe,
                           { class: "btn btn-outline-primary", id: "button_clear_dataset_edits_filter",
                           'data-toggle': "tooltip",
                           'data-turbolinks': false,
@@ -323,7 +323,7 @@
                         .card-body
                           %p.card-text
                             - unless e.submitted
-                              = render :partial => 'dataset_edits/submit_modal', :locals => {:dataset_edit => e}
+                              = render partial: 'dataset_edits/submit_modal', locals: { dataset_edit: e }
                             .div.pb-3
                               .font-weight-bold.text-dark
                                 Information:
