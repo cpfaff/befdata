@@ -1,3 +1,6 @@
+
+- cart_item ||=nil
+
 = link_to dataset do
   .card.shadow-sm.mb-4
     .card-body
@@ -53,5 +56,31 @@
         - if current_user
           .float-right
             .p-1
-              = link_to fa_icon('cart-plus'),
-                create_cart_context_path(dataset_id: dataset.id), method: :post
+              - if cart_item.present?
+                %div{'data-toggle': 'tooltip', title: 'Delete dataset', 'data-placement': 'auto'}
+                  = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                    { class: "btn btn-sm btn-outline-light text-success",
+                    'data-toggle': "modal",
+                    'data-target': "#delete_from_cart#{cart_item.id}"}
+
+                // delete confirmation modal
+                .modal.fade{id: "delete_from_cart#{cart_item.id}"}
+                  .modal-dialog.modal-dialog-centered
+                    .modal-content
+                      / Modal Header
+                      .modal-header
+                        %h4.modal-title Are you sure?
+                        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                      / Modal body
+                      .modal-body
+                        Remove dataset:
+                        .text-justify.font-weight-bold
+                          = dataset.title.truncate(80)
+                        from your current cart?
+                      / Modal footer
+                      .modal-footer
+                        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+                        = link_to 'Remove', delete_cart_context_path(cart_item), method: :delete, class: 'btn btn-outline-primary'
+              - else
+                = link_to fa_icon('cart-plus'),
+                  create_cart_context_path(dataset_id: dataset.id), method: :post
