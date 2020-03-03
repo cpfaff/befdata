@@ -321,7 +321,7 @@ class Dataset < ApplicationRecord
     false
   end
 
-  def can_download_by?(user)
+  def can_be_downloaded_by?(user)
     return false unless current_datafile
     return true if free_for?(user)
     return false unless user
@@ -331,7 +331,7 @@ class Dataset < ApplicationRecord
     false
   end
 
-  def can_edit_by?(user)
+  def can_be_edited_by?(user)
     return false unless user
     return true if user.has_role?(:owner, self) || user.has_role?(:admin) || user.has_role?(:data_admin)
 
