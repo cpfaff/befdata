@@ -97,9 +97,9 @@
         .container.pt-1
           .modal-form
             = simple_form_for UserSession.new, :url => user_session_path do |f|
-              = f.input :login, required: false, label: "Name", input_html: { id: "login_input_field" }, wrapper_html: { class:  'font-weight-bold text-muted' }
-              = f.input :password, required: false, wrapper_html: { class:  'font-weight-bold text-muted' }
-              = f.input :remember_me, as: :boolean, wrapper_html: { class:  'font-weight-bold text-muted' }
+              = f.input :login, required: false, label: "Name", input_html: { id: "login_input_field" }, wrapper_html: { class: 'font-weight-bold text-muted' }
+              = f.input :password, required: false, wrapper_html: { class: 'font-weight-bold text-muted' }
+              = f.input :remember_me, as: :boolean, wrapper_html: { class: 'font-weight-bold text-muted' }
               = f.button :submit, style: "display: none;", class: "btn btn-primary"
       / Modal footer
       .modal-footer
