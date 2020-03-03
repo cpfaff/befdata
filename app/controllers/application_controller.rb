@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
 class ::ApplicationController < ActionController::Base
+  # for application wide pagination
   protect_from_forgery
-  helper_method :current_user_session, :current_user, :get_all_paperproposal_years
+  include Pagy::Backend
+
+  # user session setup
+  helper_method :current_user_session, :current_user, :current_cart, :get_all_paperproposal_years
   # layout :layout_from_config
 
   access_control :deny_access_to_all do

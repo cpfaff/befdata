@@ -2,6 +2,7 @@
 
 module ApplicationHelper
   include Acl9Helpers
+  include Pagy::Frontend
 
   def with_customized_layout?
     LayoutHelper::BEF_LAYOUT != 'standard'
