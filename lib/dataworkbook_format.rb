@@ -4,10 +4,10 @@ module DataworkbookFormat
   WBF = {
     # Version of File Format - Change when making changes here
     # major.minor.textual_changes - changes of the last number will need no changes of import and export
-    wb_format_version: '0.1.2',
+    wb_format_version: '0.1.3',
 
     # Spreadsheet export formats # by now not working for modifying existing spreadsheets
-    unapproved_format: Spreadsheet::Format.new(size: 11, horizontal_align: :left, color: 'orange'),
+    # unapproved_format: Spreadsheet::Format.new(size: 11, horizontal_align: :left, color: 'orange'),
 
     # Sheet numbers
     sheet_count: 5,
@@ -18,24 +18,41 @@ module DataworkbookFormat
     data_sheet: 4,
 
     # Metadata sheet
-    meta_version_pos: [0, 2],
-    meta_title_pos: [3, 0],
-    meta_abstract_pos: [6, 0],
-    meta_comment_pos: [9, 0],
-    meta_projects_pos: [11, 1],
+    # meta_version_pos: [0, 2],
+    meta_version_pos: [1, 1],
+    # meta_title_pos: [3, 0],
+    meta_title_pos: [1, 0],
+    # meta_abstract_pos: [6, 0],
+    meta_abstract_pos: [4, 0],
+    # meta_comment_pos: [9, 0],
+    meta_comment_pos: [7, 0],
+    # meta_projects_pos: [11, 1],
+    meta_projects_pos: [10, 0],
+    # meta_owners_start_col: 1,
+    # meta_owners_start_row: 14,
     meta_owners_start_col: 1,
-    meta_owners_start_row: 14,
+    meta_owners_start_row: 13,
 
-    meta_usagerights_pos: [22, 0],
-    meta_published_pos: [24, 0],
-    meta_spatial_extent_pos: [28, 0],
-    meta_datemin_pos: [32, 0],
-    meta_datemax_pos: [34, 0],
-    meta_temporalextent_pos: [36, 0],
-    meta_taxonomicextent_pos: [39, 0],
-    meta_design_pos: [42, 0],
-    meta_dataanalysis_pos: [45, 0],
-    meta_circumstances_pos: [48, 0],
+    # meta_usagerights_pos: [22, 0],
+    meta_usagerights_pos: [18, 0],
+    # meta_published_pos: [24, 0],
+    meta_published_pos: [21, 0],
+    # meta_spatial_extent_pos: [28, 0],
+    meta_spatial_extent_pos: [24, 0],
+    # meta_datemin_pos: [32, 0],
+    # meta_datemax_pos: [34, 0],
+    meta_datemin_pos: [27, 1],
+    meta_datemax_pos: [28, 1],
+    # meta_temporalextent_pos: [36, 0],
+    meta_temporalextent_pos: [30, 0],
+    # meta_taxonomicextent_pos: [39, 0],
+    meta_taxonomicextent_pos: [33, 0],
+    # meta_design_pos: [42, 0],
+    meta_design_pos: [36, 0],
+    # meta_dataanalysis_pos: [45, 0],
+    meta_dataanalysis_pos: [39, 0],
+    # meta_circumstances_pos: [48, 0],
+    meta_circumstances_pos: [42, 0],
 
     # Columns sheet
     column_header_col: 0,
