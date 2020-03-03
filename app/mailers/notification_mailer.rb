@@ -15,6 +15,18 @@ class NotificationMailer < ActionMailer::Base
     send_mail(user, subject)
   end
 
+  def data_request_accepted(paperproposal)
+    set_host # before action and filter only will work in rails 4
+
+    @paperproposal = paperproposal
+    user = @paperproposal.author
+    subject = 'Data request accepted'
+    message = render_to_string 'data_request_accepted'
+
+    create_notification(user, subject, message)
+    send_mail(user, subject)
+  end
+
   def auto_accept_for_free_datasets(user, paperproposal)
     set_host # before action and filter only will work in rails 4
 
