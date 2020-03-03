@@ -191,7 +191,7 @@
                   .input-group
                     %input#filter_input_users.form-control{:placeholder => "Type..", :type => "text"}
                     .input-group-append
-                      = link_to "Reset", "#",
+                      = link_to "Reset", "javascript:void(0)".html_safe,
                         { class: "button_clear_users_filter btn btn-outline-primary", id: "button_clear_users_filter",
                         'data-toggle': "tooltip",
                         'data-turbolinks': false,
@@ -224,7 +224,7 @@
                   .input-group
                     %input#filter_input_datasets.form-control{:placeholder => "Type..", :type => "text"}
                     .input-group-append
-                      = link_to "Reset", "#",
+                      = link_to "Reset", "javascript:void(0)".html_safe,
                         { class: "btn btn-outline-primary", id: "button_clear_datasets_filter",
                         'data-toggle': "tooltip",
                         'data-turbolinks': false,
@@ -263,7 +263,7 @@
                     .input-group
                       %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
                       .input-group-append
-                        = link_to "Reset", "#",
+                        = link_to "Reset", "javascript:void(0)".html_safe,
                           { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
                           'data-toggle': "tooltip",
                           'data-turbolinks': false,
@@ -290,7 +290,7 @@
                     .input-group
                       %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
                       .input-group-append
-                        = link_to "Reset", "#",
+                        = link_to "Reset", "javascript:void(0)".html_safe,
                           { class: "btn btn-outline-primary", id: "button_clear_proposals_filter",
                           'data-toggle': "tooltip",
                           'data-turbolinks': false,
