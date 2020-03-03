@@ -12,49 +12,84 @@
 #
 # Datasets can be of main or side aspect for the proposal. Dataset owners of main aspect datasets
 # should be offered a co-authorship in the resulting paper.
+
 class Paperproposal < ApplicationRecord
-  belongs_to :author, class_name: 'User', foreign_key: 'author_id'
-  belongs_to :authored_by_project, class_name: 'Project', foreign_key: :project_id
 
-  # User roles in a paperproposal: proponents, main aspect dataset owner, side aspect dataset owner, acknowledged.
-  # many-to-many association with User model through author_paperproposal joint table.
-  # has_many :author_paperproposals, dependent: :destroy, include: [:user]
-  has_many :author_paperproposals, -> { includes [:user] }, dependent: :destroy
+  belongs_to :author,
+    class_name: 'User',
+    foreign_key: 'author_id'
 
-  has_many :authors, class_name: 'User', source: :user, through: :author_paperproposals
+  belongs_to :authored_by_project,
+    class_name: 'Project',
+    foreign_key: :project_id
+
+  # User roles in a paperproposal: proponents, main aspect dataset owner, side
+  # aspect dataset owner, acknowledged. many-to-many association with User
+  # model through author_paperproposal joint table.
+  has_many :author_paperproposals,
+    -> { includes [:user] },
+    dependent: :destroy
+
+  has_many :authors, class_name: 'User',
+    source: :user,
+    through: :author_paperproposals
+
   # with four conditional association.
-  # has_many :proponents, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'user']
-  has_many :proponents, -> { where "kind = 'user'" }, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :proponents,
+    -> { where "kind = 'user'" },
+    class_name: 'User',
+    source: :user,
+    through: :author_paperproposals
 
-  # has_many :main_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'main']
-  has_many :main_aspect_dataset_owners, -> { where "kind = 'main'" }, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :main_aspect_dataset_owners,
+    -> { where "kind = 'main'" },
+    class_name: 'User',
+    source: :user,
+    through: :author_paperproposals
 
-  # has_many :side_aspect_dataset_owners, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind=?', 'side']
-  has_many :side_aspect_dataset_owners, -> { where "kind = 'side'" }, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :side_aspect_dataset_owners,
+    -> { where "kind = 'side'" },
+    class_name: 'User',
+    source: :user,
+    through: :author_paperproposals
 
-  # has_many :acknowledgements_from_datasets, class_name: 'User', source: :user, through: :author_paperproposals, conditions: ['kind = ?', 'ack']
-  has_many :acknowledgements_from_datasets, -> { where "kind = 'ack'" }, class_name: 'User', source: :user, through: :author_paperproposals
+  has_many :acknowledgements_from_datasets,
+    -> { where "kind = 'ack'" },
+    class_name: 'User',
+    source: :user,
+    through: :author_paperproposals
 
-  # User votes on a paperproposal.
-  # has_many association with paperproposal_votes model.
-  # two conditional association to differentiate project board vote and dataset request vote.(FIXME: dataset owner's vote?)
-  has_many :paperproposal_votes, dependent: :destroy
+  # User votes on a paperproposal. has_many association with
+  # paperproposal_votes model. two conditional association to differentiate
+  # project board vote and dataset request vote.(FIXME: dataset owner's vote?)
+  has_many :paperproposal_votes,
+    dependent: :destroy
 
-  # has_many :project_board_votes, class_name: 'PaperproposalVote', source: :paperproposal_votes, conditions: { project_board_vote: true }
-  has_many :project_board_votes, -> { where project_board_vote: true }, class_name: 'PaperproposalVote', source: :paperproposal_votes
+  has_many :project_board_votes,
+    -> { where project_board_vote: true },
+    class_name: 'PaperproposalVote',
+    source: :paperproposal_votes
 
-  # has_many :for_data_request_votes, class_name: 'PaperproposalVote', source: :paperproposal_votes, conditions: { project_board_vote: false }
-  has_many :for_data_request_votes, -> { where project_board_vote: false }, class_name: 'PaperproposalVote', source: :paperproposal_votes
+  has_many :for_data_request_votes,
+    -> { where project_board_vote: false },
+    class_name: 'PaperproposalVote',
+    source: :paperproposal_votes
 
   # habtm association with Dataset model.
   before_destroy :reset_download_rights # needs to be before association definition,see https://rails.lighthouseapp.com/projects/8994/tickets/4386
-  has_many :dataset_paperproposals, dependent: :destroy
-  has_many :datasets, through: :dataset_paperproposals
+  has_many :dataset_paperproposals,
+    dependent: :destroy
+  has_many :datasets,
+    through: :dataset_paperproposals
 
-  # one-to-many association with Freeformat model.
-  has_many :freeformats, as: :freeformattable, dependent: :destroy
+  # one-to-many association with freeformat model.
+  has_many :freeformats,
+    as: :freeformattable,
+    dependent: :destroy
 
   validates_presence_of :title, :rationale, :author_id
+
+  before_create :set_initial_title
 
   STATES = {
     # for the sorting
