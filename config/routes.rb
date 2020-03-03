@@ -23,8 +23,6 @@ Rails.application.routes.draw do
 
   match 'legal' => 'pages#legal', :as => :legal, via: %i[get post]
   get 'help' => redirect('https://github.com/befdata/befdata/wiki'), :as => :help
-  match 'data' => 'pages#data', :as => :data, via: %i[get post]
-  match 'search' => 'pages#search', via: %i[get post]
 
   # resources :datasets, :except => [:index] do
   resources :datasets do
