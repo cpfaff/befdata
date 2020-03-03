@@ -26,7 +26,7 @@ class DatasetEditsController < ApplicationController
       redirect_back(fallback_location: root_url) && return
     end
 
-    if @dataset_edit.update_attributes(params[:dataset_edit].merge(submitted: true))
+    if @dataset_edit.update_attributes(dataset_edit_params.merge(submitted: true))
       @dataset_edit.notify(params[:notify])
       flash[:notice] = 'Notifications were successfully submitted and sent, Thanks!'
     else
@@ -36,6 +36,10 @@ class DatasetEditsController < ApplicationController
   end
 
   private
+
+  def dataset_edit_params
+    params.require(:dataset_edit).permit(:description, :dataset_id, :id, :notify, :proposers, :downloaders)
+  end
 
   def load_dataset_and_its_edit
     @dataset_edit = DatasetEdit.find(params[:id])
