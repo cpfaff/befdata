@@ -36,7 +36,7 @@ class DatasetEdit < ApplicationRecord
 
     # normalize
     [downloaders, proposers].each do |a|
-      a.reject! { |x| dataset.owners.include?(x) }
+      a.to_a.reject! { |x| dataset.owners.include?(x) }
     end
     downloaders -= proposers # proposers are more important
 
