@@ -47,7 +47,8 @@ class DatagroupsController < ApplicationController
   end
 
   def show
-    @datasets = @datagroup.datasets.select('datasets.id, datasets.title').order(:title).distinct
+    @datasets = @datagroup.datasets.order(:title).distinct
+    @categories = @datagroup.categories.select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
   end
 
   def update
@@ -132,6 +133,7 @@ class DatagroupsController < ApplicationController
     %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
   end
 
+  # load datagroup
   def load_datagroup
     @datagroup = Datagroup.find(params[:id])
   end
