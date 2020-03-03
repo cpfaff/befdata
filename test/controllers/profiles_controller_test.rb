@@ -50,9 +50,10 @@ class ProfilesControllerTest < ActionController::TestCase
     assert_success_no_error
   end
 
-  test 'show voting history' do
-    login_nadrowski
-    get :votes_history
-    assert_success_no_error
-  end
+  # votes history has been merged into votes show
+  # test 'show voting history' do
+    # login_nadrowski
+    # get :votes_history
+    # assert_success_no_error
+  # end
 end
