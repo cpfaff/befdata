@@ -13,14 +13,22 @@ class DatagroupsController < ApplicationController
     end
   end
 
+  helper_method :sort_column, :sort_direction
+
   def index
-    validate_sort_params(collection: %w[id title datacolumns_count categories_count], default: 'title')
-    dgs = Datagroup.select('id, title, description, created_at, datacolumns_count,
-                            (select count(*) from categories where datagroup_id = datagroups.id) as categories_count')
-                   .order("#{params[:sort]} #{params[:direction]}").search(params[:search])
+    @datagroups = Datagroup.select('id, title, description,
+                                    created_at, updated_at, datacolumns_count,
+                                    (select count(*) from categories where datagroup_id = datagroups.id) as categories_count')
+
+    if params[:sort]
+      @datagroups = @datagroups.order(sort_column + " " + sort_direction)
+    end
+
+    @pagy, @datagroups = pagy(@datagroups)
+
     respond_to do |format|
-      format.html { @datagroups = dgs.paginate(page: params.fetch(:page, 1), per_page: 100) }
-      format.xml { @datagroups = dgs }
+      format.html
+      format.xml
     end
   end
 
@@ -110,6 +118,19 @@ class DatagroupsController < ApplicationController
   end
 
   private
+
+  # sorting by
+  def sort_column
+    # allow columns names plus some extras
+    sorting_columns = Datagroup.column_names + ["categories_count"]
+    # select the correct sorting columns or default to title
+    sorting_columns.include?(params[:sort]) ? params[:sort] : "title"
+  end
+
+  # sort direction
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+  end
 
   def load_datagroup
     @datagroup = Datagroup.find(params[:id])
