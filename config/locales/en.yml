@@ -19,6 +19,11 @@
 # To learn more, please read the Rails Internationalization guide
 # available at http://guides.rubyonrails.org/i18n.html.
 
+# TODO: these translation strings are not used anymore. Check if you add
+# them back and add more translatable strings to the application.
+# address.url
+# address.phone
+
 en:
   hello: "Hello world"
 
