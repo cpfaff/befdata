@@ -366,6 +366,12 @@ class Dataset < ApplicationRecord
   end
 
   def set_default_phase
-    self.project_phase = '1' if project_phase.nil?
+    if project_phase.nil?
+      if PROJECT_PHASE.length > 0
+        self.project_phase = PROJECT_PHASE.length-1
+      else
+        self.project_phase = 0
+      end
+    end
   end
 end
