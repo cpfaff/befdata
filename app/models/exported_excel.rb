@@ -17,7 +17,7 @@ class ExportedExcel < ExportedFile
     update_attribute(:status, STARTED)
 
     Spreadsheet.client_encoding = 'UTF-8'
-    excel_workbook = Spreadsheet.open Rails.root.join('public', 'templates', 'befdata_workbook_empty.xls')
+    excel_workbook = Spreadsheet.open Rails.root.join('public', 'templates', 'befdata_workbook_empty_v013.xls')
 
     create_metasheet(excel_workbook, dataset)
     create_columnsheet(excel_workbook, dataset)

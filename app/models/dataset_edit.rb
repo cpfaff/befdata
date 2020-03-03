@@ -49,7 +49,6 @@ class DatasetEdit < ApplicationRecord
     # deliver_now or deliver_later
     # TODO: Keep an eye on if that stuff is working otherwise migrate to
     # active job.
-    # NotificationMailer.data_request_rejected(self).deliver_now
     proposers.each { |u| NotificationMailer.delay.dataset_edit(u, self, :proposer) }
     downloaders.each { |u| NotificationMailer.delay.dataset_edit(u, self, :downloader) }
   end

@@ -172,6 +172,10 @@ class Dataset < ApplicationRecord
     ACCESS_CODES.invert[access_code].to_s.humanize
   end
 
+  def project_phases
+    PROJECT_PHASE.invert[project_phase].to_s.humanize
+  end
+
   %w[free_within_projects free_for_members free_for_public].each do |right|
     define_method("#{right}?") do
       access_code >= ACCESS_CODES[right.to_sym]
