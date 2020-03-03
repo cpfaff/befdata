@@ -8,7 +8,7 @@ class FreeformatsController < ApplicationController
   skip_before_action :deny_access_to_all
 
   access_control do
-    actions :download, :update, :create, :destroy do
+    actions :download, :update, :edit, :create, :destroy do
       allow :admin, :data_admin
       allow :owner, of: :dataset
       allow logged_in, if: :paperproposal_author
