@@ -92,13 +92,14 @@ class Paperproposal < ApplicationRecord
   before_create :set_initial_title
 
   STATES = {
-    # for the sorting
+    # for sorting purposes
     'accepted' => 1,
     'in review' => 2,
     'manuscript avaible' => 3,
     'in prep' => 4,
     'deletion' => 5
   }.freeze
+
   KIND = { 'user' => 'Proponent',
            'main' => 'Main aspect data provider',
            'side' => 'Side aspect data provider',
