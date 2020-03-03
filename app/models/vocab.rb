@@ -1,9 +1,0 @@
-# frozen_string_literal: true
-
-class Vocab < ApplicationRecord
-  # attr_accessible :term
-  validates_presence_of :term
-  validates_uniqueness_of :term
-
-  has_many :datacolumns, foreign_key: :term_id, dependent: :nullify
-end
