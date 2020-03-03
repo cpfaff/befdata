@@ -40,7 +40,30 @@ class PaperproposalsController < ApplicationController
     end
   end
 
+  helper_method :sort_column, :sort_direction
+
   def index
+    # get all
+    @paperproposals = Paperproposal.includes(:author,
+                                             :proponents,
+                                             :main_aspect_dataset_owners,
+                                             :side_aspect_dataset_owners,
+                                             :authored_by_project)
+
+    # reduce by selection
+    if params[:select]
+      @selection = params.fetch(:select).permit(internal_state: [], external_state: [])
+      @paperproposals = @paperproposals.where(board_state: @selection.fetch(:internal_state)) unless @selection.fetch(:internal_state).all?(&:blank?)
+      @paperproposals = @paperproposals.where(state: @selection.fetch(:external_state)) unless @selection.fetch(:external_state).all?(&:blank?)
+    end
+
+    # filter the selction
+    if params[:sort]
+      @paperproposals = @paperproposals.order(sort_column + " " + sort_direction)
+    end
+
+    @pagy, @paperproposals = pagy(@paperproposals)
+
     respond_to do |format|
       format.html { @paperproposals = Paperproposal.includes(:author, :proponents, :main_aspect_dataset_owners, :side_aspect_dataset_owners, :authored_by_project) }
       format.csv do
@@ -169,6 +192,14 @@ class PaperproposalsController < ApplicationController
   end
 
   private
+
+  def sort_column
+    Paperproposal.column_names.include?(params[:sort]) ? params[:sort] : "title"
+  end
+
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+  end
 
   def generate_csv_index
     paperproposals = Paperproposal.joins(:author).order('state ASC, project_id ASC, created_at ASC')
