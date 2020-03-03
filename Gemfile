@@ -52,9 +52,25 @@ gem 'pg_search', '~> 2.1.0'
 # sass adapter
 gem 'sass-rails', '~> 5.0.0'
 
-# bootstrap for new ui
+# for new ui
+
+# bootstrap
 gem 'bootstrap', '~> 4.4.1'
-gem 'bootstrap_form', '~> 4.0'
+
+# select for bootstrap
+gem 'bootstrap-select-rails', '~> 1.13.8'
+
+# data tables
+gem 'jquery-datatables', '~> 1.10.20'
+
+# font awesome
+gem 'font_awesome5_rails', '~> 1.0.0'
+
+# simple form
+gem 'simple_form', '~> 5.0.1'
+
+# clipboard functionality
+gem 'clipboard-rails', '~> 1.7.1'
 
 # jQuery and the jQuery-ujs driver for your Rails
 gem 'jquery-rails', '~> 4.3.0'
@@ -65,15 +81,21 @@ gem 'jquery-ui-rails', '~> 6.0.0'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.2.1'
 
+# todo: remove will paginate and 
+# replace with pagy
+
 # paginated queries with Active Record
 gem 'will_paginate', '~> 3.2.0'
+
+# will replace will paginate
+gem 'pagy', '~> 3.7'
 
 # coffee script adapter
 gem 'coffee-rails', '~> 4.1.0'
 
 # upgrade path 
 # assigns and assert_template in tests
-gem 'rails-controller-testing'
+gem 'rails-controller-testing', '~> 1.0.4'
 
 group :production do
   # maintenance mode
