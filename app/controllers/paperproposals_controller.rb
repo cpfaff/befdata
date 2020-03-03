@@ -65,10 +65,10 @@ class PaperproposalsController < ApplicationController
     @pagy, @paperproposals = pagy(@paperproposals)
 
     respond_to do |format|
-      format.html { @paperproposals = Paperproposal.includes(:author, :proponents, :main_aspect_dataset_owners, :side_aspect_dataset_owners, :authored_by_project) }
+      format.html
       format.csv do
         send_data generate_csv_index, type: 'text/csv', disposition: 'attachment',
-                                      filename: "paperproposals-list-for-#{current_user.login}.csv"
+                                      filename: "list-of-proposals-#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"
       end
     end
   end
