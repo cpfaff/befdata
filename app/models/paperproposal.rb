@@ -105,7 +105,6 @@ class Paperproposal < ApplicationRecord
            'side' => 'Side aspect data provider',
            'ack' => 'Acknowledged' }.freeze
 
-  before_create :set_initial_title
   def set_initial_title
     self.initial_title = title
   end
@@ -133,6 +132,7 @@ class Paperproposal < ApplicationRecord
     x
   end
 
+  # TODO: Board states could be enumerables.
   def calc_board_state
     return 'can be send to project board' if board_state == 'prep' && includes_datasets?
     return 'in preparation, no data selected' if board_state == 'prep'
@@ -418,7 +418,7 @@ class Paperproposal < ApplicationRecord
       end
     when 'accept'
       make_data_request_final
-      end
+    end
   end
 
   def reject_data_request
@@ -453,6 +453,8 @@ class Paperproposal < ApplicationRecord
     datasets.each do |ds|
       ds.accepts_role! :proposer, author
     end
+    # todo: this one is not delivered compared to others. I have no idea why.
+    NotificationMailer.delay.data_request_accepted(self)
     set_lock_status
     save
   end
