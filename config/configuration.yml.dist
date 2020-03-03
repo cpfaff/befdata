@@ -8,7 +8,8 @@ site:
   # Afterwards you enable it by setting the name of the folder in the layout
   # option.
 
-  # layout: 'fundiv'
+  # layout: 'befchina'
+  layout: 'default'
 
   # Here you can specify the title of your site which will appear in the
   # browser title bar. Uncomment subtitle if you need a subtitle. The resulting
@@ -39,3 +40,12 @@ eml:
     east_bounding_coordinate: 118.148346
     north_bounding_coordinate: 29.285201
     south_bounding_coordinate: 29.101777
+
+# here you can configure project phases. This will allow to to categorize datasets
+# belonging to specific project phases and to filter datasets on the dataset index
+# page to only show data of one or multiple phases. Keep the numbers starting from 
+# zero, going up in increments of one for each new project phase you add.
+
+# phase:
+  # BEF-China: 0 
+  # TreeDì: 1 

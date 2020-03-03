@@ -77,10 +77,7 @@ class Dataset < ApplicationRecord
     free_for_public: 3
   }.freeze
 
-  PROJECT_PHASE = {
-    'BEF-China': 0,
-    'TreeDì': 1
-  }.freeze
+  PROJECT_PHASE = PHASE_CONFIG.freeze
 
   validates_inclusion_of :access_code, in: ACCESS_CODES.values,
                                        message: 'is invalid! Access Rights is out of Range.'
