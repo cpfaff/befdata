@@ -12,16 +12,12 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require jquery-ui/widgets/accordion
-//= require jquery-ui/widgets/autocomplete
-//= require jquery-ui/widgets/tabs
-//= require jquery.simplemodal.1.4.4.min
-//= require jquery.tablesorter.min
-//= require jquery-cookie
-//= require select2.min
 //= require turbolinks
-//= require jquery.tipsy
 //= require jquery3
 //= require popper
 //= require bootstrap-sprockets
+//= require bootstrap-select
+//= require tagsinput
+//= require datatables
+//= require clipboard
 //= require_tree .
