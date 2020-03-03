@@ -1,19 +1,140 @@
-= page_title 'Cart'
+/ header
 
-%h2 Dataset cart
+// title
 
-- if @cart.cart_datasets.blank?
-  You haven't selected any datasets
+- page_title 'Cart'
 
-- else
-  %ul
-    - @cart.cart_datasets.each do |cart_object|
-      %li
-        %span= cart_object.dataset.title
-        = link_to image_tag("cancel.png", :title => "Remove from your cart."),
-          delete_cart_context_path(cart_object), method: :delete, data: { confirm: "Are you sure you want delete this dataset from cart?" }
+/ body
 
-  - content_for :actions do
-    = link_to :new_paperproposal do
-      = image_tag "document.png"
-      Create new paper proposal from cart
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Show: cart
+
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll up
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Up" ,
+      'data-placement': "auto"}
+    // actions
+    .div.pt-2.pb-2
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      / section tools
+      - if current_user
+        .border-top.border-right.border-left.rounded.top-2.pb-1
+          %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        .div.pt-2
+          %span{'data-toggle': 'tooltip', title: 'Create new proposal from cart', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-plus'></i>".html_safe, :new_paperproposal,
+              { class: "btn btn-sm btn-block btn-outline-light text-success" }
+      // add a separator if more actions are appended
+      -# .div.pb-4
+    // scroll down
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+// filters
+.div.pl-2
+  .div.pb-3.pt-3
+    %h5
+      Filter:
+
+    .input-group
+      %input#filter_input_cart_items.form-control{:placeholder => "Type..", :type => "text"}
+      .input-group-append
+        = link_to "Reset", "javascript:void(0)".html_safe,
+          { class: "btn btn-outline-primary", id: "button_clear_cart_items_filter",
+          'data-turbolinks': false, }
+
+  // content
+  - if @cart.cart_datasets.count > 0
+    #filter_target_cart_items.card-columns.single
+      - @cart.cart_datasets.each do |cart_item|
+        = render partial: 'datasets/dataset', locals: { cart_item: cart_item, dataset: cart_item.dataset }
+  - else
+    .font-weight-normal.text-muted
+      Your cart is empty!
+
+  #filter_target_cart_items_empty_note.d-none
+    No results for your query!
+
+
+/ scripts
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// scroll buttons in action bar
+:javascript
+  $(document).ready(function(){
+    // scroll up
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll down
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });
+
+// filter the cart_items
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_cart_items').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_cart_items').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_cart_items").find('.card').is(':visible')) {
+            $("#filter_target_cart_items_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_cart_items_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_cart_items_filter').click(function(){
+      $('#filter_input_cart_items').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_cart_items').find('.card').removeClass('d-none');
+      $("#filter_target_cart_items_empty_note").addClass('d-none');
+    });
+  });
+
