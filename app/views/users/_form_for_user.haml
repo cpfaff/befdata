@@ -40,13 +40,14 @@
             - if current_user
               - if current_user.has_role?(:admin)
                 = field_set_tag "Roles" do
-                  %div.pl-3
+                  %div.pl-2
                     = f.input :project_board, as: :boolean
                     = f.input :admin, as: :boolean
                     = f.input :data_admin, as: :boolean
                     = f.input :alumni, as: :boolean
             = field_set_tag "Notifications" do
-              = f.input :receive_emails
+              %div.pl-2
+                = f.input :receive_emails
         #tab-2.tab-pane{:role => "tabpanel"}
           .container
             %br
