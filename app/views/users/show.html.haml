@@ -32,6 +32,16 @@
           .text-muted
             o
 
+      - if current_user
+        - unless current_user.has_role?(:admin) | current_user.has_role?(:admin)
+          .btn.btn-sm.btn-outline-light
+            .text-muted
+              o
+      - else
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
       // section info
       - if current_user
         - if @user.comment.present?
