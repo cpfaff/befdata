@@ -26,7 +26,12 @@
     .div.pt-2.pb-2
 
       // placeholder if action bar is empty
-      - unless current_user
+      - if current_user
+        - unless current_user.has_role?(:admin).present?
+          .btn.btn-sm.btn-outline-light
+            .text-muted
+              o
+      - else
         .btn.btn-sm.btn-outline-light
           .text-muted
             o
