@@ -21,7 +21,7 @@ Rails.application.routes.draw do
     end
   end
 
-  match 'imprint' => 'pages#imprint', :as => :imprint, via: %i[get post]
+  match 'legal' => 'pages#legal', :as => :legal, via: %i[get post]
   get 'help' => redirect('https://github.com/befdata/befdata/wiki'), :as => :help
   match 'data' => 'pages#data', :as => :data, via: %i[get post]
   match 'search' => 'pages#search', via: %i[get post]
