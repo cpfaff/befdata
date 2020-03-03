@@ -45,7 +45,6 @@ xml.dataset(id: @dataset.id, version: 1) do
               xml.keyword t.name, id: t.id
             end
           end
-          xml.semanticTagging dc.semantic_term.try(:term)
         end
         next unless params[:separate_category_columns].to_s.casecmp('true').zero? && dc.split_me?
 
@@ -65,7 +64,6 @@ xml.dataset(id: @dataset.id, version: 1) do
               xml.keyword t.name, id: t.id
             end
           end
-          xml.semanticTagging dc.semantic_term.try(:term)
         end
       end
     end
