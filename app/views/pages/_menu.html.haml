@@ -31,31 +31,31 @@
       - if current_user
         .btn-group
           = link_to "<i class='fas fa-user' style='font-size:13px; vertical-align: middle;'></i>".html_safe, profile_path,
-            { class: "btn btn-outline-light darkgray-border text-muted",
+            { class: "btn btn-outline-light gray-border text-muted",
             'data-toggle': "tooltip",
             'title': "Logged in as: #{current_user}",
             'data-placement': "auto"}
           - if current_user.open_votes_count > 0
             = link_to "<i class='fas fa-vote-yea' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.open_votes_count}".html_safe, votes_profile_path,
-              { class: "btn btn-outline-light darkgray-border text-primary",
+              { class: "btn btn-outline-light gray-border text-primary",
               'data-toggle': "tooltip",
               'title': "Data requests",
               'data-placement': "auto"}
           - else
             = link_to "<i class='fas fa-vote-yea' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.open_votes_count}".html_safe, votes_profile_path,
-              { class: "btn btn-outline-light darkgray-border text-muted",
+              { class: "btn btn-outline-light gray-border text-muted",
               'data-toggle': "tooltip",
               'title': "Data requests",
               'data-placement': "auto"}
           - if current_user.notifications.where(:read => false).count > 0
             = link_to "<i class='fas fa-bell' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.notifications.where(:read => false).count}".html_safe, notifications_path,
-              { class: "btn btn-outline-light darkgray-border text-primary",
+              { class: "btn btn-outline-light gray-border text-primary",
               'data-toggle': "tooltip",
               'title': "Notifications",
               'data-placement': "auto"}
           - else
             = link_to "<i class='fas fa-bell' style='font-size:13px; vertical-align: middle;'></i> # #{current_user.notifications.where(:read => false).count}".html_safe, notifications_path,
-              { class: "btn btn-outline-light darkgray-border text-muted",
+              { class: "btn btn-outline-light gray-border text-muted",
               'data-toggle': "tooltip",
               'title': "Notifications",
               'data-placement': "auto"}
@@ -66,13 +66,13 @@
             'title': "Cart",
             'data-placement': "auto"}
           = link_to "<i class='fas fa-sign-out-alt' style='font-size:13px; vertical-align: middle;'></i>".html_safe, logout_path,
-            { class: "btn btn-outline-light darkgray-border text-muted",
+            { class: "btn btn-outline-light gray-border text-muted",
             'data-toggle': "tooltip",
             'title': "Logout",
             'data-placement': "auto"}
       - else
         = link_to "<i class='fas fa-sign-in-alt' style='font-size:13px; vertical-align: middle;'></i> Login".html_safe, "#",
-          { class: "btn btn-outline-light darkgray-border text-muted",
+          { class: "btn btn-outline-light gray-border text-muted",
             'data-toggle': "modal",
             'data-target': "#login_form"}
 
