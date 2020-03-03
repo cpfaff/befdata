@@ -64,7 +64,7 @@
     .input-group
       %input#filter_input_projects.form-control{:placeholder => "Type..", :type => "text"}
       .input-group-append
-        = link_to "Reset", "#",
+        = link_to "Reset", "javascript:void(0)".html_safe,
           { class: "btn btn-outline-primary", id: "button_clear_projects_filter",
           'data-turbolinks': false, }
 
