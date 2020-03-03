@@ -47,6 +47,7 @@
             { class: "btn btn-sm btn-block btn-outline-light text-success",
               'data-toggle': "modal",
               'data-target': "#dataset_download_history"}
+
     // import status
     - if current_user
       - unless dataset.finished_import?
@@ -76,6 +77,11 @@
               { class: "btn btn-sm btn-block btn-outline-light text-success ",
                 'data-toggle': "modal",
                 'data-target': "#dataset_download"}
+        %span{'data-toggle': 'tooltip', title: 'Download freeformats', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-paperclip'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "modal",
+              'data-target': "#freeformat_download"}
     - if current_user
       .div.pb-4
 
@@ -135,7 +141,6 @@
               = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
                 { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
                   'data-turbolinks': false }
-      // todo: this should appear when
     // section tools content
     - if current_user
       - if dataset.can_be_edited_by? current_user
