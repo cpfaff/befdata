@@ -25,51 +25,88 @@
 # * approve_predefined_columns : after the initial upload of data a User can bulk approve columns,
 #   without reviewing each column individually. The Datacolumn must be correctly described, in
 #   that it must have a Datagroup and a Datatype.
+
 require 'acl_patch'
 class Dataset < ApplicationRecord
-  include PgSearch
-  acts_as_authorization_object subject_class_name: 'User', join_table_name: 'roles_users'
+  # access control
+  acts_as_authorization_object subject_class_name: 'User',
+                               join_table_name: 'roles_users'
   include AclPatch
 
   attr_writer :owner_ids
   acts_as_taggable
 
-  has_many :datafiles, -> { order 'id DESC' }, dependent: :destroy, class_name: 'Datafile'
+  has_many :datafiles,
+    -> { order 'id DESC' },
+    dependent: :destroy,
+    class_name: 'Datafile'
 
-  has_one  :current_datafile, -> { order 'id DESC' }, class_name: 'Datafile'
+  has_one :current_datafile,
+    -> { order 'id DESC' },
+    class_name: 'Datafile'
 
-  has_many :exported_files, dependent: :destroy
-  has_one  :exported_excel   # exported Excel workbook
-  has_one  :exported_csv     # exported regular csv
-  has_one  :exported_scc_csv # exported csv with separate coategory columns
+  has_many :exported_files,
+    dependent: :destroy
 
-  # has_many :datacolumns, dependent: :destroy, order: 'columnnr'
-  has_many :datacolumns, -> { order 'columnnr' }, dependent: :destroy
+  # exported excel workbook
+  has_one :exported_excel
 
-  has_many :sheetcells, through: :datacolumns
-  has_many :datagroups, -> { includes :categories }, through: :datacolumns
-  has_many :freeformats, as: :freeformattable, dependent: :destroy
+  # exported regular csv
+  has_one :exported_csv
+
+  # exported csv with separate coategory columns
+  has_one :exported_scc_csv
+
+  has_many :datacolumns,
+    -> { order 'columnnr' },
+    dependent: :destroy
+
+  has_many :sheetcells,
+    through: :datacolumns
+
+  has_many :datagroups,
+    -> { includes :categories },
+    through: :datacolumns
+
+  has_many :freeformats,
+    as: :freeformattable,
+    dependent: :destroy
 
   has_many :dataset_downloads
-  has_many :downloaders, -> { distinct }, through: :dataset_downloads, source: :user
 
-  # has_many :dataset_edits, order: 'updated_at DESC', dependent: :destroy
-  has_many :dataset_edits, -> { order 'updated_at DESC' }, dependent: :destroy
+  has_many :downloaders,
+           -> { distinct },
+           through: :dataset_downloads,
+           source: :user
 
-  # has_one :unsubmitted_edit, class_name: 'DatasetEdit', conditions: ['submitted=?', false]
-  has_one :unsubmitted_edit, -> { where submitted: false }, class_name: 'DatasetEdit'
+  has_many :dataset_edits,
+           -> { order 'updated_at DESC' },
+           dependent: :destroy
+
+  has_one :unsubmitted_edit,
+          -> { where submitted: false },
+          class_name: 'DatasetEdit'
 
   has_and_belongs_to_many :projects
+
   has_many :dataset_paperproposals
-  has_many :paperproposals, through: :dataset_paperproposals
-  has_many :proposers, -> { distinct }, through: :paperproposals, source: :author
+
+  has_many :paperproposals,
+           through: :dataset_paperproposals
+
+  has_many :proposers,
+    -> { distinct },
+    through: :paperproposals,
+    source: :author
 
   has_many :dataset_tags
-  # has_many :all_tags, through: :dataset_tags, source: :tag, order: 'lower(name)'
-  has_many :all_tags, -> { order 'lower(name)' }, through: :dataset_tags, source: :tag
+  has_many :all_tags,
+           -> { order 'lower(name)' },
+           through: :dataset_tags,
+           source: :tag
 
-  validates :title, presence: true, uniqueness: { case_sensitive: false }
-
+  # constants
+  # TODO: These constants need to be transformed into enumerables
   ACCESS_CODES = {
     private: 0,
     free_within_projects: 1,
@@ -79,11 +116,23 @@ class Dataset < ApplicationRecord
 
   PROJECT_PHASE = PHASE_CONFIG.freeze
 
-  validates_inclusion_of :access_code, in: ACCESS_CODES.values,
-                                       message: 'is invalid! Access Rights is out of Range.'
+  # validations
+  validates :title,
+            presence: true,
+            uniqueness: { case_sensitive: false }
 
+  validates_inclusion_of :access_code,
+                         in: ACCESS_CODES.values,
+                         message: 'is invalid! Access Rights is out of Range.'
+
+  # hooks
   before_destroy :check_for_paperproposals
-  before_save :set_include_license, :check_author, :set_default_phase
+  before_save :set_include_license,
+              :check_author,
+              :set_default_phase
+
+  # includes
+  include PgSearch
 
   pg_search_scope :search, against: {
     title: 'A',
