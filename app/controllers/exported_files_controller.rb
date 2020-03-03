@@ -16,8 +16,16 @@ class ExportedFilesController < ApplicationController
 
   def regenerate_download
     @exported_file.queued_to_be_exported
-    puts download_page_dataset_path(@dataset, anchor: @exported_file.format)
-    redirect_to download_page_dataset_path(@dataset, anchor: @exported_file.format)
+
+    # status of the downloadable files
+    @exported_excel = @dataset.exported_excel || @dataset.create_exported_excel
+    @exported_csv = @dataset.exported_csv || @dataset.create_exported_csv
+    @exported_scc_csv = @dataset.exported_scc_csv || @dataset.create_exported_scc_csv
+
+    respond_to do |format|
+      format.html
+      format.js { render template: "datasets/regenerate_downloads.js.haml"}
+    end
   end
 
   private
