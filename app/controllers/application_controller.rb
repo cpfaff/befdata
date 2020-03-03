@@ -61,14 +61,6 @@ class ::ApplicationController < ActionController::Base
     end
   end
 
-  def redirect_back_or_default(default = root_url)
-    if request.env['HTTP_REFERER'].blank?
-      redirect_to default
-    else
-      redirect_back(fallback_location: root_url)
-    end
-  end
-
   def current_cart
     cookies[:cart_id] ||= Cart.create!.id
     begin
