@@ -7,7 +7,9 @@ class CartsController < ApplicationController
       allow logged_in
     end
     action :delete_cart_context do
-      allow logged_in # TODO: this should be only allowed for the owner of a cart or similar see #4670
+      # TODO: this should be only allowed for the
+      # owner of a cart or similar see #4670
+      allow logged_in
     end
   end
 
@@ -23,10 +25,6 @@ class CartsController < ApplicationController
     else
       flash[:error] = "#{@dataset.title} is already in cart."
     end
-    # TODO:
-    # remove that method as there is a new redirect method
-    # in rails 5
-    # redirect_back_or_default current_cart_path
     redirect_back(fallback_location: current_cart_path)
   end
 
