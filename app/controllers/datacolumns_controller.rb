@@ -46,6 +46,7 @@ class DatacolumnsController < ApplicationController
   end
 
   def approve_datagroup
+    @datagroup = Datagroup.new
     @data_groups_available = if @datacolumn.datagroup_id
                                Datagroup.order(:title).where(['id <> ?', @datacolumn.datagroup_id])
                              else # no datagroup assigned
