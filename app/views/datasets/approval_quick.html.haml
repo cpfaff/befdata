@@ -1,55 +1,90 @@
+// if this takes long. However during that job we also need to
+// disable controls on the dataset show page so that users are
+// not disturbing it. And if this is running really, really long
+// we also need a way to cancel it.
+
+// TODO: add back a note and add a solution for large datasets
+-# %h3 Quick Approve
+-# %p Only do this, if you know what you do, this changes a lot at once.
+-# - if @dataset.number_of_observations > 10000
+  -# #too-many-alert
+    -# %b Caution!
+    -# %p
+      -# The quick approval process for this dataset may take a long time, since your dataset has so many rows. Either wait patiently, don't be irritated by error messages of your browser, or go through the columns one by one.
+
 - page_title "Quick approve #{@dataset.title}"
 
-%h3 Quick Approve
-%p Only do this, if you know what you do, this changes a lot at once.
-- if @dataset.number_of_observations > 10000
-  #too-many-alert
-    %b Caution!
-    %p
-      The quick approval process for this dataset may take a long time, since your dataset has so many rows. Either wait patiently, don't be irritated by error messages of your browser, or go through the columns one by one.
 %p
-  Below the select box you find the previosly assigned values. Grey values means they are not approved and are
-  automatically filled in if possible. Empty boxes will be left unchanged.
+  .text-justify
+    Only use the quick approval, if you know what you are doing as this changes
+    a lot at once. The quick approval process may take a long time, depending
+    on the amount of rows in your datasets. Below the select box you find the
+    previosly assigned values. Grey values means they are not approved and are
+    automatically filled in if possible. Empty or unchanged boxes will be left
+    unchanged.
 
-= form_tag :controller=> 'datasets', :action => 'batch_update_columns' do
+= form_tag controller: 'datasets', action: 'batch_update_columns' do
   %table#columns-table.quick-approve-table
     %thead
       %tr
-        %th= "#"
-        %th= ' '
         %th Header
         %th Datagroup
         %th Datatype
     %tbody
       -@dataset.datacolumns.includes(:datagroup).each do |c|
         = hidden_field_tag "datacolumn[][id]", c.id
-        %tr
-          %td= c.columnnr
-          %td{:class => "approval-status approval-stage-#{c.approval_stage}"}
-            = c.approval_stage
-          %td= link_to c.columnheader, approval_overview_datacolumn_url(c)
+        %tr.pb-1
+          %td
+            = link_to c.columnheader, approval_overview_datacolumn_url(c)
+          %td
+            = select_tag "datacolumn[][datagroup]",
+              options_from_collection_for_select(@datagroups,"id","title", (c.datagroup_id if c.datagroup_approved?)),
+              { include_blank: true, class: 'select' }
+          %td
+            = select_tag "datacolumn[][import_data_type]",
+              options_from_collection_for_select(@datatypes,"name","name",
+              (c.import_data_type if c.datatype_approved?)),
+              { include_blank: true, class: 'select' }
 
-          %td.datagroup-cell
-            = select_tag "datacolumn[][datagroup]", options_from_collection_for_select(@datagroups,"id","title",
-              (c.datagroup_id unless c.datagroup_approved?)), {:include_blank => true}
-            %p.datagroup-description.clear-value
-              clear
-            %p.datagroup-description.reset-old-datagroup-value{:class => !c.datagroup_approved? ? 'unapproved' : ''}
-              = c.datagroup.title
+  %div.pt-5.pb-2
+    = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, dataset_path(@dataset),
+      { class: "btn btn-outline-primary" }
+    = link_to "Approve all", "#",
+      { class: "btn btn-outline-primary",
+        'data-toggle': "modal",
+        'data-target': "#approve_dataset_group_and_type"}
 
-          %td.datatype-cell
-            = select_tag "datacolumn[][import_data_type]", options_from_collection_for_select(@datatypes,"name","name",
-              (c.import_data_type unless c.datatype_approved?)), {:include_blank => true}
-            %p.datatype-description.clear-value
-              clear
-            %p.datatype-description.reset-old-datatype-value{:class => !c.datatype_approved? ? 'unapproved' : ''}
-              = c.import_data_type
+/ modals
 
-  = submit_tag 'Approve all columns'#, data: { confirm: 'Are you sure?' }
+// approve dataset groups and data type
+#approve_dataset_group_and_type.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Save values?
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Are you sure?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = submit_tag 'OK', class: 'btn btn-outline-primary'
 
+/ scripts
+
+// initialize selectpickers
 :javascript
-  jQuery(document).ready(function(){
-    $(".clear-value").click(function() {
-          $(this).siblings("select").val('');
+  $(document).on('turbolinks:load', function() {
+    $('.select').selectpicker({
+      liveSearch: true,
+      liveSearchPlaceholder: "type to filter ...",
+      actionsBox: true
     });
+  });
+
+  // fix style on cache reload of pickers
+  $(document).on('turbolinks:before-cache', function() {
+    $('.select').selectpicker('destroy').addClass('selectpicker')
   });

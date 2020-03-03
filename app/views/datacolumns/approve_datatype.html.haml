@@ -1,39 +1,102 @@
-- page_title "Approve data type of #{@datacolumn.columnheader}"
-
-%h3 Approve Datatype
-
-%p
-  - if !@datacolumn.datatype_approved?
-    The datatype
-    %strong= @datacolumn.import_data_type
-    is not approved. Please select the datatype and click on
-    %i Save.
-    Your data will then be validated against the selected datatype. At the moment there is only a text representation
-    of your data present in the database.
+.div.pb-3
+  .font-weight-bold.text-dark
+    Column:
+  - if @datacolumn.columnheader.present?
+    .font-weight-normal.text-dark
+      = @datacolumn.columnheader
   - else
-    The datatype has already been approved as
-    %strong #{@datacolumn.import_data_type}.
-    You can change it by selecting a new datatype. The data will then be
-    validated against the selected datatype.
+    .font-weight-normal.text-muted
+      No information available
 
-%p
-  The following is an overview of the #{@datacolumn.values_stored? ? "accepted" : "uploaded"} values for this data column.
-%table
-  %thead
-    %tr
-      %th.span-4.last Value
-  %tbody
-    - if @datacolumn.values_stored?
-      - @datacolumn.accepted_values(5).each do |sc|
-        %tr
-          %td= sc.accepted_value
-    - else
-      - @datacolumn.imported_values(10).each do |sc|
-        %tr
-          %td= sc.import_value
+- if @datacolumn.datagroup.present?
+  %p
+    .text-justify
+      Here you can select and approve the data type your data column belongs to.
+      - if @datacolumn.datatype_approved?
+        The datatype has already been approved as
+        %strong #{@datacolumn.import_data_type}.
+        You can change it by selecting a new datatype. The data will then be
+        validated against the selected datatype.
+      - else
+        The current datatype
+        %strong= @datacolumn.import_data_type
+        is not approved. Please select the correct datatype and click on
+        %i Save.
+        Finally your data will be validated against the selected datatype. At the moment there is only a
+        text representation of your data present in the database.
 
-= form_tag :action => :update_datatype, :controller => :datacolumns do |form|
-  = hidden_field_tag :id, @datacolumn.id
-  %p.question= label_tag 'import_data_type', "Which type of data is this?"
-  %p= select_tag 'import_data_type', options_for_select(Datatypehelper.known.map{|dt| dt.name}, @datatype.name)
-  %p= submit_tag 'Save Datatype'
+  // cards with content
+  .div.pb-3
+    .font-weight-bold.text-dark
+      .pb-1
+        Values:
+        %p.font-weight-normal
+          The following table you find an overview of the #{@datacolumn.values_stored? ? "imported" : "uploaded"} values for this data column.
+          The values can help you to decide about the correct datatype. You can select it below.
+
+    .div.pr-1
+      - if @datacolumn.values_stored?
+        %table#datacolumns_values.table.table-striped{ width: "100%"}
+          %thead
+            %tbody
+              - @datacolumn.accepted_values(5).each do |value|
+                %tr
+                  %td
+                    = value.accepted_value
+      - else
+        %table#datacolumns_values.table.table-striped{ width: "100%"}
+          %thead
+            %tbody
+              - @datacolumn.imported_values(10).each do |value|
+                %tr
+                  %td
+                    = value.import_value
+
+  .mt-2
+    = form_tag :action => :update_datatype, :controller => :datacolumns do |form|
+      = hidden_field_tag :id, @datacolumn.id
+      .div.pb-3
+        .font-weight-bold.text-dark
+          .pb-1
+            Datatype:
+      = select_tag 'import_data_type', options_for_select(Datatypehelper.known.map{|dt| dt.name}, @datatype.name), class: 'select form-control'
+      .pt-3.pb-2
+        = submit_tag 'Save datatype', class: 'btn btn-outline-primary'
+- else
+  %p
+    Please #{link_to 'Approve the datagroup', approve_datagroup_datacolumn_path(@datacolumn)} first.
+  -# todo: this needs to be fixed along with the handling of the request in the controller action
+  -# = simple_form_for @datacolumn, url: update_datatype_datacolumn_path(@datacolumn), method: :post do |f|
+  -# = f.input :import_data_type,
+    -# as: :select,
+    -# hint: "Select the correct datatype and save it",
+    -# label: "Datatype",
+    -# selected: @datatype.name,
+    -# required: false,
+    -# collection: Datatypehelper.known.map{|dt| dt.name}
+  -# = f.button :submit, "Submit", class: "btn btn-outline-primary"
+
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
+
+// initialize selectpickers
+:javascript
+  $(document).on('turbolinks:load', function() {
+    $('.select').selectpicker({
+      liveSearch: true,
+      liveSearchPlaceholder: "type to filter ...",
+      actionsBox: true
+    });
+  });
+
+  // fix style on cache reload of pickers
+  $(document).on('turbolinks:before-cache', function() {
+    $('.select').selectpicker('destroy').addClass('selectpicker')
+  });
+

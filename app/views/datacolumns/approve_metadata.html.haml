@@ -1,54 +1,46 @@
-- page_title "Approve meta data of #{@datacolumn.columnheader}"
+.div.pb-3
+  .font-weight-bold.text-dark
+    Column:
+  - if @datacolumn.columnheader.present?
+    .font-weight-normal.text-dark
+      = @datacolumn.columnheader
+  - else
+    .font-weight-normal.text-muted
+      No information available
 
-%h3 Approve Metadata and Acknowledgements
-
+// description
 %p
-  Please confirm the metadata and acknowledgements.
+  Here you can confirm the metadata and the acknowledgements for each of your
+  the columns in your dataset. Thus, you can mention people which helped with
+  part of the data collection e.g. or during the field work.
 
-= form_tag update_metadata_datacolumn_path(@datacolumn) do
-  %dl
-    %dt= label_tag 'datacolumn[columnheader]', 'Header'
-    %dd=  text_field_tag 'datacolumn[columnheader]', @datacolumn.columnheader, :class => "metadata-text-input"
-  %dl
-    %dt= label_tag 'datacolumn[definition]', 'Definition'
-    %dd= text_area_tag 'datacolumn[definition]', @datacolumn.definition, :class => 'metadata-text-input'
-  %dl
-    %dt= label_tag 'datacolumn[unit]', 'Unit'
-    %dd= text_field_tag 'datacolumn[unit]', @datacolumn.unit, {:class => "metadata-text-input"}
-  %dl
-    %dt= label_tag "datacolumn[tag_list]", 'Keywords (Comma separated)'
-    %dd= text_field_tag "datacolumn[tag_list]", @datacolumn.tag_list.join(", "), :class => "metadata-text-input",:id =>"tag_list", "data-tags"=> all_tags_for_select2
-  %br/
-  %dl
-    %dt= label_tag 'datacolumn[instrumentation]', 'Instrumentation'
-    %dd= text_area_tag 'datacolumn[instrumentation]', @datacolumn.instrumentation, :class => 'metadata-text-input'
+// form user
+= simple_form_for @datacolumn, url: update_metadata_datacolumn_path(@datacolumn), method: :post,
+  wrapper_mappings: { check_boxes: :vertical_collection, radio_buttons: :vertical_collection, file: :custom_file, boolean: :custom_boolean_switch } do |f|
+  = f.error_notification
+  = f.input :columnheader
+  = f.input :unit
+  = f.input :tag_list, input_html: { value: f.object.tag_list.join(","), data: { role: 'tagsinput' } }
+  = f.input :definition, input_html: { rows: 10 }
+  = f.input :instrumentation, input_html: { rows: 10 }
+  = f.input :informationsource, label: "References", input_html: { rows: 10 }
+  = f.input :comment, input_html: { rows: 10 }
+  = label_tag 'people', 'Acknowledged'
+  - unless @datacolumn.acknowledge_unknown.blank?
+    = hidden_field_tag "datacolumn[acknowledge_unknown]", @datacolumn.acknowledge_unknown
+    %p.datagroup-description#unmatched-persons-hint
+      These people could not be matched within the portal:
+      = @datacolumn.acknowledge_unknown
+      = link_to "Delete this message", "#", {:id => "unmatched-persons-delete"}
+  %p
+    = select_tag "people[]", options_for_select(all_users_names_and_ids_for_select, @datacolumn.users.pluck(:id)), multiple: true, class: 'select form-control'
+  = f.button :submit, class: "btn btn-outline-primary"
 
-  %dl
-    %dt= label_tag 'datacolumn[informationsource]', 'References'
-    %dd= text_area_tag 'datacolumn[informationsource]', @datacolumn.informationsource, :class => 'metadata-text-input'
+/ functions
 
-  %dl
-    %dt= label_tag 'datacolumn[comment]',"Comment"
-    %dd= text_area_tag 'datacolumn[comment]', @datacolumn.comment, :class => "metadata-text-input"
-
-  %dl#metadata-people
-    %dt= label_tag 'people', 'Acknowledged people'
-    - unless @datacolumn.acknowledge_unknown.blank?
-      = hidden_field_tag "datacolumn[acknowledge_unknown]", @datacolumn.acknowledge_unknown
-      %p.datagroup-description#unmatched-persons-hint
-        These people could not be matched within the portal:
-        = @datacolumn.acknowledge_unknown
-        = link_to "Delete this message", "#", {:id => "unmatched-persons-delete"}
-    %dd
-      = select "person", "person_id", all_users_names_and_ids_for_select, {:prompt => 'Select Member'}, {:onchange => 'selectPeople(this)'}
-      %ul#people-list.metadata-approve-people{:style => 'list-style: none;'}
-        - @ppl.each do |person|
-          %li{:onclick => "this.parentNode.removeChild(this);"}
-            %input{:name => "people[]", :type => "hidden", :value => person.id}/
-            = image_tag person.avatar.to_s, :height => '16'
-            = person.to_label
-
-  = submit_tag 'Confirm / Save'
+// todo: test if this still works as expected
+// when there is people mentioned in the workbook which do not match
+// an entry in the database then you get this hint here.
 :javascript
   jQuery(document).ready(function(){
     $("#unmatched-persons-delete").click(function(event) {
@@ -56,12 +48,32 @@
       $('#unmatched-persons-hint').css("text-decoration", "line-through")
       event.preventDefault();
     });
-    $("#tag_list").select2({
-      tags: $("#tag_list").data("tags"),
-      tokenSeparators: [",", ";", "，"],
-      width: "resolve",
-      minimumInputLength: 1,
-      formatInputTooShort: function(){return ""}
+  });
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
+
+// setup the tag input field
+:javascript
+  $(function() {
+    $("input[data-role=tagsinput], select[multiple][data-role=tagsinput]").tagsinput();
+  });
+
+// initialize selectpickers
+:javascript
+  $(document).on('turbolinks:load', function() {
+    $('.select').selectpicker({
+      liveSearch: true,
+      liveSearchPlaceholder: "type to filter ...",
+      actionsBox: true
     });
   });
 
+  // fix style on cache reload of pickers
+  $(document).on('turbolinks:before-cache', function() {
+    $('.select').selectpicker('destroy').addClass('selectpicker')
+  });

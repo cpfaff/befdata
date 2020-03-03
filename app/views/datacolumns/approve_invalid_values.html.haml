@@ -1,95 +1,113 @@
-- page_title "Approve invalid values of #{@datacolumn.columnheader}"
+/ head
 
-%h3 Approve invalid values
-- if @datacolumn.datagroup.blank?
+/ body
+
+- if @datacolumn.datagroup_approved && @datacolumn.datatype_approved
+
+  .div.pb-3
+    .font-weight-bold.text-dark
+      Column:
+    - if @datacolumn.columnheader.present?
+      .font-weight-normal.text-dark
+        = @datacolumn.columnheader
+    - else
+      .font-weight-normal.text-muted
+        No information available
+
   %p
-    Please #{link_to 'Approve the datagroup', approve_datagroup_datacolumn_path(@datacolumn)} first.
+  %p
+    Here you can browse and approve invalid values that we detected in your data
+    column. Currently there are #{@count_of_all_invalid_values} invalid values.
+
+  #accordion
+    .card
+      #heading_invalid_values_form
+        .card-header
+          %h5.mb-0
+            %button.btn.btn-link{"aria-controls" => "collapse_invalid_values_form",
+              "aria-expanded" => "true", "data-target" => "#collapse_invalid_values_form", "data-toggle" => "collapse"}
+              Validate with form
+      #collapse_invalid_values_form.collapse.show{"aria-labelledby" => "heading_invalid_values_form", "data-parent" => "#accordion"}
+        .card-body
+          - if @datacolumn.invalid_values.present?
+            #invalid-values-form
+              = form_tag update_invalid_values_datacolumn_path(@datacolumn) do
+                %table#invalid-values-table
+                  .mb-2
+                    %thead
+                      %tr
+                        %th
+                          Original
+                        %th
+                          Short
+                        %th
+                          Long
+                        %th
+                          Description
+                  %tbody
+                    - @invalid_values.each do |value|
+                      %tr
+                        %td
+                          .div.pr-2
+                            = value.import_value
+                            = hidden_field_tag 'invalid_values[][import_value]', value.import_value
+                        %td
+                          = text_field_tag "invalid_values[][short]", value.import_value, { class: 'form-control'}
+                        %td
+                          = text_field_tag "invalid_values[][long]", "", { class: 'form-control'}
+                        %td
+                          = text_field_tag "invalid_values[][description]", "", { class: 'form-control'}
+
+                .mt-4
+                  = submit_tag "Approve", disabled: @count_of_all_invalid_values.zero?, class: 'btn btn-outline-primary'
+          - else
+            No invalid values present
+
+    .card
+      #heading_invalid_values_csv
+        .card-header
+          %h5.mb-0
+            %button.btn.btn-link{"aria-controls" => "collapse_invalid_values_csv",
+              "aria-expanded" => "true", "data-target" => "#collapse_invalid_values_csv", "data-toggle" => "collapse"}
+              Validate with file
+      #collapse_invalid_values_csv.collapse{"aria-labelledby" => "heading_invalid_values_csv", "data-parent" => "#accordion"}
+        .card-body
+          - if @datacolumn.invalid_values.present?
+            %ul
+              %li
+                Step 1
+                = link_to "Download CSV file of invalid values", approve_invalid_values_datacolumn_path(@datacolumn, :csv)
+              %li
+                Step 2
+                Describe invalid values in the CSV file. (Delete rows of invalid
+                values that you don't want to describe).
+              %li
+                Step 3
+                Upload your CSV file
+                .pt-2.pb-2
+                  = form_tag update_invalid_values_with_csv_datacolumn_path(@datacolumn), multipart: true do
+                    .custom-file
+                      = file_field_tag :csvfile, accept: 'text/csv', disabled: @count_of_all_invalid_values.zero?, class: 'custom-file-input'
+                      %label.custom-file-label
+                        Select file
+                    .pt-2.pb-2
+                      = submit_tag "upload", disabled: @count_of_all_invalid_values.zero?, class: 'btn btn-outline-primary'
+          - else
+            No invalid values present
+
 - else
-  - if  @count_of_all_invalid_values > 200
-    #too-many-alert
-      %b Note:
-      There are
-      %b= number_with_delimiter(@count_of_all_invalid_values)
-      invalid values. If you think of them as self-explanatory, ie. Category information should
-      be copied from original imported value, we can auto-fill &amp; approve all of them for you.
-      = form_tag autofill_and_update_invalid_values_datacolumn_path(@datacolumn) do
-        = submit_tag "Yes, do it for me!", data: { confirm: "Are you sure?" }
-        = link_to "No, thanks", "#", id: 'close-too-many-alert'
+  - if @datacolumn.datagroup_approved.blank?
+    %p
+      Please #{link_to 'Approve the datagroup', approve_datagroup_datacolumn_path(@datacolumn)} first.
 
-  .info
-    .right
-      Approve
-      %b #{@count_of_all_invalid_values}
-      invalid values using
-      %ul.switchers
-        %li
-          %span.switcher#form_switcher.selected Form
-        %li
-          %span.switcher#csv_switcher CSV
-    %b  Datagroup:
-    = link_to  @datacolumn.datagroup, :target => '_blank' do
-      = @datacolumn.datagroup.title
-    (#{@datacolumn.datagroup.categories.count} categories)
+  - if @datacolumn.datatype_approved.blank?
+    %p
+      Please #{link_to 'Approve the datatype', approve_datatype_datacolumn_path(@datacolumn)} first.
 
-  #invalid-values-form
-    = form_tag update_invalid_values_datacolumn_path(@datacolumn) do
-      %table#invalid-values-table
-        %thead
-          %tr
-            %th Original
-            %th Short
-            %th Long
-            %th Description
-        %tbody
-          - @invalid_values.each do |value|
-            %tr
-              %td
-                = value.import_value
-                = hidden_field_tag 'invalid_values[][import_value]', value.import_value
-              %td= text_field_tag "invalid_values[][short]", value.import_value
-              %td= text_field_tag "invalid_values[][long]"
-              %td= text_field_tag "invalid_values[][description]"
+/ functions
 
-      - if  @count_of_all_invalid_values > @invalid_values.per_page
-        %div
-          Displaying  #{@invalid_values.length} of #{@count_of_all_invalid_values} invalid values
-          .right= will_paginate @invalid_values
-        = submit_tag 'Approve this page'
-      - else
-        = submit_tag "Approve", :disabled => @count_of_all_invalid_values.zero?
-
-  #invalid-values-csv.prepend-1.hidden
-    .step
-      %span Step 1
-      = link_to "Download CSV file of invalid values", approve_invalid_values_datacolumn_path(@datacolumn, :csv)
-    .step
-      %span Step 2
-      Describe invalid values in the CSV file.
-      %br
-      Delete rows of invalid values that you don't want to describe.
-    .step
-      %span Step 3
-      Upload your CSV file
-      = form_tag update_invalid_values_with_csv_datacolumn_path(@datacolumn), :multipart => true do
-        = file_field_tag :csvfile, :accept => 'text/csv', :disabled => @count_of_all_invalid_values.zero?
-        = submit_tag "upload", :disabled => @count_of_all_invalid_values.zero?
-
-  :javascript
-    $(function(){
-      $(".switchers .switcher").click(function(e){
-        $(this).closest('.switchers').find(".switcher:not(this)").removeClass('selected');
-        $(this).addClass('selected');
-      })
-      $("#form_switcher").click(function(){
-        $("#invalid-values-form").show();
-        $("#invalid-values-csv").hide();
-      });
-      $("#csv_switcher").click(function(){
-        $("#invalid-values-form").hide();
-        $("#invalid-values-csv").show();
-      });
-      $("#close-too-many-alert").click(function(e){
-        $("#too-many-alert").hide();
-        e.preventDefault();
-      })
-    })
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });

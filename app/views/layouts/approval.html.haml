@@ -1,26 +1,130 @@
-- content_for :content do
-  %h2 Approve #{link_to @dataset.title, @dataset}
-  - if @datacolumn
-    %h2 Datacolumn: #{@datacolumn.columnheader}
-  #approval-area
-    - if @datacolumn
-      %ul.approval-line
-        %li
-          %span{:class => "approval-status approval-stage-#{@datacolumn.approval_stage}"}= ''
-        %li= link_to "Overview", approval_overview_datacolumn_url(@datacolumn),
-          {:class => "#{'active' if params[:action] == 'approval_overview'} #{'unvisited' if @datacolumn.approval_stage < 0}"}
-        %li= link_to "Datagroup", approve_datagroup_datacolumn_url(@datacolumn),
-          {:class => "#{'active' if params[:action] == 'approve_datagroup'} #{'unvisited' if @datacolumn.approval_stage < 1}"}
-        %li= link_to "Datatype", approve_datatype_datacolumn_url(@datacolumn),
-          {:class => "#{'active' if params[:action] == 'approve_datatype'} #{'unvisited' if @datacolumn.approval_stage < 2}"}
-        %li= link_to "Invalid Values", approve_invalid_values_datacolumn_url(@datacolumn),
-          {:class => "#{'active' if params[:action] == 'approve_invalid_values'} #{'unvisited' if @datacolumn.approval_stage < 3}"}
-        %li= link_to "Metadata", approve_metadata_datacolumn_url(@datacolumn),
-          {:class => "#{'active' if params[:action] == 'approve_metadata'} #{'unvisited' if @datacolumn.approval_stage < 4}"}
-        %li= link_to "Semantic Tagging", annotate_datacolumn_url(@datacolumn),
-        {:class => "#{'hidden' unless params[:action] == 'annotate' || current_user.admin? || current_user.data_admin? }"}
-    = yield
+/ title
 
+- page_title "Approve #{@dataset.title.truncate(20)}"
+
+// approval related content
+- content_for :content do
+  // heading
+  .div.pb-2.pl-2
+    .font-weight-bold
+      .pull-left
+        .text-muted.font-weight-bold
+          %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+          Approve: #{@dataset.title.truncate(80)}
+
+
+    // sidebar
+    = content_for :actions do
+      #actions.pt-1
+        // scroll to top
+        = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+          { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+          'data-toggle': "tooltip",
+          'data-turbolinks': false,
+          'title': "Up" ,
+          'data-placement': "auto"}
+
+        // actions
+        .div.pt-2.pb-2
+
+          // placeholder if action bar is empty
+          - unless current_user
+            .btn.btn-sm.btn-outline-light
+              .text-muted
+                o
+
+          / section tools
+          - if current_user
+            - if @dataset.can_be_edited_by? current_user
+              .border-top.border-right.border-left.rounded.top-2.pb-1
+                %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+                  = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                    { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                    'data-turbolinks': false }
+          // section tools content
+          - if current_user
+            - if @dataset.can_be_edited_by? current_user
+              .div.pt-2
+                %span{'data-toggle': 'tooltip', title: 'Quick approval', 'data-placement': 'auto'}
+                  = link_to "<i class='fas fa-fast-forward'></i>".html_safe, approval_quick_dataset_url(@dataset),
+                    { class: "btn btn-sm btn-block btn-outline-light text-success" }
+                %span{'data-toggle': 'tooltip', title: 'Approve columnwise', 'data-placement': 'auto'}
+                  = link_to "<i class='fas fa-thumbs-up'></i>".html_safe, approval_overview_datacolumn_url(@dataset.datacolumns.first),
+                    { class: "btn btn-sm btn-block btn-outline-light text-success" }
+                -# %span{'data-toggle': 'tooltip', title: 'Back to dataset', 'data-placement': 'auto'}
+                  -# = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i>".html_safe, dataset_path(@dataset),
+                    -# { class: "btn btn-sm btn-block btn-outline-light text-success" }
+              -# .div.pb-4
+        // scroll down
+        = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+          { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+          'data-toggle': "tooltip",
+          'data-turbolinks': false,
+          title: "Down" ,
+          'data-placement': "auto"}
+
+
+  // tabs with content
+  - if @datacolumn.present?
+    #dataset_approval.div.pl-2
+      .div.pb-3.pt-3
+        .row
+          .col-2
+            .pt-5
+            .div.border-top.border-left.border-bottom.rounded-left
+              .div.pt-2.pl-2.pb-2
+                .div.pb-2
+                  .font-weight-bold.text-muted.text-center
+                    Columns
+                .nav.flex-column.nav-pills{"aria-orientation" => "vertical", :role => "tablist"}
+                  - @dataset.datacolumns.each do |column|
+                    .pb-2
+                      %li.nav-item
+                        = link_to "Column: #{column.columnnr} (#{column.approval_stage})", approval_overview_datacolumn_url(column),
+                          {:class => "nav-link #{'active' if params[:id] == column.id.to_s}"}
+          .col-10
+            - tab_height = @dataset.datacolumns.count
+            - if @datacolumn
+              %ul.nav.nav-tabs
+                %li.nav-item
+                  = link_to "Overview <span class='fas fa-angle-double-right' style='vertical-align: middle;'></span>".html_safe, approval_overview_datacolumn_url(@datacolumn),
+                    {:class => "nav-link #{'active' if params[:action] == 'approval_overview'} #{'unvisited' if @datacolumn.approval_stage < 0}"}
+                %li.nav-item
+                  = link_to "1. Datagroup <span class='fas fa-angle-double-right' style='vertical-align: middle;'></span>".html_safe, approve_datagroup_datacolumn_url(@datacolumn),
+                    {:class => "nav-link #{'active' if params[:action] == 'approve_datagroup'} #{'unvisited' if @datacolumn.approval_stage < 1}"}
+                %li.nav-item
+                  = link_to "2. Datatype <span class='fas fa-angle-double-right' style='vertical-align: middle;'></span>".html_safe, approve_datatype_datacolumn_url(@datacolumn),
+                    {:class => "nav-link #{'active' if params[:action] == 'approve_datatype'} #{'unvisited' if @datacolumn.approval_stage < 2}"}
+                %li.nav-item
+                  = link_to "3. Invalid Values <span class='fas fa-angle-double-right' style='vertical-align: middle;'></span>".html_safe, approve_invalid_values_datacolumn_url(@datacolumn),
+                    {:class => "nav-link #{'active' if params[:action] == 'approve_invalid_values'} #{'unvisited' if @datacolumn.approval_stage < 3}"}
+                %li.nav-item
+                  = link_to "4. Metadata", approve_metadata_datacolumn_url(@datacolumn),
+                    {:class => "nav-link #{'active' if params[:action] == 'approve_metadata'} #{'unvisited' if @datacolumn.approval_stage < 4}"}
+            %br
+            .div.pl-2.pr-2{:style => "min-height: #{@dataset.datacolumns.count*100}px;"}
+              = yield
+              %div.pt-5.pb-2
+                = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, dataset_path(@dataset),
+                  { class: "btn btn-outline-primary" }
+
+  - else
+    #dataset_quick_approval.div.pl-2
+      .div.pb-3.pt-3
+        .row
+          .col-12
+            %ul#tabs.nav.nav-tabs
+              %li.nav-item
+                %a.active.nav-link.active{"data-toggle" => "tab", :href => "#quick_approval_tab_1", :role => "tab"} Overview
+            .tab-content.equal-height
+              // metadata
+              #dataset_tab_1.tab-pane.active{:role => "tabpanel"}
+                .container
+                  %br
+                  = yield
+
+// the approval sidebar
 = render :partial => 'datasets/approval_sidebar'
 
+// embed everything into the application layout
 = render :template => 'layouts/application'

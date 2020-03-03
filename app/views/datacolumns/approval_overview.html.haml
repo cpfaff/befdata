@@ -1,54 +1,121 @@
-- page_title "Approve #{@datacolumn.columnheader}"
-%h3 Overview
+/ body
 
--unless @datacolumn.finished
-  %p
-    %strong
-      The datacolumn is not yet fully approved,
-      = link_to "click here to do so.", next_approval_step_datacolumn_url(@datacolumn)
-
-%h4
-  Datagroup
-  = "(not yet approved)" unless @datacolumn.datagroup_approved?
-%p
-  - if @datacolumn.datagroup_id
-    = link_to @datacolumn.datagroup.title, @datacolumn.datagroup
+.div.pb-3
+  .font-weight-bold.text-dark
+    Column:
+  - if @datacolumn.columnheader.present?
+    .font-weight-normal.text-dark
+      = @datacolumn.columnheader
   - else
-    Not specified yet.
+    .font-weight-normal.text-muted
+      No information available
 
-%h4
-  Datatype
-  = "(not yet approved)" unless @datacolumn.datatype_approved?
 %p
-  = @datacolumn.import_data_type
+  .text-justify
+    Below you find an overview about the datacolumn
+    %strong #{@datacolumn.columnheader}
+    you selected for approval. The numbers behind each datacolumn
+    on the left side indicate the current status of their approval.
+    Finishing one step of the approval in this wizard will increment
+    the counter by one. When the counter reaches 4 all steps are
+    completed and the values are accepted as correct in the database.
 
-%h4 Invalid values
-%p
+// content in tabs
+.div.pb-3
+  .font-weight-bold.text-dark
+    Datagroup:
+  - if @datacolumn.datagroup_approved?
+    .font-weight-normal.text-dark
+      = link_to @datacolumn.datagroup.title, @datacolumn.datagroup, class: "font-weight-normal text-dark"
+  - else
+    .font-weight-normal.text-muted
+      Unapproved
+
+.div.pb-3
+  .font-weight-bold.text-dark
+    Dataype:
+  - if @datacolumn.datatype_approved?
+    .font-weight-normal.text-dark
+      = @datacolumn.import_data_type
+  - else
+    .font-weight-normal.text-muted
+      Unapproved
+
+.div.pb-3
+  .font-weight-bold.text-dark
+    Invalid values:
   - if @datacolumn.has_invalid_values?
-    There are still invalid values. Please approve.
+    .font-weight-normal.text-dark
+      Unapproved
   - else
-    No invalid values found.
+    .font-weight-normal.text-dark
+      No invalid values
 
-%h4
-  Metadata
-  = "(not yet approved)" unless @datacolumn.finished?
-%p
-  %strong Definition:
-  = @datacolumn.definition
-%p
-  %strong Comment:
-  = @datacolumn.comment
-%p
-  %strong Unit:
-  = @datacolumn.unit
-%p
-  %strong People:
-  %span.comma-separated-list
-    - @datacolumn.users.each do |u|
-      %span= link_to u, u
-  - unless @datacolumn.informationsource.blank?
-    %br
-    = @datacolumn.informationsource
+.div.pb-3
+  .font-weight-bold.text-dark.pb-2
+    Metadata:
+  - if @datacolumn.finished?
+    .container
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Definition:
+        - if @datacolumn.definition.present?
+          .font-weight-normal.text-dark
+            = @datacolumn.definition
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Unit:
+        - if @datacolumn.unit.present?
+          .font-weight-normal.text-dark
+            = @datacolumn.unit
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Comment:
+        - if @datacolumn.comment.present?
+          .font-weight-normal.text-dark
+            = @datacolumn.comment
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Reference:
+        - if @datacolumn.informationsource.present?
+          .font-weight-normal.text-dark
+            = @datacolumn.informationsource
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          People:
+        - if @datacolumn.users.present?
+          .font-weight-normal.text-dark
+            = @datacolumn.users.map{ |user| link_to(user,user)}.join(", ").html_safe
+        - else
+          .font-weight-normal.text-muted
+            No information available
+  - else
+    .font-weight-normal.text-muted
+      Unapproved
+
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
 
 
 

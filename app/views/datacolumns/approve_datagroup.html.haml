@@ -1,133 +1,319 @@
-- page_title "Approve datagroup of #{@datacolumn.columnheader}"
-
-%h3 Approve Datagroup
+.div.pb-3
+  .font-weight-bold.text-dark
+    Column:
+  - if @datacolumn.columnheader.present?
+    .font-weight-normal.text-dark
+      = @datacolumn.columnheader
+  - else
+    .font-weight-normal.text-muted
+      No information available
 
 %p
-  - unless @datacolumn.datagroup_approved?
-    The datagroup
-    %strong= @datacolumn.datagroup.title
-    has not been approved. Please approve the uploaded data group or select one from the available data groups and click on
-    %i Save.
-  - else
-    The datagroup has already been approved as
-    %strong #{@datacolumn.datagroup.title}.
-    You can change the data group by selecting one from the list or by creating a new one.
+  .text-justify
+    Here you can select and approve the data group your data column belongs to.
+    The Data Group allows to link different data columns to one group. This means
+    that data between files and within files in the database can be linked. If
+    the data type specified is "category", every entry in the datacolumn will be
+    validated against a list of names specific to this data group. If the data
+    type specified is "text", the entry will not be validated but saved as is.
+    All the other data types are validated according to their own rules e.g.
+    numbers and dates are checked if they can be converted to numbers and
+    otherwise are treated as categories. A linked pool can finally be maintained
+    with administration tools e.g. to get rid of spelling mistakes or change a
+    species name across the whole database.
 
 #accordion
-  %h4 Uploaded Datagroup
-  - if @datacolumn.datagroup.present?
-    = form_tag :action => 'update_datagroup', :controller => 'datacolumns' do |form|
-      #datagroup-existing.datagroup-selectable
-        = hidden_field_tag :id, @datacolumn.id
-        = radio_button_tag 'datagroup', @datacolumn.datagroup.id, true, {:class => 'span-1'}
-        = label "datagroup", @datacolumn.datagroup.id, {:class => "span-6 last datagroup-radio-label"} do
-          %strong= @datacolumn.datagroup.title
-          %p.datagroup-description
-            %strong Description:
-            = @datacolumn.datagroup.description
-        = submit_tag "Save uploaded data group"
-  - else
-    %p No datagroup specified while importing.
+  .card
+    #heading_current_datagroup.card-header
+      %h5.mb-0
+        %button.btn.btn-link{"aria-controls" => "collapse_current_datagroup", "aria-expanded" => "true", "data-target" => "#collapse_current_datagroup", "data-toggle" => "collapse"}
+          Current
+    #collapse_current_datagroup.collapse.show{"aria-labelledby" => "heading_current_datagroup", "data-parent" => "#accordion"}
+      .card-body
+        %p
+          You find the currently use data group here. If this is set you
+          may uploaded the template and defined a data group in the meta data.
 
-  %h4 Create a new data group
-  = form_tag create_and_update_datagroup_datacolumn_path(@datacolumn), {class: 'new_datagroup'} do
-    %dl
-      %dt= label_tag 'new_datagroup[title]', 'Title'
-      %dd= text_field_tag 'new_datagroup[title]', @datacolumn.datagroup.title
-    %dl
-      %dt= label_tag 'new_datagroup[description]', 'Description'
-      %dd= text_area_tag 'new_datagroup[description]', @datacolumn.datagroup.description
-    = submit_tag "Create and assign a new data group"
-
-  - unless @data_groups_available.blank?
-    %h4 Choose between Existing datagroups
-    .datagroups-list
-      %form{:id => 'filter-form', :action => '#'}
-        %strong Filter
-        %input{:id => 'filter-input', :type => 'text'}
-        %a{:id => 'clear-filter', :href => '#'} clear
-      %noscript
-        %p Enable javascript for the filter to work
-      -#%hr
-      = form_tag :action => 'update_datagroup', :controller => 'datacolumns' do |form|
-        = hidden_field_tag :id, @datacolumn.id
-        = submit_tag "Save chosen data group"
-        #all-datagroups-from-portal
-          - @data_groups_available.each do |datagroup|
-            %div{class: 'datagroup-from-portal datagroup-selectable', id: "datagroup-#{datagroup.id}"}
-              = radio_button_tag 'datagroup', datagroup.id, false, {:class => 'span-1'}
-              = label 'datagroup', datagroup.id, {:class => "span-6 last datagroup-radio-label"}  do
-                %strong= link_to datagroup.title, datagroup
-                %p.datagroup-description
-                  %strong Description:
-                  = datagroup.description
-                - unless datagroup.datacolumns.empty?
+        - if @datacolumn.datagroup.present?
+          .card.shadow-sm.mb-4
+            = form_tag :action => 'update_datagroup', :controller => 'datacolumns' do |form|
+              .card-header
+                .pl-2
+                  = radio_button_tag 'datagroup', @datacolumn.datagroup.id, true, class: "form-check-input"
+                  = link_to @datacolumn.datagroup.title,  @datacolumn.datagroup
+              .card-body
+                = hidden_field_tag :id, @datacolumn.id
+                = label "datagroup", @datacolumn.datagroup.id, {:class => "span-6 last datagroup-radio-label"} do
                   %p.datagroup-description
-                    %strong Already assigned datacolumns:
-                    %span.columns
-                      = datagroup.datacolumns.limit(5).pluck(:columnheader).join(', ')
-                      - if datagroup.datacolumns_count > 5
-                        and
-                        = link_to "another #{pluralize(datagroup.datacolumns_count - 5, 'column')}.", datacolumns_datagroup_path(datagroup), remote: true
+                    %strong Description:
+                    = @datacolumn.datagroup.description
+                %br
+                = submit_tag "Approve", class: "btn btn-outline-primary"
+        - else
+          .font-weight-normal.text-muted
+            No data group associated create a new one or choose an existing one
+  .card
+    #heading_new_datagroup.card-header
+      %h5.mb-0
+        %button.btn.btn-link{"aria-controls" => "collapse_new_datagroup", "aria-expanded" => "true", "data-target" => "#collapse_new_datagroup", "data-toggle" => "collapse"}
+          Create new
+    #collapse_new_datagroup.collapse{"aria-labelledby" => "heading_new_datagroup", "data-parent" => "#accordion"}
+      .card-body
+        = simple_form_for @datagroup, url: create_and_update_datagroup_datacolumn_path(@datacolumn) do |f|
+          = f.error_notification
+          = f.input :title
+          = f.input :description, input_html: { rows: 10 }
+          = f.button :submit, class: "btn btn-outline-primary"
+  .card
+    #heading_existing_datagroup.card-header
+      %h5.mb-0
+        %button.btn.btn-link.collapsed{"aria-controls" => "collapse_existing_datagroup", "aria-expanded" => "false", "data-target" => "#collapse_existing_datagroup", "data-toggle" => "collapse"}
+          Select from existing groups
+    #collapse_existing_datagroup.collapse{"aria-labelledby" => "heading_existing_datagroup", "data-parent" => "#accordion"}
+      .card-body
+        - unless @data_groups_available.blank?
+          // filters
+          .div.pl-2
+            .div.pb-3.pt-3
+              %h5
+                Filter:
 
-        = submit_tag 'Save chosen data group'
+              .input-group
+                %input#filter_input_datagroups.form-control{:placeholder => "Type..", :type => "text"}
+                .input-group-append
+                  = link_to "Reset", "javascript:void(0)".html_safe,
+                    { class: "btn btn-outline-primary", id: "button_clear_datagroups_filter",
+                    'data-turbolinks': false }
 
+              %noscript
+                %p Enable javascript for the filter to work
+
+            - if @data_groups_available.present?
+              = form_tag :action => 'update_datagroup', :controller => 'datacolumns' do |form|
+                = hidden_field_tag :id, @datacolumn.id
+                #filter_target_datagroups.card-columns.single
+                  - @data_groups_available.each do |datagroup|
+                    .card.shadow-sm.mb-4
+                      .card-header
+                        .pl-2
+                          = radio_button_tag 'datagroup', datagroup.id, false, class: "form-check-input"
+                          = link_to datagroup.title, datagroup
+                      .card-body
+                        .div.pb-3
+                          .font-weight-bold.text-dark
+                            Description:
+                          - if datagroup.description.present?
+                            .font-weight-normal.text-dark
+                              = datagroup.description
+                          - else
+                            .font-weight-normal.text-muted
+                              No information available
+
+                        .div.pb-3
+                          .font-weight-bold.text-dark
+                            Assigned columns:
+                          - if datagroup.datacolumns.present?
+                            .font-weight-normal.text-dark
+                              = datagroup.datacolumns.limit(5).pluck(:columnheader).join(', ')
+                          - else
+                            .font-weight-normal.text-muted
+                              No information available
+                        = submit_tag "Approve selected", class: 'btn btn-outline-primary'
+            - else
+              .font-weight-normal.text-muted
+                No information available
+
+            #filter_target_datagroups_empty_note.d-none
+              No information available
+
+        -# %h4 Uploaded Datagroup
+        -# - if @datacolumn.datagroup.present?
+          -# = form_tag :action => 'update_datagroup', :controller => 'datacolumns' do |form|
+            -# #datagroup-existing.datagroup-selectable
+              -# = hidden_field_tag :id, @datacolumn.id
+              -# = radio_button_tag 'datagroup', @datacolumn.datagroup.id, true, {:class => 'span-1'}
+              -# = label "datagroup", @datacolumn.datagroup.id, {:class => "span-6 last datagroup-radio-label"} do
+                -# %strong= @datacolumn.datagroup.title
+                -# %p.datagroup-description
+                  -# %strong Description:
+                  -# = @datacolumn.datagroup.description
+              -# = submit_tag "Save uploaded data group"
+        -# - else
+          -# %p No datagroup specified while importing.
+
+-# - page_title "Approve datagroup of #{@datacolumn.columnheader}"
+
+-# %h3 Approve Datagroup
+
+-# The datacolumn is not yet fully approved,
+-# = link_to "click here to do so.", next_approval_step_datacolumn_url(@datacolumn)
+
+-# %p
+  -# - unless @datacolumn.datagroup_approved?
+    -# The datagroup
+    -# %strong= @datacolumn.datagroup.title
+    -# has not been approved. Please approve the uploaded data group or select one from the available data groups and click on
+    -# %i Save.
+  -# - else
+    -# The datagroup has already been approved as
+    -# %strong #{@datacolumn.datagroup.title}.
+    -# You can change the data group by selecting one from the list or by creating a new one.
+
+-# #accordion
+
+  -# %h4 Uploaded Datagroup
+  -# - if @datacolumn.datagroup.present?
+    -# = form_tag :action => 'update_datagroup', :controller => 'datacolumns' do |form|
+      -# #datagroup-existing.datagroup-selectable
+        -# = hidden_field_tag :id, @datacolumn.id
+        -# = radio_button_tag 'datagroup', @datacolumn.datagroup.id, true, {:class => 'span-1'}
+        -# = label "datagroup", @datacolumn.datagroup.id, {:class => "span-6 last datagroup-radio-label"} do
+          -# %strong= @datacolumn.datagroup.title
+          -# %p.datagroup-description
+            -# %strong Description:
+            -# = @datacolumn.datagroup.description
+        -# = submit_tag "Save uploaded data group"
+  -# - else
+    -# %p No datagroup specified while importing.
+
+
+  -# %h4 Create a new data group
+  -# = form_tag create_and_update_datagroup_datacolumn_path(@datacolumn), {class: 'new_datagroup'} do
+    -# %dl
+      -# %dt= label_tag 'new_datagroup[title]', 'Title'
+      -# %dd= text_field_tag 'new_datagroup[title]', @datacolumn.datagroup.title
+    -# %dl
+      -# %dt= label_tag 'new_datagroup[description]', 'Description'
+      -# %dd= text_area_tag 'new_datagroup[description]', @datacolumn.datagroup.description
+    -# = submit_tag "Create and assign a new data group"
+
+  -# - unless @data_groups_available.blank?
+    -# %h4 Choose between Existing datagroups
+    -# .datagroups-list
+      -# %form{:id => 'filter-form', :action => '#'}
+        -# %strong Filter
+        -# %input{:id => 'filter-input', :type => 'text'}
+        -# %a{:id => 'clear-filter', :href => '#'} clear
+      -# %noscript
+        -# %p Enable javascript for the filter to work
+      -# -#%hr
+      -# = form_tag :action => 'update_datagroup', :controller => 'datacolumns' do |form|
+        -# = hidden_field_tag :id, @datacolumn.id
+        -# = submit_tag "Save chosen data group"
+        -# #all-datagroups-from-portal
+          -# - @data_groups_available.each do |datagroup|
+            -# %div{class: 'datagroup-from-portal datagroup-selectable', id: "datagroup-#{datagroup.id}"}
+              -# = radio_button_tag 'datagroup', datagroup.id, false, {:class => 'span-1'}
+              -# = label 'datagroup', datagroup.id, {:class => "span-6 last datagroup-radio-label"}  do
+                -# %strong= link_to datagroup.title, datagroup
+                -# %p.datagroup-description
+                  -# %strong Description:
+                  -# = datagroup.description
+                -# - unless datagroup.datacolumns.empty?
+                  -# %p.datagroup-description
+                    -# %strong Already assigned datacolumns:
+                    -# %span.columns
+                      -# = datagroup.datacolumns.limit(5).pluck(:columnheader).join(', ')
+                      -# - if datagroup.datacolumns_count > 5
+                        -# and
+                        -# = link_to "another #{pluralize(datagroup.datacolumns_count - 5, 'column')}.", datacolumns_datagroup_path(datagroup), remote: true
+
+        -# = submit_tag 'Save chosen data group'
+
+
+/ functions
+
+// enable correct menu tab
 :javascript
-  jQuery(document).ready(function(){
-    $("#accordion").accordion({
-      header: 'h4',
-      heightStyle: 'content',
-      icons:false,
-      collapsible:true
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $("#filter_target_datagroups .card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+
+// filter the datagroups
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datagroups').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datagroups').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_datagroups").find('.card').is(':visible')) {
+            $("#filter_target_datagroups_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datagroups_empty_note").addClass('d-none');
+          };
+      });
     });
 
-    // *** filter the datagroups ***
-    function datagroupsFilter(){
-
-      // assign elements
-      filterForm = $("#filter-form");
-      filterInput = $("#filter-input");
-      clearFilter = $("#clear-filter");
-      filterableElementsParent = $("div#all-datagroups-from-portal");
-      irrelevantString1 = "Description:"
-      irrelevantString2 = "Already assigned datacolumns:"
-      irrelevantString3 = /and\s+another [0-9]+ columns?/
-      // case insensitive contains
-      $.expr[':'].icontains = function(obj, index, meta, stack){
-      string = (obj.textContent || obj.innerText || jQuery(obj).text() || '');
-      string = string.replace(irrelevantString1,"");
-      string = string.replace(irrelevantString2,"");
-      string = string.replace(irrelevantString3, "");
-      return string.toLowerCase().indexOf(meta[3].toLowerCase()) >= 0;
-      };
-
-      // react to changes of textfield
-      filterInput.change(function() {
-        filterString = $(this).val();
-        if (filterString) {
-          filterableElementsParent.children("div:not(:icontains(" + filterString + "))").hide();
-          filterableElementsParent.children("div:icontains(" + filterString + ")").show();
-        } else {
-          filterableElementsParent.children().show();
-        }
-      }).keyup(function() {
-        $(this).change();
+  $(document).ready(function() {
+    $('#button_clear_datagroups_filter').click(function(){
+      $('#filter_input_datagroups').each(function(){
+        $(this).val('');
       });
-
-      // clear the filter
-      clearFilter.click(function(event) {
-        filterInput.val('');
-        filterInput.change();
-        event.preventDefault();
-      });
-
-      // prevent the form from submitting
-      filterForm.bind("submit", function(event) {
-        event.preventDefault();
-      });
-    };
-
-    // activaaaaaate
-    datagroupsFilter();
-
+      $('#filter_target_datagroups').find('.card').removeClass('d-none');
+      $("#filter_target_datagroups_empty_note").addClass('d-none');
+    });
   });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_datagroups').each(function(){
+        $(this).val('');
+        $('#filter_target_datagroups').find('.card').removeClass('d-none');
+        $("#filter_target_datagroups_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+
+-# // submit the form
+// todo: this needs to be adapted. We want to hide the select radio button
+// on click of a new button in each datagroups well we want to select the
+// closest radio button and sumit the form.
+-# :javascript
+  -# // when selection is changed
+  -# $(document).ready(function() {
+    -# $('submit_selection').on('click', function() {
+      -# var $form = $(this).closest('form');
+      -# $form.find('input[type=submit]').click();
+    -# });
+  -# });
+
+  -# // when search button is clicked
+  -# $(document).ready(function() {
+    -# $('#dataset_search_button').click(function () {
+      -# var $form = $(this).closest('form');
+      -# $form.find('input[type=submit]').click();
+    -# });
+  -# });
+
+-# // enable and disable checkbox for license
+-# :javascript
+  -# $(function() {
+    -# var public_radio_button = $("input:radio[name='dataset[access_code]']").filter("#dataset_access_code_3");
+    -# var license_controll = $("#dataset_include_license:checkbox");
+
+    -# $("input:radio[name='dataset[access_code]']").change(function(){
+      -# if (public_radio_button.is(":checked")) {
+        -# license_controll.attr({disabled: false, checked:'checked'});
+      -# } else {
+        -# license_controll.attr({checked: false, disabled: true});
+      -# }
+    -# })
+  -# });
+
+
+
