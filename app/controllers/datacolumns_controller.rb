@@ -122,6 +122,8 @@ class DatacolumnsController < ApplicationController
     end
 
     begin
+      # TODO: this needs to be changed along a proper form in the view
+      # @datacolumn.approve_datatype(params.require(:datacolumn).permit(:import_data_type, :id), current_user)
       @datacolumn.approve_datatype(params.require(:import_data_type), current_user)
       ExportedFile.invalidate(@dataset.id, :all)
       flash[:notice] = 'Successfully updated Datatype'
