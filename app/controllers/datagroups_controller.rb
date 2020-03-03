@@ -73,7 +73,7 @@ class DatagroupsController < ApplicationController
       redirect_back(fallback_location: root_url) && return
     end
 
-    f = csv_params[:file].path
+    f = csv_params.fetch(:file).path
 
     changes = @datagroup.update_and_merge_categories_with_csv(f, current_user)
 
@@ -92,7 +92,7 @@ class DatagroupsController < ApplicationController
       redirect_back(fallback_location: root_url) && return
     end
 
-    if @datagroup.import_categories_with_csv(csv_params.path)
+    if @datagroup.import_categories_with_csv(csv_params.fetch(:file).path)
       redirect_back(fallback_location: root_url, notice: 'Categories are successfully imported')
     else
       flash[:error] = @datagroup.errors.full_messages.to_sentence
@@ -120,6 +120,6 @@ class DatagroupsController < ApplicationController
   end
 
   def csv_params
-    params.require(:csvfile)
+    params.require(:datagroup).permit(:file, :@tempfile, :@original_filename, :@content_type, :@headers)
   end
 end
