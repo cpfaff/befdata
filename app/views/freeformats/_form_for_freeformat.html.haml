@@ -1,0 +1,42 @@
+/ head
+
+// partial
+= simple_form_for @freeformat, wrapper_mappings: { check_boxes: :vertical_collection, radio_buttons: :vertical_collection, file: :custom_file, boolean: :custom_boolean_switch } do |f|
+  = f.error_notification
+  = f.input :file, as: :file
+  = f.input :description
+  - if @freeformat.freeformattable_type.is_a? Paperproposal
+    %br
+    = f.label "is a published paper"
+    = f.input :is_essential, as: :boolean
+    %br
+    = f.input :uri
+  = f.button :submit, class: "btn btn-outline-primary", data: { disable_with: false }
+
+-# %br
+-# = f.text_area :description, :size => "40x4", :value => freeformat.description
+-# - if freeformattable.is_a? Paperproposal
+  -# %br
+  -# = f.label "is a published paper"
+  -# = f.check_box :is_essential
+  -# %br
+  -# = f.text_area :uri, :size => "40x2", :placeholder => "An URI like a DOI or an external link"
+-# %br
+-# = f.submit freeformat.new_record? ? 'Upload File' : 'Update File'
+
+/ scripts
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
+  });
+
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
