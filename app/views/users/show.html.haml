@@ -84,7 +84,7 @@
 
       / section tools
       - if current_user
-        - if current_user.has_role?(:admin)
+        - if current_user.has_role?(:admin) || @user == current_user
           .border-top.border-right.border-left.rounded.top-2.pb-1
             %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
               = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
