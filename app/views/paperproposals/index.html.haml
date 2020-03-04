@@ -1,36 +1,232 @@
-- page_title "Paper Proposals"
+/ header
 
-- if current_user
-  = content_for :actions do
-    = link_to :new_paperproposal do
-      = image_tag("document.png")
-      Create new Paperproposal
-    = link_to paperproposals_path(:csv) do
-      = image_tag("save.png")
-      Download list as CSV
+// variables
 
-%h2 Paper Proposals
+- unless current_user
+  - @paperproposals = @paperproposals.select{ |p| p.state == 'accepted'}
 
-= render :partial => 'paperproposals/associated_paperproposals', :locals => {:no_heading => true}
+// title
+- page_title "Papers"
 
--#- pp_select = @paperproposals.select{ |p| p.state == 'accepted'}
--#- unless pp_select.blank?
--#  %h3 Published
--#  = render :partial => 'list', :locals => {:paperproposals => pp_select, :with_lock => true}
--#
--#- if current_user
--#  - pp_select = @paperproposals.select{|p| p.state == 'in review'}.sort
--#  - unless pp_select.blank?
--#    %h3 In review
--#    = render :partial => 'list', :locals => {:paperproposals => pp_select, :with_lock => true}
--#
--#  - pp_select = @paperproposals.select{|p| p.state == 'manuscript avaible'}.sort
--#  - unless pp_select.blank?
--#    %h3 Manuscript avaible
--#    = render :partial => 'list', :locals => {:paperproposals => pp_select, :with_lock => true}
--#
--#  - pp_select = @paperproposals.select{|p| p.state == 'in prep'}.sort
--#  - unless pp_select.blank?
--#    %h3 In preparation
--#    = render :partial => 'list', :locals => {:paperproposals => pp_select, :with_lock => true}
 
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Index: papers
+
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll up
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Up" ,
+      'data-placement': "auto"}
+    // actions
+    .div.pt-2.pb-2
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      / section tools
+      - if current_user
+        .border-top.border-right.border-left.rounded.top-2.pb-1
+          %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        .div.pt-2
+          = link_to "<i class='fas fa-plus'></i>".html_safe, new_paperproposal_path,
+            { class: "btn btn-sm btn-block btn-outline-light text-success",
+            'data-toggle': "tooltip",
+            title: "Add new proposal" ,
+            'data-placement': "auto"}
+        .div.pb-4
+
+      // section download
+      - if current_user
+        .border-top.border-right.border-left.rounded-top.pb-1
+          %span{'data-toggle': 'tooltip', title: 'Download section', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-download'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                'data-turbolinks': false }
+      // section download content
+      - if current_user
+        .div.pt-2
+          // download metadata
+          = link_to "<i class='fas fa-newspaper'></i>".html_safe, paperproposals_path(:csv),
+            { class: "btn btn-sm btn-block btn-outline-light text-success",
+            'data-toggle': "tooltip",
+            title: "Publication list" ,
+            'data-placement': "auto"}
+
+      // add a separator if more actions are appended
+      -# .div.pb-4
+    // scroll down
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+// filters
+.div.pl-2
+  .div.pb-3.pt-3
+    %h5
+      Filter:
+
+    .input-group
+      %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
+      .input-group-append
+        = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
+
+  // select
+  .pb-2
+    = simple_form_for :select, url: paperproposals_path, method: :get do |f|
+      / board state
+      %h5
+        Select:
+      - if params.has_key?(:select) ? params[:select].has_key?(:external_state) : false
+        = f.input :external_state,
+          as: :select,
+          label: "External Status",
+          required: false,
+          collection: all_paperproposal_external_states_for_select,
+          selected: params[:select][:external_state],
+          input_html: { multiple: true, class: "facet_select"}
+      - else
+        = f.input :external_state,
+          as: :select,
+          label: "External Status",
+          required: false,
+          collection: all_paperproposal_external_states_for_select,
+          input_html: { multiple: true, class: "facet_select"}
+      - if params.has_key?(:select) ? params[:select].has_key?(:internal_state) : false
+        = f.input :internal_state,
+          as: :select,
+          label: "Internal Status",
+          required: false,
+          collection: all_paperproposal_internal_states_for_select,
+          selected: params[:select][:internal_state],
+          input_html: { multiple: true, class: "facet_select"}
+      - else
+        = f.input :internal_state,
+          as: :select,
+          label: "Internal Status",
+          required: false,
+          collection: all_paperproposal_internal_states_for_select,
+          input_html: { multiple: true, class: "facet_select"}
+      = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
+
+  // sorting
+  .div.pb-4
+    %h5
+      Sort:
+    .btn-group
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "title"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "created_at", "Created", "numeric"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "updated_at", "Updated", "numeric"
+
+  // content
+  - if @paperproposals.present?
+    #filter_target_proposals.card-columns.single
+      - @paperproposals.each do |paperproposal|
+        = render partial: paperproposal
+  - else
+    .font-weight-normal.text-dark
+      No information available
+
+  #filter_target_proposals_empty_note.d-none
+    No information available
+
+  // pagination
+  .div
+    .pt-3
+      != pagy_bootstrap_nav @pagy
+
+
+/ scripts
+
+// initialize selectpickers
+:javascript
+  $(document).on('turbolinks:load', function() {
+    $('.facet_select').selectpicker({
+      liveSearch: true,
+      liveSearchPlaceholder: "type to filter ...",
+      actionsBox: true
+    });
+  });
+
+  // fix style of selectpickers on turbolinks cache reload of the pickers
+  $(document).on('turbolinks:before-cache', function() {
+    $('.facet_select').selectpicker('destroy').addClass('selectpicker')
+  });
+
+// resubmit the form on changes in the selection menu
+:javascript
+  $(document).ready(function() {
+    $('select').on('change', function() {
+      var $form = $(this).closest('form');
+      $form.find('input[type=submit]').click();
+    });
+  });
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// scolling on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body to 0px on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });
+
+// filter the proposals
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_proposals').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_proposals').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_proposals").find('.card').is(':visible')) {
+            $("#filter_target_proposals_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_proposals_empty_note").addClass('d-none');
+          };
+      });
+    });
