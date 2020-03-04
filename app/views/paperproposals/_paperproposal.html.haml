@@ -1,0 +1,59 @@
+// partial for paperproposals
+= link_to paperproposal do
+  .card.shadow-sm.mb-4
+    .card-body
+      %h4.card-title
+        = paperproposal.title
+      %p.card-text
+        .font-weight-bold.text-dark
+          Abstract:
+          - if paperproposal.rationale.present?
+            .font-weight-normal.text-dark
+              = paperproposal.rationale.truncate(250)
+          - else
+            .font-weight-normal.text-dark
+              No information avialable
+      .pt-2.pb-3
+        .float-left
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if paperproposal.authors.count
+                = fa_icon('user')
+                Users:
+                = paperproposal.authors.count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if paperproposal.datasets.count
+                = fa_icon('file')
+                Datafiles:
+                = paperproposal.datasets.count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if paperproposal.freeformats_count
+                = fa_icon('paperclip')
+                Attachments:
+                = paperproposal.freeformats_count
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if paperproposal.board_state
+                = fa_icon('users')
+                Board:
+                = paperproposal.board_state.humanize
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if paperproposal.state
+                = fa_icon('traffic-light')
+                State:
+                = paperproposal.state.humanize
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if paperproposal.created_at
+                = fa_icon('calendar')
+                Created at:
+                = paperproposal.created_at.strftime("%F")
+          .badge.badge-pill.badge-light.m-1
+            .p-1
+              - if paperproposal.updated_at
+                = fa_icon('calendar')
+                Updated at:
+                = paperproposal.updated_at.strftime("%F")
