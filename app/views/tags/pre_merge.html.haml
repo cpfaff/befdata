@@ -27,9 +27,11 @@
             = text_field_tag 'new_keyword'
             %br
             = submit_tag "Merge"
-:javascript
-  $("#tag_list").select2({
-    allowClear: true,
-    width: 'resolve',
-    placeholder: 'Select a keyword'
-  });
+
+// todo: replace by bootstrap select picker
+-# :javascript
+  -# $("#tag_list").select2({
+    -# allowClear: true,
+    -# width: 'resolve',
+    -# placeholder: 'Select a keyword'
+  -# });
