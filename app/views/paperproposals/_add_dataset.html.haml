@@ -1,0 +1,8 @@
+/ select input
+.pb-2
+  .dataset
+    = select_tag "datasets[][id]", options_for_select(@all_datasets.map{|ds| [ds.title, ds.id]}), class: 'select'
+    %span As
+    = select_tag "datasets[][aspect]", options_for_select(['main','side']), class: 'select'
+    .remove_button.btn.btn-sm.btn-outline-danger
+      = fa_icon('trash', text: "Remove Dataset")
