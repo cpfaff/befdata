@@ -81,6 +81,12 @@
           .text-muted
             o
 
+      - if current_user
+        - unless may_administrate_paperproposals? || is_paperproposal_author?
+          .btn.btn-sm.btn-outline-light
+            .text-muted
+              o
+
       // section info
       - if current_user
         - if may_administrate_paperproposals? || is_paperproposal_author?
