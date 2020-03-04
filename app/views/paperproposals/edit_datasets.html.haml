@@ -1,30 +1,104 @@
-- page_title "Manage Datasets for #{@paperproposal.title}"
+/ head
 
-%h2
-  Select Datasets for
-  = link_to @paperproposal.title, @paperproposal
+// title
+- page_title "Edit datasets of #{@paperproposal.title}"
 
-= form_tag :controller=> 'paperproposals', :action => 'update_datasets' do |f|
-  %table.paperproposal-datasets-table
-    %thead
-      %tr
-        %th Dataset
-        %th Aspect
-        %th Remove
-    %tbody#collect-datasets-tbody
-      - @datasets.each do |ds|
-        %tr
-          %input{:name => "datasets[][id]", :type => "hidden", :value => ds.id}
-          %td= ds.title
-          - ds_pp = @paperproposal.dataset_paperproposals.where('dataset_id = ?', ds.id).first
-          %td= select_tag "datasets[][aspect]", options_for_select(['main','side'], :selected => ds_pp.nil? ? nil : ds_pp.aspect)
-          %td
-            %a{:onclick => "this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);"} Remove
-  %h4 Add dataset
-  = select "add_dataset_to_paperproposal", "select",
-    @all_datasets.map{|ds| [ds.title, ds.id]}, {:prompt => 'Select Dataset'}, {:onchange => 'selectDatasets(this)'}
+// variables
 
-  - if @paperproposal.board_state == 'final'
-    %p= submit_tag 'Submit', data: { confirm: 'This will revoke all download rights. Are you sure?' }
-  - else
-    %p= submit_tag 'Submit'
+- a_dataset_form = j render partial: "add_dataset", locals: { datasets: { id: nil, aspect: nil }}
+
+
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Edit datasets: #{@paperproposal.title.truncate(80)}
+
+.div.pl-2
+  .div.pb-3.pt-3
+    .proposal_datasets_form
+      = form_tag controller: 'paperproposals', action: 'update_datasets' do |f|
+        #proposal_datasets
+          %noscript
+            %p enable javascript to manage datasets.
+          = render partial: "add_cart_dataset", locals: { datasets: { id: nil, aspect: nil }}
+        #btn_add_dataset.btn.btn-sm.btn-outline-success
+          = fa_icon('plus', text: "Add dataset")
+        .pt-5.pb-2
+          - if @paperproposal.board_state == 'final'
+            %p
+              // todo: if this is really true then it is not working. check the implementation
+              = submit_tag 'Save', class: 'btn btn-outline-primary', class: 'd-none'
+              = link_to 'Save', "javascript:void(0)".html_safe,
+                { class: "btn btn-outline-primary",
+                'data-toggle': "modal",
+                'data-target': "#revoke_all_download_rights"}
+          - else
+            %p
+              = submit_tag 'Save', class: 'btn btn-outline-primary'
+
+
+// delete confirmation modal
+#revoke_all_download_rights.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Revoke rights
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        .text-justify
+          // todo: if this is really true then it is not working. check the implementation
+          Saving the new dataset will revoke all the granted download
+          rights. Are you sure?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        #submit_proposal_datasets_form.btn.btn-outline-primary
+          Yes
+
+/ scripts
+
+/ modal: when the  button is clicked on the login form
+:javascript
+  $(document).ready(function() {
+    $('#submit_proposal_datasets_form').click(function () {
+      $('.proposal_datasets_form').find('input[type=submit]').click();
+    });
+  });
+
+// init select pickers
+:javascript
+  $(function () {
+    $('select').selectpicker({
+      liveSearch: true
+    });
+
+    $('.remove_button').click(function() {
+        $(this).closest('.dataset').remove();
+    });
+
+  });
+
+// append a role form
+:javascript
+  $("#btn_add_dataset").click(function(){
+    $("#proposal_datasets").append("#{a_dataset_form}");
+
+    $(function () {
+      $('select').selectpicker({
+        liveSearch: true
+      });
+
+      $('.remove_button').click(function() {
+          $(this).closest('.dataset').remove();
+      });
+
+    });
+
+    return(false);
+  })
