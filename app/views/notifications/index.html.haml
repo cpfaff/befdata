@@ -1,21 +1,62 @@
-- page_title "My Notifications"
+/ header
 
-%h2 Notifications
+// title
 
-- @notifications.each do |n|
-  - read_string = n.read ? 'read' : 'unread'
-  = content_tag n, class: read_string do
-    .heading
-      %span.subject= n.subject
-      %span.delete= link_to 'del', n, method: :delete, data: { confirm: 'Are you sure?' }
-      %span.time= n.created_at
-      %span.read-status= link_to read_string, mark_as_read_notification_url(n, :read => !n.read)
+- page_title 'Notifications'
 
-    .message.hidden= raw n.message
+/ body
 
-:javascript
-  $(function(){
-    $('.subject').click(function() {
-      $(this).parent('.heading').next('.message').toggle();
-    });
-  });
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Index: notifications
+
+// notifications
+.div.pl-2
+  .div.pb-3.pt-3
+    - @notifications.sort_by { |item| item.read? ? 1 : 0 }.each do |notification|
+      - read_string = notification.read ? 'read' : 'unread'
+      .card.shadow-sm.mb-4
+        .card-header
+          .font-weight-bold.text-muted
+            %span
+              Notification:
+              = notification.subject
+        .card-body
+          %p.card-text
+            = notification.message.html_safe
+        .card-footer.text-right
+          - if notification.read
+            = link_to "<i class='fas fa-eye-slash'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
+              { class: "btn btn-sm btn-outline-light text-primary",
+              'data-toggle': "tooltip",
+              title: "#{read_string}" ,
+              'data-placement': "auto"}
+          - else
+            = link_to "<i class='fas fa-eye'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
+              { class: "btn btn-sm btn-outline-light text-primary",
+              'data-toggle': "tooltip",
+              title: "#{read_string}" ,
+              'data-placement': "auto"}
+          %span{'data-toggle': 'tooltip', title: 'Delete notification', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-outline-light text-primary",
+              'data-toggle': "modal",
+              'data-target': "#delete_notification"}
+          // delete confirmation modal
+          #delete_notification.modal.fade
+            .modal-dialog.modal-dialog-centered
+              .modal-content
+                / Modal Header
+                .modal-header
+                  %h4.modal-title Delete
+                  %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                / Modal body
+                .modal-body.text-left
+                  Do you really want to delete that notification?
+                / Modal footer
+                .modal-footer
+                  %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+                  = link_to 'Delete', notification, method: :delete, class: 'btn btn-outline-primary'
