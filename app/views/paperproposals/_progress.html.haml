@@ -22,28 +22,31 @@
       %p Please prepare your paperproposal and submit to project board when you are ready.
       = form_for @paperproposal, :url => paperproposal_update_state_path(@paperproposal) do |form|
         - if @paperproposal.includes_datasets?
-          = form.submit 'Send to board', data: { confirm: 'Are you sure?' }
+          = form.submit 'Send to board', data: { confirm: 'Are you sure?' }, class: 'btn btn-outline-primary'
+
         - else
-          = form.submit 'Send to board', data: { confirm: 'Continue without datasets?' }
+          = form.submit 'Send to board', data: { confirm: 'Continue without datasets?' }, class: 'btn btn-outline-primary'
+
 
     - if @paperproposal.board_state == 're_prep'
       %p Your paperproposal was rejected by the project board. Please make changes and resubmit.
       = form_for @paperproposal, :url => paperproposal_update_state_path(@paperproposal) do |form|
-        = form.submit 'Send to board again', data: { confirm: 'Did you make your changes?' }
+        = form.submit 'Send to board again', data: { confirm: 'Did you make your changes?' }, class: 'btn btn-outline-primary'
+
 
     - if @paperproposal.board_state == 'data_rejected'
       %p At least one data request was rejected. Please communicate with the data-owners, edit your paperproposal and ask again.
       = form_for @paperproposal, :url => paperproposal_update_state_path(@paperproposal) do |form|
         - if @paperproposal.includes_datasets?
-          = form.submit 'Ask again', data: { confirm: 'Did you make your changes?' }
+          = form.submit 'Ask again', data: { confirm: 'Did you make your changes?' }, class: 'btn btn-outline-primary'
         - else
-          = form.submit 'Finish data request', data: { confirm: 'Continue without datasets?' }
+          = form.submit 'Finish data request', data: { confirm: 'Continue without datasets?' }, class: 'btn btn-outline-primary'
 
     - if @paperproposal.board_state == 'final'
       - if @paperproposal.expiry_date.blank? && @paperproposal.includes_datasets?
         %p Download rights expired. To regain access you must request permission of the project board and data owners.
         = form_for @paperproposal, :url => paperproposal_update_state_path(@paperproposal) do |form|
-          = form.submit 'Reset data request', data: { confirm: 'Are you sure?' }
+          = form.submit 'Reset data request', data: { confirm: 'Are you sure?' }, class: 'btn btn-outline-primary'
       - else
         %p
           Data request approved.
