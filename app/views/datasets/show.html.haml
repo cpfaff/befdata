@@ -444,37 +444,6 @@
         %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
           Close
 
-// dataset download modal
-#freeformat_download.modal.fade
-  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
-    .modal-content
-      / Modal Header
-      .modal-header
-        %h4.modal-title Freeformat download
-        %button.close{"data-dismiss" => "modal", :type => "button"}
-          ×
-      / Modal body
-      .modal-body
-        .container
-          - @dataset.freeformats.each do |freeformat|
-            %ul.list-unstyled
-              %li
-                - if freeformat.is_essential
-                  = image_tag "star.png"
-
-                = link_to freeformat.file_file_name, download_freeformat_path(freeformat), rel: 'nofollow', data: { turbolinks: false }
-                (#{number_to_human_size freeformat.file_file_size})
-
-                - unless freeformat.description.blank?
-                  %br
-                  %i= freeformat.description
-                - unless freeformat.uri.blank?
-                  %br
-                  URI: #{freeformat.uri}
-      / Modal footer
-      .modal-footer
-        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
-          Close
 
 / scripts
 
