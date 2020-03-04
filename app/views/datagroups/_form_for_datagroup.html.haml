@@ -1,16 +1,28 @@
-= form_for @datagroup do |f|
-  = f.error_messages
-  %dl
-    %dt= f.label :title
-    %dd= f.text_field :title
-  %dl
-    %dt= f.label :description
-    %dd= f.text_area :description
-  %dl
-    %dt= f.label :comment
-    %dd= f.text_area :comment
-  - if @datagroup.new_record?
+= simple_form_for @datagroup do |f|
+  = f.error_notification
+  %body
     %div
-      = check_box_tag :import
-      = label_tag :import, 'Go on to add categories'
-  = f.submit
+      %ul.nav.nav-tabs
+        %li.nav-item
+          %a.nav-link.active{"data-toggle" => "tab", :href => "#tab-1", :role => "tab"} Metadata
+      .tab-content.equal-height
+        #tab-1.tab-pane.active{:role => "tabpanel"}
+          .container
+            %br
+            = f.input :title
+            = f.input :description, :input_html => {:rows => 10}
+            = f.input :comment, :input_html => {:rows => 10}
+            - if @datagroup.new_record?
+              %div
+                = check_box_tag :import
+                = label_tag :import, 'Go on to add categories'
+
+  .container
+    %div.pt-5.pb-2
+      - if @datagroup.new_record?
+        = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, datagroups_path,
+          { class: "btn btn-outline-primary" }
+      - else
+        = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, datagroup_path(@datagroup),
+          { class: "btn btn-outline-primary" }
+      = f.button :submit, class: "btn btn-outline-primary"

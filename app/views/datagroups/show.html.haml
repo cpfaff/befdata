@@ -1,86 +1,368 @@
+// todo: remove when sure this is not needed anymore. I guess it would be nice to have
+// this table update e.g. when we edit something or locked. I mean just in case there is
+// more than one person doing somthing with the groups.
+-# :javascript
+  -# $(function(){
+    -# $.getScript("#{datagroup_categories_path(@datagroup)}")
+      -# .done(function(){
+        -# $("#img-loader").remove();
+      -# })
+      -# .fail(function(jqxhr, settings, exception) {
+      -# $("#categories_table").text("Error occurs. Please try refreshing the page");
+    -# });
+    -# function show_indicator() {
+      -# $("#categories_table tbody").fadeTo("fast",0.3);
+      -# $("#loader").show();
+    -# };
+    -# $("#categories").on("click", "#categories_table th a, .pagination a, #clear_search",  function(){
+      -# $.getScript(this.href);
+      -# show_indicator();
+      -# return(false);
+    -# });
+    -# $("#categories").on("submit", "form#filter", function(){
+      -# var term = $(this).find(":input[type='search']").val();
+      -# if(term == "") return false;
+      -# show_indicator();
+    -# });
+  -# });
+
+
+/ header
+
+// title
 - page_title "Datagroup: #{@datagroup.title}"
 
-- content_for :actions do
-  - if current_user.admin? || current_user.data_admin?
-    = link_to edit_datagroup_path(@datagroup) do
-      = image_tag "edit.png"
-      Edit
-    - if @datasets.empty?
-      = link_to datagroup_path(@datagroup), :method => :delete, data: { confirm: "Are you sure to delete this datagroup ?" } do
-        = image_tag "trash.png"
-        Delete
-    - else
-      = link_to datacolumns_datagroup_path(@datagroup) do
-        = image_tag "edit.png"
-        Manage Datacolumns
-  - elsif @datasets.present?
-    = link_to datacolumns_datagroup_path(@datagroup) do
-      = image_tag "list-ordered.png"
-      Browse Datacolumns
-  - unless @datagroup.categories.empty?
-    = link_to datagroup_categories_path(@datagroup, :format => :csv) do
-      = image_tag("download.png")
-      Download Categories as CSV
-    = show_to :admin, :data_admin do
-      = link_to upload_categories_datagroup_path do
-        = image_tag("arrow_join_accept.png")
-        Manage Categories via CSV
-  = link_to new_datagroup_category_path(@datagroup) do
-    = image_tag 'file-upload.png'
-    Add categories
-  = link_to datagroups_path do
-    = image_tag "back.png"
-    Back to Data Groups list
+/ body
 
-%h2= "Datagroup: #{@datagroup.title}"
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Show: #{@datagroup.title}
 
-- unless @datagroup.description.blank?
-  %h4 Description
-  = simple_format @datagroup.description
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
 
-- unless @datagroup.comment.blank?
-  %h4 Comment
-  = simple_format @datagroup.comment
+    // actions
+    .div.pt-2.pb-2
 
-- unless @datasets.empty?
-  %h3 Datasets
-  %ul
-    - @datasets.each do |ds|
-      %li
-        = render :partial => ds, :locals => {:with_cart => true, :with_comment => false}
+      // placeholder if action bar is empty
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
 
-- if @datagroup.categories.empty?
-  %h3 Datagroup has no categories
-- else
-  %h3
-    Categories
-    = image_tag 'spinner.gif', :id => 'img-loader'
-  %noscript Please enable javascript to view the categories.
-  #categories
-    #loader.hidden Loading ...
-    #categories_table
+      // section info
+      - if current_user
+        - if @datagroup.comment.present?
+          = show_to :admin, :data_admin, :project_board do
+            .border-top.border-right.border-left.rounded.top-2.pb-1
+              %span{'data-toggle': 'tooltip', title: 'Info section', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-info'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                    'data-turbolinks': false }
+      // section info content
+      - if current_user
+        - if @datagroup.comment.present?
+          = show_to :admin, :data_admin, :project_board do
+            .div.pt-2
+              %span{'data-toggle': 'tooltip', title: 'Show comment', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-comments'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-success",
+                    'data-toggle': "modal",
+                    'data-target': "#comment_datagroup"}
+            .div.pb-4
 
-  :javascript
-    $(function(){
-      $.getScript("#{datagroup_categories_path(@datagroup)}")
-        .done(function(){
-          $("#img-loader").remove();
-        })
-        .fail(function(jqxhr, settings, exception) {
-        $("#categories_table").text("Error occurs. Please try refreshing the page");
-      });
-      function show_indicator() {
-        $("#categories_table tbody").fadeTo("fast",0.3);
-        $("#loader").show();
-      };
-      $("#categories").on("click", "#categories_table th a, .pagination a, #clear_search",  function(){
-        $.getScript(this.href);
-        show_indicator();
-        return(false);
-      });
-      $("#categories").on("submit", "form#filter", function(){
-        var term = $(this).find(":input[type='search']").val();
-        if(term == "") return false;
-        show_indicator();
+      / section tools
+      - if current_user
+        - if current_user.has_role?(:admin).present?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      / section tools content
+      - if current_user
+        .div.pt-2
+
+          - if current_user.admin? || current_user.data_admin?
+            %div{'data-toggle': 'tooltip', title: 'Edit metadata', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-tag'></i>".html_safe, edit_datagroup_path(@datagroup),
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+
+          - if current_user.admin? || current_user.data_admin?
+            - if @datasets.empty?
+              %div{'data-toggle': 'tooltip', title: 'Delete datagroup', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-success",
+                  'data-toggle': "modal",
+                  'data-target': "#delete_datagroup"}
+
+          - if current_user.admin? || current_user.data_admin?
+            - if @datasets.present?
+              %div{'data-toggle': 'tooltip', title: 'Manage Datacolumns', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-tag'></i>".html_safe, datacolumns_datagroup_path(@datagroup),
+                  { class: "btn btn-sm btn-block btn-outline-light text-success" }
+
+          - unless current_user.admin? || current_user.data_admin?
+            - if @datasets.present?
+              %div{'data-toggle': 'tooltip', title: 'Browse Datacolumns', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-tag'></i>".html_safe, datacolumns_datagroup_path(@datagroup),
+                  { class: "btn btn-sm btn-block btn-outline-light text-success" }
+
+          // todo: pack this into a partial
+          - if @datagroup.categories.present?
+            - if current_user.admin? || current_user.data_admin?
+              %div{'data-toggle': 'tooltip', title: 'Upload categories', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-arrow-up'></i>".html_safe, upload_categories_datagroup_path,
+                  { class: "btn btn-sm btn-block btn-outline-light text-success" }
+
+          - if current_user.present?
+            %div{'data-toggle': 'tooltip', title: 'Add categories', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-plus'></i>".html_safe, new_datagroup_category_path(@datagroup),
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+
+          %div{'data-toggle': 'tooltip', title: 'Back to datagroups', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-arrow-left'></i>".html_safe, datagroups_path,
+              { class: "btn btn-sm btn-block btn-outline-light text-success" }
+
+
+
+        .div.pb-4
+
+    // section download
+    .border-top.border-right.border-left.rounded-top.pb-1
+      %span{'data-toggle': 'tooltip', title: 'Download section', 'data-placement': 'auto'}
+        = link_to "<i class='fas fa-download'></i>".html_safe, "#",
+          { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+            'data-turbolinks': false }
+    // section content
+    .div.pt-2
+      // download categories
+      - if @datagroup.categories.present?
+        %div{'data-toggle': 'tooltip', title: 'Downlod category CSV', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-file-alt'></i>".html_safe, datagroup_categories_path(@datagroup, format: :csv),
+            { class: "btn btn-sm btn-block btn-outline-light text-success" }
+
+
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+
+// tabs with content
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#datagroup_tab_1", :role => "tab"} Metadata
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#datagroup_tab_2", :role => "tab"} Categories
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#datagroup_tab_3", :role => "tab"} Datasets
+        .tab-content.equal-height
+          // metadata
+          #datagroup_tab_1.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Description:
+                - if @datagroup.description.present?
+                  .font-weight-normal.text-dark
+                    = @datagroup.description
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+          // categories
+          #datagroup_tab_2.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @categories.present?
+                %table#index_datagroups_categories_table.table.table-striped{ width: "100%"}
+                  %thead
+                    %tr
+                      %th Short
+                      %th Long
+                      %th Description
+                      %th Occurences
+                  - @categories.to_a.each do |category|
+                    %tr
+                      %td= category.short
+                      %td= category.long
+                      %td= category.description
+                      %td= category.count
+              - else
+                No information available
+
+              -# - if @datagroup.categories.present?
+                -# Categories:
+                -# = image_tag 'spinner.gif', :id => 'img-loader'
+                -# %noscript Please enable javascript to view the categories.
+                -# #categories
+                  -# #loader.hidden Loading ...
+                  -# #categories_table
+              -# - else
+                -# Categories:
+                -# No information available
+
+          // datasets
+          #datagroup_tab_3.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @datasets.present?
+                // filter for datasets
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_datasets.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_datasets_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_datasets.card-columns.single
+                  - @datasets.each do |dataset|
+                    = render partial: dataset
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_datasets_empty_note.d-none
+                .font-weight-normal.text-dark
+                  No information available
+
+/ modals
+
+// delete confirmation modal
+#delete_datagroup.modal
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Delete Confirmation
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Are you sure?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = link_to 'Delete', datagroup_path(@datagroup), method: :delete, class: 'btn btn-outline-primary'
+
+// comment display modal
+#comment_datagroup.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          Comment
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        - if @datagroup.comment.present?
+          = show_to :admin, :data_admin, :project_board do
+            = @datagroup.comment
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+
+/scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datagroups_path').find('.nav-item').addClass('active');
+  });
+
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content.equal-height .tab-pane:first").addClass("active");
+    $(".tab-content.equal-height").height(maxHeight);
+  });
+
+// table: init (init before setting the tab height)
+:javascript
+  $(document).ready(function() {
+    $('#index_datagroups_categories_table').DataTable( {
+      pagingType: "full_numbers",
+      dom: '<"float-left"f><"float-right"l>rt<"float-left pl-1"i><"float-right"p>',
+      order: [[ 0, "desc" ]],
+      language: {
+        search: "Filter:"
+        },
+      search: {
+        regex: true
+      }
+    } );
+  } );
+
+// filter the datasets
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datasets').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datasets').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_datasets").find('.card').is(':visible')) {
+            $("#filter_target_datasets_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datasets_empty_note").addClass('d-none');
+          };
       });
     });
+
+  $(document).ready(function() {
+    $('#button_clear_datasets_filter').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_datasets').find('.card').removeClass('d-none');
+      $("#filter_target_datasets_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+        $('#filter_target_datasets').find('.card').removeClass('d-none');
+        $("#filter_target_datasets_empty_note").addClass('d-none');
+      });
+    });
+  });

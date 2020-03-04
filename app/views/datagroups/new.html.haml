@@ -1,9 +1,25 @@
+/ title
+
 - page_title "Create a new datagroup"
 
-%h2 Create a new datagroup
-- content_for :actions do
-  = link_to  datagroups_path do
-    = image_tag "back.png"
-    Back to datagroups list
+/ body
 
-= render :partial => "form_for_datagroup"
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      New: Datagroup
+
+// partial
+.div.pl-2
+  .div.pb-3.pt-3
+    = render :partial => "form_for_datagroup"
+
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datagroups_path').find('.nav-item').addClass('active');
+  });
