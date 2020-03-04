@@ -10,19 +10,19 @@ class UserLoginTest < ActionDispatch::IntegrationTest
   end
 
   test 'login with wrong password should fail' do
-    get data_path
+    get datasets_path
     assert_response :success
-    post user_session_path, params: { user_session: { login: @user.login, password: 'wrong' } }, headers: { 'HTTP_REFERER' => data_path }
-    assert_redirected_to data_path
+    post user_session_path, params: { user_session: { login: @user.login, password: 'wrong' } }, headers: { 'HTTP_REFERER' => datasets_path }
+    assert_redirected_to datasets_path
     follow_redirect!
     assert_match /not/, flash[:error]
   end
 
   test 'login with correct password should pass' do
-    get data_path
+    get datasets_path
     assert_response :success
-    post user_session_path, params: { user_session: { login: @user.login, password: 'test' } }, headers: { 'HTTP_REFERER' => data_path }
-    assert_redirected_to data_path
+    post user_session_path, params: { user_session: { login: @user.login, password: 'test' } }, headers: { 'HTTP_REFERER' => datasets_path }
+    assert_redirected_to datasets_path
     follow_redirect!
     assert_equal 'Login successful!', flash[:notice]
   end
