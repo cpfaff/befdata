@@ -1,0 +1,90 @@
+.card.shadow-sm.mb-4
+  .card-header
+    .font-weight-bold.text-muted
+      %span
+        Attachment:
+  .card-body
+    %p.card-text
+      .div.pb-3
+        .font-weight-bold.text-dark
+          File name:
+        - if freeformat.file_file_name.present?
+          .font-weight-normal.text-dark
+            = freeformat.file_file_name
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Description:
+        - if freeformat.description.present?
+          .font-weight-normal.text-dark
+            = freeformat.description
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Uri:
+        - if freeformat.uri.present?
+          .font-weight-normal.text-dark
+            = freeformat.uri
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Is essential:
+        - if freeformat.is_essential.present?
+          .font-weight-normal.text-dark
+            = freeformat.is_essential
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Content type:
+        - if freeformat.file_content_type.present?
+          .font-weight-normal.text-dark
+            = freeformat.file_content_type
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          File size:
+        - if freeformat.file_file_size.present?
+          .font-weight-normal.text-dark
+            = number_to_human_size(freeformat.file_file_size)
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Created at:
+        - if freeformat.created_at.present?
+          .font-weight-normal.text-dark
+            = freeformat.created_at.to_date
+        - else
+          .font-weight-normal.text-muted
+            No information available
+
+      .div.pb-3
+        .font-weight-bold.text-dark
+          Updated at:
+        - if freeformat.updated_at.present?
+          .font-weight-normal.text-dark
+            = freeformat.updated_at.to_date
+        - else
+          .font-weight-normal.text-muted
+            No information available
+  .card-footer.text-right
+    %span{'data-toggle': 'tooltip', title: 'Download', 'data-placement': 'auto'}
+      = link_to "<i class='fas fa-download'></i>".html_safe, download_freeformat_path(freeformat),
+        { class: "btn btn-sm btn-outline-light text-primary", 'data-turbolinks': false }
