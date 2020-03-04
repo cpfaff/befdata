@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   # rest including its views
   resource :profile, only: %i[show edit update] do
     member do
-      get :votes, :votes_history
+      get :votes
       post :update_credentials
       resources :notifications, only: %i[index destroy] do
         get :mark_as_read, on: :member
