@@ -40,7 +40,7 @@ Rails.application.routes.draw do
     member do
       post :update_workbook, :approve_predefined, :batch_update_columns
       get :download, :edit_files, :importing, :approve, :approval_quick,
-          :keywords, :download_page, :download_status, :freeformats_csv
+          :keywords, :download_status, :freeformats_csv
     end
   end
 
