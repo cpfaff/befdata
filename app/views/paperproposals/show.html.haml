@@ -1,120 +1,443 @@
+// todo: check, integrate and remove the commented things below
+-# - if may_administrate_paperproposals? || is_paperproposal_author?
+  -# = content_for :actions do
+    -# %ul
+      -# - if @paperproposal.lock
+        -# %li
+          -# = image_tag("lock-closed.png")
+          -# Locked
+      -# - if may_administrate_paperproposals? || author_may_edit?
+        -# %li
+          -# = link_to edit_paperproposal_path(@paperproposal) do
+            -# = image_tag("edit.png")
+            -# Edit Metadata
+        -# %li
+          -# = link_to edit_files_paperproposal_path(@paperproposal) do
+            -# = image_tag("edit.png")
+            -# Manage Files
+      -# - if may_administrate_paperproposals? || author_may_edit_datasets?
+        -# %li
+          -# = link_to edit_datasets_paperproposal_path(@paperproposal) do
+            -# = image_tag("edit.png")
+            -# Manage Datasets
+      -# - if may_administrate_paperproposals?
+        -# %li
+          -# = link_to administrate_votes_paperproposal_path(@paperproposal) do
+            -# = image_tag("edit.png")
+            -# Admin
+      -# - if may_administrate_paperproposals? || is_paperproposal_author?
+        -# %li
+          -# = link_to safe_delete_paperproposal_path(@paperproposal), data: { confirm: "Do you really want to delete this paperproposal?" } do
+            -# = image_tag("trash.png")
+            -# Delete
+
+-# = content_for :info do
+  -# %h3 State
+  -# %p= @paperproposal.state
+  -# %h3 Author
+  -# = render partial: @paperproposal.author, locals: {extra: @paperproposal.author.alumni ? 'Alumni' : nil}
+  -# - unless @paperproposal.proponents.empty?
+    -# %h3 Main Proponents
+    -# %ul
+      -# - @paperproposal.proponents.order(:alumni).each do |u|
+        -# %li= render partial: u, locals: {extra: u.alumni ? 'Alumni' : nil}
+  -# - unless @paperproposal.authored_by_project.blank?
+    -# %h3 Project
+    -# = link_to @paperproposal.authored_by_project.name, @paperproposal.authored_by_project
+
+
+/ head
+
+// title
 - page_title "Paper proposal: #{@paperproposal.title}"
 
-- if may_administrate_paperproposals? || is_paperproposal_author?
-  = content_for :actions do
-    %ul
-      - if @paperproposal.lock
-        %li
-          = image_tag("lock-closed.png")
-          Locked
-      - if may_administrate_paperproposals? || author_may_edit?
-        %li
-          = link_to edit_paperproposal_path(@paperproposal) do
-            = image_tag("edit.png")
-            Edit Metadata
-        %li
-          = link_to edit_files_paperproposal_path(@paperproposal) do
-            = image_tag("edit.png")
-            Manage Files
-      - if may_administrate_paperproposals? || author_may_edit_datasets?
-        %li
-          = link_to edit_datasets_paperproposal_path(@paperproposal) do
-            = image_tag("edit.png")
-            Manage Datasets
-      - if may_administrate_paperproposals?
-        %li
-          = link_to administrate_votes_paperproposal_path(@paperproposal) do
-            = image_tag("edit.png")
-            Admin
+
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Show: #{@paperproposal.title.truncate(80)}
+
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
+
+    // actions
+    .div.pt-2.pb-2
+
+      // placeholder if action bar is empty
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      // section info
+      - if current_user
+        - if may_administrate_paperproposals? || is_paperproposal_author?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Info section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-info'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+
+      // section info content
+      - if current_user
+        - if may_administrate_paperproposals? || is_paperproposal_author?
+          - if @paperproposal.lock
+            .div.pt-2
+              %span{'data-toggle': 'tooltip', title: 'Locked', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-lock'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-success",
+                    'data-toggle': "modal",
+                    'data-target': "#comment_user"}
+            .div.pb-4
+
+      / section edit
       - if may_administrate_paperproposals? || is_paperproposal_author?
-        %li
-          = link_to safe_delete_paperproposal_path(@paperproposal), data: { confirm: "Do you really want to delete this paperproposal?" } do
-            = image_tag("trash.png")
-            Delete
+        - if may_administrate_paperproposals? || author_may_edit?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Edit section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section edit content
+      - if may_administrate_paperproposals? || is_paperproposal_author?
+        - if may_administrate_paperproposals? || author_may_edit?
+          .div.pt-2
+            = link_to "<i class='fas fa-tag'></i>".html_safe, edit_paperproposal_path(@paperproposal),
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Edit metadata" ,
+              'data-placement': "auto"}
+            = link_to "<i class='fas fa-paperclip'></i>".html_safe, edit_files_paperproposal_path(@paperproposal),
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Edit attachments" ,
+              'data-placement': "auto"}
+        - if may_administrate_paperproposals? || author_may_edit_datasets?
+          .div.pt-2
+            = link_to "<i class='fas fa-file-alt'></i>".html_safe, edit_datasets_paperproposal_path(@paperproposal),
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Edit datasets" ,
+              'data-placement': "auto"}
 
-= content_for :info do
-  %h3 State
-  %p= @paperproposal.state
-  %h3 Author
-  = render partial: @paperproposal.author, locals: {extra: @paperproposal.author.alumni ? 'Alumni' : nil}
-  - unless @paperproposal.proponents.empty?
-    %h3 Main Proponents
-    %ul
-      - @paperproposal.proponents.order(:alumni).each do |u|
-        %li= render partial: u, locals: {extra: u.alumni ? 'Alumni' : nil}
-  - unless @paperproposal.authored_by_project.blank?
-    %h3 Project
-    = link_to @paperproposal.authored_by_project.name, @paperproposal.authored_by_project
-  - if current_user
-    %h3 Email lists
-    %ul
-      %li
-        = render :partial => "users/email_list_modal",
-                  :locals => {:contacts => @paperproposal.authors_selection(:author_and_proponents),
-                              :css => "paperproposal_owners_prop",
-                              :caption => 'Author and proponents'}
-      %li
-        = render :partial => "users/email_list_modal",
-                  :locals => {:contacts => @paperproposal.authors_selection(:proponents_and_main),
-                              :css => "paperproposal_owners_main",
-                              :caption => 'Author, proponents and owners of main datasets'}
-      %li
-        = render :partial => "users/email_list_modal",
-                  :locals => {:contacts => @paperproposal.authors_selection(:proponents_and_all_owners),
-                              :css => "paperproposal_owners_datasets",
-                              :caption => 'Author, proponents and all dataset owners'}
-      %li
-        = render :partial => "users/email_list_modal",
-                  :locals => {:contacts => @paperproposal.authors_selection(:all_mentioned),
-                              :css => "paperproposal_authors_also_helper",
-                              :caption => 'Author, proponents, dataset owners and data helpers'}
+          .div.pb-4
 
-%h2
-  = @paperproposal.title
+      / section tools
+      - if may_administrate_paperproposals? || is_paperproposal_author?
+        .border-top.border-right.border-left.rounded.top-2.pb-1
+          %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                'data-turbolinks': false }
+      // section tools content
+      - if may_administrate_paperproposals? || is_paperproposal_author?
+        - if may_administrate_paperproposals?
+          // TODO: if there is no votes to approve there should be no button
+          .div.pt-2
+            = link_to "<i class='fas fa-vote-yea'></i>".html_safe, administrate_votes_paperproposal_path(@paperproposal),
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Administer votes" ,
+              'data-placement': "auto"}
+        - if may_administrate_paperproposals? || is_paperproposal_author?
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Delete proposal', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-success",
+                'data-toggle': "modal",
+                'data-target': "#delete_proposal"}
 
-%p
-  %strong Created at:
-  = @paperproposal.created_at.to_date
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
 
-- unless @paperproposal.initial_title == @paperproposal.title
-  %p
-    %strong Initial title:
-    = @paperproposal.initial_title
+// tabs for content
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#proposal_tab_metadata", :role => "tab"} Metadata
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#proposal_tab_datasets", :role => "tab"} Datasets
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#proposal_tab_attachments", :role => "tab"} Attachments
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#proposal_tab_users", :role => "tab"} Users
+        .tab-content.equal-height
+          // metadata
+          #proposal_tab_metadata.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              // todo: integrate initial title
+              -# - unless @paperproposal.initial_title == @paperproposal.title
+                -# %p
+                  -# %strong Initial title:
+                  -# = @paperproposal.initial_title
 
-- unless @paperproposal.envisaged_journal.blank?
-  %p
-    %strong Envisaged journal:
-    = sanitize @paperproposal.envisaged_journal
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Status:
+                - if @paperproposal.state.present?
+                  .font-weight-normal.text-dark
+                    = @paperproposal.state
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-- unless @paperproposal.envisaged_date.blank?
-  %p
-    %strong Envisaged date:
-    =@paperproposal.envisaged_date
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Title:
+                - if @paperproposal.title.present?
+                  .font-weight-normal.text-dark
+                    = @paperproposal.title
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-%h3 Rationale
-= simple_format @paperproposal.rationale
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Created at:
+                - if @paperproposal.created_at.present?
+                  .font-weight-normal.text-dark
+                    = @paperproposal.created_at.to_date
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-%h3 Datasets #{"(" + @paperproposal.dataset_paperproposals.count.to_s + ")" unless @paperproposal.dataset_paperproposals.empty? }
-- if !@paperproposal.dataset_paperproposals.empty?
-  %ul
-    - @paperproposal.dataset_paperproposals.joins(:dataset).order('aspect ASC, title ASC').each do |ds_pp|
-      %li
-        = link_to ds_pp.dataset.title, ds_pp.dataset
-        = '(' + ds_pp.aspect + ')' unless ds_pp.aspect.nil?
-- else
-  %p No datasets are linked to this paperproposal.
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Updated at:
+                - if @paperproposal.updated_at.present?
+                  .font-weight-normal.text-dark
+                    = @paperproposal.updated_at.to_date
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-%h3 Calculated Authors
-%p
-  %span.comma-separated-list
-    - @paperproposal.all_authors_ordered.each do |u|
-      %span= link_to u, u
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Envisaged journal:
+                - if @paperproposal.envisaged_journal.present?
+                  .font-weight-normal.text-dark
+                    = sanitize @paperproposal.envisaged_journal
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-- unless @paperproposal.freeformats_count.zero?
-  %h3 Files (#{@paperproposal.freeformats_count})
-  - only_essential_no_links = !current_user
-  = render :partial => 'freeformats/index', :locals => {:only_essential_no_links => only_essential_no_links}
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Envisaged date:
+                - if @paperproposal.envisaged_date.present?
+                  .font-weight-normal.text-dark
+                    = @paperproposal.envisaged_date
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
-%h3 Data request state
-= render :partial => 'progress'
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Rationale:
+                - if @paperproposal.rationale.present?
+                  .font-weight-normal.text-dark
+                    = @paperproposal.rationale
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
 
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Calculated authors:
+                - if @paperproposal.all_authors_ordered.present?
+                  .font-weight-normal.text-dark
+                    = @paperproposal.all_authors_ordered.map{ |author| link_to(author, author) }.join(", ").html_safe
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Board state:
+
+                .div.pb-3
+                  = render :partial => 'progress'
+
+          // datasets
+          #proposal_tab_datasets.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              // TODO: check if we can remove dataset_paperproposals
+              -# - if @paperproposal.dataset_paperproposals.present?
+              - if @paperproposal.datasets.present?
+                // filter for datasets
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_datasets.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_datasets_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_datasets.card-columns.single
+                  - @paperproposal.datasets.each do |dataset|
+                    = render partial: dataset
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_datasets_empty_note.d-none
+                No information avialable
+
+          // attachments
+          #proposal_tab_attachments.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @paperproposal.freeformats.present?
+                // filter for datasets
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_freeformats.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_freeformats_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_freeformats.card-columns.double
+                  - @paperproposal.freeformats.each do |freeformat|
+                    = render partial: freeformat, locals: { index: true }
+
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_datasets_empty_note.d-none
+                No information avialable
+
+
+/ modals
+
+// delete confirmation modal
+#delete_proposal.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Delete Confirmation
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Are you sure?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = link_to 'Delete', safe_delete_paperproposal_path(@paperproposal), method: :delete, class: 'btn btn-outline-primary'
+
+/ scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_paperproposals_path').find('.nav-item').addClass('active');
+  });
+
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content.equal-height .tab-pane:first").addClass("active");
+    $(".tab-content.equal-height").height(maxHeight);
+  });
+
+// scolling on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body to 0px on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body to 0px on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });
+
+// filter the datasets
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datasets').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datasets').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_datasets").find('.card').is(':visible')) {
+            $("#filter_target_datasets_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datasets_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_datasets_filter').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_datasets').find('.card').removeClass('d-none');
+      $("#filter_target_datasets_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+        $('#filter_target_datasets').find('.card').removeClass('d-none');
+        $("#filter_target_datasets_empty_note").addClass('d-none');
+      });
+    });
+  });
