@@ -28,12 +28,12 @@
       #main.container.clear-top
         .row
           .col-12
-            = render :partial => "pages/#{LayoutHelper::BEF_LAYOUT}/head"
+            = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/head"
             -# = link_to image_tag('header-logo.png')
         .row
           .col-12
             .pt-2
-              = render :partial => 'pages/menu'
+              = render partial: 'pages/menu'
         .row
           .col-12
             .mt-3
@@ -67,4 +67,4 @@
     // pushes the footer down the viewport
     %footer#footer
       .container.pt-3
-        = render :partial => "pages/#{LayoutHelper::BEF_LAYOUT}/foot"
+        = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/foot"
