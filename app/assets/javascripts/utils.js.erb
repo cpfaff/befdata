@@ -1,96 +1,41 @@
-Array.isArray = Array.isArray || function(o) {
-  return typeof o === 'object' && Object.prototype.toString.call(o).slice(8, -1) === 'Array'
-};
+//Array.isArray = Array.isArray || function(o) {
+//  return typeof o === 'object' && Object.prototype.toString.call(o).slice(8, -1) === 'Array'
+//};
 
 // StackOverflow's implementation of String template: http://stackoverflow.com/a/18234317
 // example:
 //    '{target} is the one to be replaced'.formatUnicorn({target: 'replacement'})
-String.prototype.formatUnicorn = String.prototype.formatUnicorn || function() {
-  var e = this.toString();
-  if (!arguments.length) return e;
-  var t = typeof arguments[0],
-      n = "string" == t || "number" == t ? Array.prototype.slice.call(arguments) : arguments[0];
-  for (var i in n) e = e.replace(new RegExp("\\{" + i + "\\}", "gi"), n[i]);
-  return e;
-};
+//String.prototype.formatUnicorn = String.prototype.formatUnicorn || function() {
+//  var e = this.toString();
+//  if (!arguments.length) return e;
+//  var t = typeof arguments[0],
+//      n = "string" == t || "number" == t ? Array.prototype.slice.call(arguments) : arguments[0];
+//  for (var i in n) e = e.replace(new RegExp("\\{" + i + "\\}", "gi"), n[i]);
+//  return e;
+//};
 
 // parse query string from current URL into an object
 // example:
 //    params() => returns an object
-function params(str){
-    var query_str = str || window.location.search.slice(1),
-        params = {},
-        pairs = query_str.split('&');
-
-    for (var i = 0; i < pairs.length; i++) {
-      var pos = pairs[i].indexOf('=');
-      if (pos == -1) continue;
-      var name = decodeURIComponent(pairs[i].substring(0, pos)),
-          value = decodeURIComponent(pairs[i].substring(pos+1));
-      if (params[name]) {
-        if (Array.isArray(params[name])){
-          params[name].push(value);
-        } else {
-          params[name] = [params[name], value];
-        }
-      } else {
-        params[name] = value;
-      }
-    }
-  return params;
-}
-// Wrap tipsy and zeroclipboard into one jquery function.
-// example:
-//    <input type="text" id="target-field" >
-//    <button data-clipboard-target => "target-field" id="trigger">Copy</button>
-//    $("#trigger").zeroClipboard();
-$.fn.zeroClipboard = function(){
-  var options = {
-    title: 'Copy to clipboard',
-    copied_hint: 'Copied!',
-    gravity: $.fn.tipsy.autoNS
-  };
-  options = $.extend(options, arguments[0]);
-
-  return this.each(function(){
-    var self = $(this);
-    self.attr('original-title', options.title).tipsy({gravity: options.gravity, offset:2, opacity: 0.9});
-
-    var clip = new ZeroClipboard(self, {moviePath: "#{asset_path('ZeroClipboard.swf')}"});
-
-    clip.on("ready", function() {
-      clip.on('aftercopy', function(event) {
-        $(event.target).attr('original-title', options.copied_hint);
-        $(event.target).tipsy('show');
-      });
-
-      self.mouseout(function(){
-        self.attr('original-title', options.title);
-      });
-    });
-  })
-};
-// A simple tab widget
-$.fn.simpleTab = function(){
-  var tabs = $(this),
-      tabContent = $(this).next('.tab-content');
-
-  $("[data-toggle=tab]", this).click(function(){
-    var target = this.getAttribute('href').slice(1),
-        p = $(this).parent();
-
-    if (p.hasClass('active')) return false;
-
-    $("li", tabs).removeClass('active');
-    p.addClass('active');
-
-    $(".tab-pane", tabContent).each(function(){
-      if (this.id && this.id == target) {
-        $(this).addClass('active');
-      } else {
-        $(this).removeClass('active');
-      }
-    });
-    return false;
-  });
-};
+//function params(str){
+//    var query_str = str || window.location.search.slice(1),
+//        params = {},
+//        pairs = query_str.split('&');
+//
+//    for (var i = 0; i < pairs.length; i++) {
+//      var pos = pairs[i].indexOf('=');
+//      if (pos == -1) continue;
+//      var name = decodeURIComponent(pairs[i].substring(0, pos)),
+//          value = decodeURIComponent(pairs[i].substring(pos+1));
+//      if (params[name]) {
+//        if (Array.isArray(params[name])){
+//          params[name].push(value);
+//        } else {
+//          params[name] = [params[name], value];
+//        }
+//      } else {
+//        params[name] = value;
+//      }
+//    }
+//  return params;
+//}
