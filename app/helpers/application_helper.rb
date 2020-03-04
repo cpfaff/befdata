@@ -55,6 +55,11 @@ module ApplicationHelper
     Project.select('id, name').order('lower(name)').collect { |p| [p.to_s, p.id] }
   end
 
+  # cart and dataset
+  def dataset_is_in_cart?(dataset)
+    current_cart.datasets.include? dataset
+  end
+
   # sort by table columns
   def sortable(column, title = nil, type = nil)
     title ||= column.titleize
