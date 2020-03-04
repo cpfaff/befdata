@@ -45,7 +45,7 @@ Rails.application.routes.draw do
   end
 
   scope path: '/files' do
-    resources :freeformats, only: %i[create update destroy] do
+    resources :freeformats, only: %i[create edit update destroy] do
       get :download, on: :member
     end
   end
