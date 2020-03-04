@@ -1,3 +1,14 @@
+// todo: check integrate and delete
+-# .votes-state
+  -# .users-and-arrows
+    -# - votes.each do |vote|
+      -# .user-and-arrow
+        -# .voter= link_to vote.user.to_label, vote.user
+        -# = image_tag("arrow_right_#{vote.vote}.png", :title => vote.comment)
+  -# .votes-result
+    -# = image_tag("arrow_join_#{vote_result_so_far.split[0]}.png")
+    -# %span= paperproposal.calc_board_state
+
 - unless votes.empty?
   - paperproposal = votes.first.paperproposal
   - vote_result_so_far = case paperproposal.board_state
@@ -5,12 +16,12 @@
     - when 're_prep', 'data_rejected' then 'rejected'
     - else ''
 
-  .votes-state
-    .users-and-arrows
+  .row
+    .col
       - votes.each do |vote|
-        .user-and-arrow
-          .voter= link_to vote.user.to_label, vote.user
-          = image_tag("arrow_right_#{vote.vote}.png", :title => vote.comment)
-    .votes-result
+        = link_to vote.user.to_label, vote.user
+        = image_tag("arrow_right_#{vote.vote}.png", title: vote.comment)
+        %br
+    .col
       = image_tag("arrow_join_#{vote_result_so_far.split[0]}.png")
       %span= paperproposal.calc_board_state

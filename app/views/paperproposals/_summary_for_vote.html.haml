@@ -1,11 +1,29 @@
-%h3
-  = "Paper Proposal:"
-  = link_to paperproposal.title, paperproposal
-%p
-  %strong Rationale:
-  = paperproposal.rationale
-%p
-  %strong Main authors:
-  %span.comma-separated-list
-    - paperproposal.all_authors_ordered(:without_data).each do |u|
-      %span= link_to u, u
+.div.pb-3
+  .font-weight-bold.text-dark
+    Proposal title:
+  - if paperproposal.title.present?
+    .font-weight-normal.text-dark
+      = link_to paperproposal.title, paperproposal
+  - else
+    .font-weight-normal.text-muted
+      No information available
+
+.div.pb-3
+  .font-weight-bold.text-dark
+    Rationale:
+  - if paperproposal.rationale.present?
+    .font-weight-normal.text-dark
+      = paperproposal.rationale
+  - else
+    .font-weight-normal.text-muted
+      No information available
+
+.div.pb-3
+  .font-weight-bold.text-dark
+    Rationale:
+  - if paperproposal.all_authors_ordered.present?
+    .font-weight-normal.text-dark
+      = paperproposal.all_authors_ordered(:without_data).map{ |author| link_to(author, author) }.join(", ").html_safe
+  - else
+    .font-weight-normal.text-muted
+      No information available

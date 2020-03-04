@@ -1,22 +1,49 @@
-.vote.vote-open
-  = render :partial => 'paperproposals/summary_for_vote', :locals => {:paperproposal => vote.paperproposal}
+.card.shadow-sm.mb-4
+  .card-body
+    %h4.card-title
+      Vote
+    %p.card-text
+      = render partial: 'paperproposals/summary_for_vote', locals: { paperproposal: vote.paperproposal }
 
-  - unless vote.project_board_vote
-    %h4 Requested Datasets
-    %ul
-      - (vote.paperproposal.datasets & vote.user.datasets_owned).each do |ds|
-        %li= link_to ds.title, ds
+      - unless vote.project_board_vote
+        .div.pb-3
+          .font-weight-bold.text-dark
+            Requested datasets:
+        %ul
+          - (vote.paperproposal.datasets & vote.user.datasets_owned).each do |ds|
+            %li= link_to ds.title, ds
 
-  %h4 State of Voting
-  - other_votes = vote.project_board_vote ? vote.paperproposal.project_board_votes : vote.paperproposal.for_data_request_votes
-  = render :partial => 'paperproposals/state_of_vote', :locals => {:votes => other_votes}
+      .div.pb-3
+        .font-weight-bold.text-dark
+          State of Voting:
 
-  = form_for vote, :url => update_vote_path(vote) do |form|
-    %h4 Your Vote
-    %dl
-      %dt= form.label :vote, 'Accept or reject?'
-      %dd= form.select :vote, votes_choices_for_select
-    %dl
-      %dt= form.label :comment
-      %dd= form.text_area :comment
-    = form.submit "Send vote"
+      - other_votes = vote.project_board_vote ? vote.paperproposal.project_board_votes : vote.paperproposal.for_data_request_votes
+
+      .div.pb-3
+        = render partial: 'paperproposals/state_of_vote', locals: { votes: other_votes}
+
+      = simple_form_for vote, url: update_vote_path(vote) do |form|
+        .div.pb-2
+          .font-weight-bold.text-dark
+            Your vote:
+        = form.input :vote, as: :select, label: 'Decision', collection: votes_choices_for_select
+        = form.input :comment, as: :text, input_html: { rows: 10 }
+        = form.button :submit, 'Send vote', class: 'btn btn-outline-primary'
+
+
+/ scripts
+
+// initialize selectpickers
+:javascript
+  $(document).on('turbolinks:load', function() {
+    $('.select').selectpicker({
+      liveSearch: true,
+      liveSearchPlaceholder: "type to filter ...",
+      actionsBox: true
+    });
+  });
+
+  // fix style on cache reload of pickers
+  $(document).on('turbolinks:before-cache', function() {
+    $('.select').selectpicker('destroy').addClass('selectpicker')
+  });
