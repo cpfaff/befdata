@@ -27,7 +27,7 @@ xml.paperproposal(id: @paperproposal.id) do
       xml.dataset(id: dataset.id) do
         xml.title dataset.title
         xml.aspect dspp.aspect
-        xml.authorizable dataset.can_download_by? current_user
+        xml.authorizable dataset.can_be_downloaded_by? current_user
         xml.owners do
           dataset.owners.each do |u|
             xml.person(id: u.id) do
