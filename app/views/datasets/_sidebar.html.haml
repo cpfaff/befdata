@@ -99,10 +99,14 @@
                 'data-target': "#email_users"}
       - if current_user
         .disable_on_import
-          %span{'data-toggle': 'tooltip', title: 'Add dataset to cart', 'data-placement': 'auto'}
-            = link_to "<i class='fas fa-cart-plus'></i>".html_safe, create_cart_context_path(dataset_id: dataset.id),
-              { class: "btn btn-sm btn-block btn-outline-light text-success",
-                method: :post }
+          - if dataset_is_in_cart? dataset
+            %span{'data-toggle': 'tooltip', title: 'Remove dataset from cart', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-cart-plus'></i>".html_safe, delete_cart_context_path(dataset_id: current_cart.cart_datasets.where(dataset_id: dataset.id).pluck(:id).first),
+              { class: "btn btn-sm btn-block btn-outline-light text-danger", method: :delete }
+          - else
+            %span{'data-toggle': 'tooltip', title: 'Add dataset to cart', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-cart-plus'></i>".html_safe, create_cart_context_path(dataset_id: dataset.id),
+              { class: "btn btn-sm btn-block btn-outline-light text-success", method: :post }
       .div.pb-4
 
     / section edit
