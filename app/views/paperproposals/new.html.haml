@@ -1,5 +1,26 @@
+/ head
+
+// title
 - page_title "Create new paper proposal"
 
-%h2 Create new paper proposal
+/ body
 
-= render :partial => "form_for_attributes"
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      New: proposal
+
+// partial
+.div.pl-2
+  .div.pb-3.pt-3
+    = render :partial => "form_for_attributes"
+
+/ functions
+
+// enable correct menu tab
+:javascript
+  $(document).ready(function() {
+    $('#navigation_paperproposals_path').find('.nav-item').addClass('active');
+  });
