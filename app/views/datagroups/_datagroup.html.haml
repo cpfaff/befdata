@@ -1,0 +1,81 @@
+/ body
+
+// partial for datagroup
+= link_to datagroup do
+  .card.shadow-sm.mb-4
+    .card-body
+      %h4.card-title
+        = datagroup.title
+      %p.card-text
+        .font-weight-bold.text-dark
+          Description:
+        - if datagroup.description.present?
+          .font-weight-normal.text-dark
+            = datagroup.description.truncate(200)
+        - else
+          .font-weight-normal.text-dark
+            No information available
+      .pt-2.pb-3
+        .float-left
+
+          - if datagroup.created_at.present?
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                = fa_icon('calendar')
+                Created at:
+                = datagroup.created_at.strftime("%F")
+
+          - if datagroup.updated_at.present?
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                = fa_icon('calendar')
+                Updated at:
+                = datagroup.updated_at.strftime("%F")
+
+          - if datagroup.categories_count.present?
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                = fa_icon('list-alt')
+                Categories:
+                = datagroup.categories_count
+
+          - if datagroup.datacolumns_count.present?
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                = fa_icon('columns')
+                Datacolumns:
+                = datagroup.datacolumns_count
+
+        - if current_user
+          .float-right
+            .p-1
+              .btn-group
+                - if current_user.admin? || current_user.data_admin?
+                  %div{'data-toggle': 'tooltip', title: 'Edit metadata', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-tag'></i>".html_safe, edit_datagroup_path(datagroup),
+                      { class: "btn btn-sm btn-block btn-outline-light text-success" }
+                - if current_user.admin? || current_user.data_admin?
+                  - if datagroup.datacolumns_count.to_i == 0
+                    %div{'data-toggle': 'tooltip', title: 'Delete datagroup', 'data-placement': 'auto'}
+                      = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                        { class: "btn btn-sm btn-block btn-outline-light text-success",
+                        'data-toggle': "modal",
+                        'data-target': "#delete_datagroup"}
+
+/ modals
+
+// delete confirmation modal
+#delete_datagroup.modal
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Delete Confirmation
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Are you sure?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = link_to 'Delete', datagroup_path(datagroup), method: :delete, class: 'btn btn-outline-danger'
