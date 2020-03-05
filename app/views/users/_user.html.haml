@@ -21,17 +21,12 @@
           = user.firstname
           %br
           = user.lastname
-    %p.card-text
-      - if role
+    - if role.present?
+      %p.card-text
         .text-muted
           Roles:
           %br
           = role
-      - else
-        .text-muted
-          Roles:
-          %br
-          = user.roles.pluck(:name).uniq.map(&:humanize).join(", ")
     %p.card-text
       .text-muted
         Owner of:
