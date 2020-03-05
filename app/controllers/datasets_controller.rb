@@ -329,7 +329,7 @@ class DatasetsController < ApplicationController
   def destroy
     if @dataset.destroy
       flash[:notice] = 'The dataset was successfully deleted.'
-      redirect_to data_path
+      redirect_to datasets_path
     else
       flash[:error] = @dataset.errors.full_messages.to_sentence
       redirect_back(fallback_location: root_url)
