@@ -1,15 +1,26 @@
+/ title
+
 - page_title "Add categories to #{@datagroup.title}"
 
-- content_for :actions do
-  = link_to datagroup_path(@datagroup) do
-    = image_tag 'back.png'
-    Back to Data Group page
+/ body
 
-%h2
-  Add categories to
-  = link_to @datagroup.title, datagroup_path(@datagroup)
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Add categories to: #{@datagroup.title}
 
-%noscript Please enable javascript to use this feature.
+// sidebar
+
+// update the sidebar
+-# - content_for :actions do
+  -# = link_to datagroup_path(@datagroup) do
+    -# = image_tag 'back.png'
+    -# Back to Data Group page
+
+%noscript
+  Please enable javascript to use this feature.
 
 %div
   .right
@@ -19,32 +30,28 @@
         %span.switcher#form_switcher.selected Form
       %li
         %span.switcher#csv_switcher CSV
-  %span#num-cats
+  %span#category_counter
     %em= pluralize(@datagroup.categories.count, 'category')
-  = image_tag 'spinner.gif', id: 'img-loader', class: 'hidden'
+  = image_tag 'spinner.gif', id: 'img-loader', class: 'd-none'
 
-  .clearfix
   %hr
 
   %div#import-form
-    = form_for [@datagroup, Category.new], { :remote => true, 'data-type' => 'json' } do |f|
+    = simple_form_for [@datagroup, Category.new], remote: true, 'data-type': :json do |f|
       %table
         %tr
           %td
-            = f.label :short
-            = f.text_field :short
+            = f.input :short
           %td
-            = f.label :long
-            = f.text_field :long
+            = f.input :long
           %td
-            = f.label :description
-            = f.text_field :description
-          %td
-            = f.submit '+ Add'
+            = f.input :description, as: :string
+          %td.pt-3
+            = f.button :submit, 'Add', class: 'btn btn-outline-primary'
 
     %div#added
       %h3 Added categories in this session
-      %table.tablesorter
+      %table
         %thead
           %tr
             %th ID
@@ -55,7 +62,7 @@
         %tbody
       #empty-identifier
         Categories added via the form above will be displayed here.
-  %div#import-csv.hidden
+  %div#import-csv
     .prepend-1
       .step
         %span Step 1
@@ -63,97 +70,96 @@
         = link_to 'CSV template file', '/templates/template-to-import-categories.csv'
         for importing categories
       .step
-        %span Step 2
-        Upload CSV file of categories
-        = form_tag import_categories_datagroup_path(@datagroup), multipart: true do
-          = file_field_tag :csvfile
-          = submit_tag 'Upload'
+        = simple_form_for @datagroup,
+          url: import_categories_datagroup_path(@datagroup),
+          html: { multipart: true },
+          wrapper_mappings: { file: :custom_file },
+          method: :post do |f|
+          = f.error_notification
+          = f.input :file, as: :file
+          %div.pt-5.pb-2
+            = f.button :submit, class: "btn btn-outline-primary"
 
 :javascript
-  $(function(){
-    var update_counter = function(count){
-      var counter = $("#num-cats em");
-      if (parseInt(count) == 1) {
-        counter.text(count+' category');
-      } else {
-        counter.text(count+' categories');
-      }
-    };
-
-    $(".switchers .switcher").click(function(e){
-      $(this).closest('.switchers').find(".switcher:not(this)").removeClass('selected');
-      $(this).addClass('selected');
-    });
-    $("#form_switcher").click(function(){
-      $("#import-csv").hide();
-      $("#import-form").show();
-    });
-    $("#csv_switcher").click(function(){
-      $("#import-csv").show();
-      $("#import-form").hide();
-    });
-
-    $("form#new_category").on('ajax:success', function(event, data){
-      $('#img-loader').hide();
-      if(data.error){
-        alert(data.error);
-      }
-      else{
-        var added = $('#added table tbody');
-        var link = $("<a>").attr( { href: '/categories/'+data.id, target: '_blank' }).text(data.short);
-        var del_link = $("<a>").attr(
-          {
-           href: '/categories/'+data.id,
-           'data-method': "delete",
-           'data-type': 'json',
-           'data-remote': true
-          }).text('Delete');
-        var tr = $("<tr>").addClass('hidden').attr('id', 'category-'+data.id);
-
-        var id = $("<td/>").text(data.id);
-        var short = $("<td/>").append(link);
-        var long = $("<td/>").text(data.long);
-        var description = $("<td/>").text(data.description);
-        var action = $("<td>").append(del_link)
-
-        tr.append(id);
-        tr.append(short);
-        tr.append(long);
-        tr.append(description);
-        tr.append(action);
-        tr.prependTo(added).fadeIn();
-        update_counter(data.count);
-        $("form#new_category").get(0).reset();
-        $("table.tablesorter").trigger('update');
-        $("#added #empty-identifier").hide();
-      }
-    });
-    $('#added table tbody').on('ajax:success', "a[data-method='delete']", function(event, data){
-      $('#img-loader').hide();
-      if (data.error) {
-        alert(data.error);
-      } else {
-        $(this).closest('tr#category-'+data.id).fadeOut('fast', function(){$(this).remove();});
-        $("table.tablesorter").trigger('update');
-        update_counter(data.count);
-      }
-    });
-    $("form#new_category").submit(function(){
-      $('#img-loader').show();
-      var short_val = $(this).find('#category_short').val();
-      if ($.trim(short_val) == ''){
-        $('#img-loader').hide();
-        return(false);
-      }
-    });
-    $('#added table tbody').on('click', "a[data-method='delete']", function(){
-      $('#img-loader').show();
-    });
-    $("#import-csv form").submit(function(){
-      if (!$(this).find(':file').val()) {
-         return(false);
-      }
-    })
-  })
+  console.log('test')
+  document.body.addEventListener('ajax:success', function(event) {
+    var detail = event.detail;
+    var data = detail[0], status = detail[1],  xhr = detail[2];
+    console.log(event.detail)
+  });
 
 
+//  $(function(){
+//    var update_counter = function(count){
+//      var counter = $("#category_counter em");
+//      if (parseInt(count) == 1) {
+//        counter.text(count+' category');
+//      } else {
+//        counter.text(count+' categories');
+//      }
+//    };
+//
+//    $("form#new_category").on('ajax:success', function(event, data){
+//      $('#img-loader').hide();
+//      console.log("test")
+//      if(data.error){
+//        alert(data.error);
+//      }
+//      else{
+//        console.log('Success creating the category')
+//        var added = $('#added table tbody');
+//        var link = $("<a>").attr( { href: '/categories/'+data.id, target: '_blank' }).text(data.short);
+//        var del_link = $("<a>").attr(
+//          {
+//           href: '/categories/'+data.id,
+//           'data-method': "delete",
+//           'data-type': 'json',
+//           'data-remote': true
+//          }).text('Delete');
+//        var tr = $("<tr>").addClass('d-none').attr('id', 'category-'+data.id);
+//
+//        var id = $("<td/>").text(data.id);
+//        var short = $("<td/>").append(link);
+//        var long = $("<td/>").text(data.long);
+//        var description = $("<td/>").text(data.description);
+//        var action = $("<td>").append(del_link)
+//
+//        tr.append(id);
+//        tr.append(short);
+//        tr.append(long);
+//        tr.append(description);
+//        tr.append(action);
+//        tr.prependTo(added).fadeIn();
+//        update_counter(data.count);
+//        $("form#new_category").get(0).reset();
+//        $("#added #empty-identifier").hide();
+//      }
+//    });
+//    $('#added table tbody').on('ajax:success', "a[data-method='delete']", function(event, data){
+//      $('#img-loader').hide();
+//      if (data.error) {
+//        alert(data.error);
+//      } else {
+//        $(this).closest('tr#category-'+data.id).fadeOut('fast', function(){$(this).remove();});
+//        update_counter(data.count);
+//      }
+//    });
+//    $("form#new_category").submit(function(){
+//      $('#img-loader').show();
+//      var short_val = $(this).find('#category_short').val();
+//      if ($.trim(short_val) == ''){
+//        $('#img-loader').hide();
+//        return(false);
+//      }
+//    });
+//    $('#added table tbody').on('click', "a[data-method='delete']", function(){
+//      $('#img-loader').show();
+//    });
+//    $("#import-csv form").submit(function(){
+//      if (!$(this).find(':file').val()) {
+//         return(false);
+//      }
+//    })
+//  })
+//
+//
