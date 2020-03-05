@@ -1,7 +1,3 @@
-// TODO: the sidebar needs to go into its own modal. In that way we can simply
-// update it with an ajax call. This is useful e.g. when importing is finished.
-// currently the button for approval is not yet shown before a reload.
-
 / title
 
 - page_title "#{@dataset.title}"
@@ -28,20 +24,22 @@
       .col
         %ul#tabs.nav.nav-tabs
           %li.nav-item
-            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#dataset_tab_1", :role => "tab"} Metadata
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#dataset_tab_metadata", :role => "tab"} Metadata
           %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_2", :role => "tab"} Data
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_data", :role => "tab"} Data
           %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_3", :role => "tab"} People
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_attachments", :role => "tab"} Attachments
           %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_4", :role => "tab"} Projects
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_people", :role => "tab"} People
           %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_5", :role => "tab"} Proposals
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_projects", :role => "tab"} Projects
           %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_6", :role => "tab"} Changes
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_proposals", :role => "tab"} Proposals
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_tab_changes", :role => "tab"} Changes
         .tab-content.equal-height
           // metadata
-          #dataset_tab_1.tab-pane.active{:role => "tabpanel"}
+          #dataset_tab_metadata.tab-pane.active{:role => "tabpanel"}
             .container
               %br
 
@@ -156,14 +154,46 @@
                     No information available
 
           // data
-          #dataset_tab_2.tab-pane{:role => "tabpanel"}
+          #dataset_tab_data.tab-pane{:role => "tabpanel"}
             .container
               %br
                 #datacolumns
                   = render partial: 'datacolumns/datacolumns', locals: { datacolumns: @datacolumns }
 
+          #dataset_tab_attachments.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @dataset.freeformats.present?
+                // filter for datasets
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_freeformats.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_freeformats_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_freeformats.card-columns.double
+                  - @dataset.freeformats.each do |freeformat|
+                    = render partial: freeformat, locals: { index: true }
+
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_datasets_empty_note.d-none
+                No information avialable
+
           // people
-          #dataset_tab_3.tab-pane{:role => "tabpanel"}
+          #dataset_tab_people.tab-pane{:role => "tabpanel"}
             .container
               %br
               // cards with users
@@ -197,7 +227,7 @@
                   No information available
 
           // projects
-          #dataset_tab_4.tab-pane{:role => "tabpanel"}
+          #dataset_tab_projects.tab-pane{:role => "tabpanel"}
             .container
               %br
               - if @projects.present?
@@ -228,7 +258,7 @@
                 No information available
 
           // proposals
-          #dataset_tab_5.tab-pane{:role => "tabpanel"}
+          #dataset_tab_proposals.tab-pane{:role => "tabpanel"}
             .container
               %br
               // when you are logged in
@@ -290,7 +320,7 @@
                 No information available
 
           // changes
-          #dataset_tab_6.tab-pane{:role => "tabpanel"}
+          #dataset_tab_changes.tab-pane{:role => "tabpanel"}
             .container
               %br
               - if current_user
@@ -360,15 +390,15 @@
     .modal-content
       / Modal Header
       .modal-header
-        %h4.modal-title Delete Confirmation
+        %h4.modal-title Delete
         %button.close{"data-dismiss" => "modal", :type => "button"} ×
       / Modal body
       .modal-body
-        Are you sure?
+        Do you really want to delete the dataset?
       / Modal footer
       .modal-footer
-        %button.btn.btn-outline-secondary{"data-dismiss" => "modal", :type => "button"} Cancel
-        = link_to 'Delete', dataset_path(@dataset), method: :delete, class: 'btn btn-outline-danger'
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = link_to 'Delete', dataset_path(@dataset), method: :delete, class: 'btn btn-outline-primary'
 
 // if there is a comment let the user see it
 #comment_dataset.modal.fade
