@@ -159,6 +159,16 @@
 
               .div.pb-3
                 .font-weight-bold.text-dark
+                  Description:
+                - if @project.description.present?
+                  .font-weight-normal.text-dark
+                    = @project.description
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+              .div.pb-3
+                .font-weight-bold.text-dark
                   Created at:
                 - if @project.created_at.present?
                   .font-weight-normal.text-dark
