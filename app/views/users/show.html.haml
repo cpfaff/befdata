@@ -32,16 +32,6 @@
           .text-muted
             o
 
-      - if current_user
-        - unless current_user.has_role?(:admin) | current_user.has_role?(:admin)
-          .btn.btn-sm.btn-outline-light
-            .text-muted
-              o
-      - else
-        .btn.btn-sm.btn-outline-light
-          .text-muted
-            o
-
       // section info
       - if current_user
         - if @user.comment.present?
@@ -115,7 +105,7 @@
       - if current_user
         - if current_user.has_role?(:admin) || @user == current_user
           .div.pt-2
-            %span{'data-toggle': 'tooltip', title: 'Show comment', 'data-placement': 'auto'}
+            %span{'data-toggle': 'tooltip', title: 'Show my credentials', 'data-placement': 'auto'}
               = link_to "<i class='fas fa-key'></i>".html_safe, "#",
                 { class: "btn btn-sm btn-block btn-outline-light text-success",
                   'data-toggle': "modal",
