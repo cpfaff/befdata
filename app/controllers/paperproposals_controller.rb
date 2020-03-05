@@ -253,11 +253,11 @@ class PaperproposalsController < ApplicationController
   end
 
   def load_proposal
-    @paperproposal = Paperproposal.find(params.fetch(:id))
+    @paperproposal = Paperproposal.where(id: params.fetch(:id))
   end
 
   def load_vote
-    @vote = PaperproposalVote.find(params.fetch(:id))
+    @vote = PaperproposalVote.where(id: params.fetch(:id))
   end
 
   def paperproposal_params
