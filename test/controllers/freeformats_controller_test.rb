@@ -45,7 +45,7 @@ class FreeformatsControllerTest < ActionController::TestCase
     f = fixture_file_upload(File.join('test_files_for_uploads', 'empty_test_file.txt'))
 
     post :create, params: { freeformat: { file: f },
-                  freeformattable_id: @paperproposal.id, freeformattable_type: @paperproposal.class.to_s }
+                            freeformattable_id: @paperproposal.id, freeformattable_type: @paperproposal.class.to_s }
     freeformat = @paperproposal.freeformats.select { |ff| ff.file_file_name == 'empty_test_file.txt' }.first
 
     assert_redirected_to edit_paperproposal_path(@paperproposal)
@@ -101,11 +101,11 @@ class FreeformatsControllerTest < ActionController::TestCase
   end
 
   # test 'logged in user may download freeformat from paperproposal' do
-    # login_user 'Phdstudentnutrientcycling'
-    # f = Freeformat.find_by_file_file_name '8346952459374534ppNutrientCyclingtest.doc'
+  # login_user 'Phdstudentnutrientcycling'
+  # f = Freeformat.find_by_file_file_name '8346952459374534ppNutrientCyclingtest.doc'
 
-    # get :download, params: { id: f.id }
+  # get :download, params: { id: f.id }
 
-    # assert_success_no_error
+  # assert_success_no_error
   # end
 end

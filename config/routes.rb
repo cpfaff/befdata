@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   match 'logout' => 'user_sessions#destroy', :as => :logout, via: %i[get post]
 
   resources :users
-  # todo: check which profile resources still need to be there remove the
+  # TODO: check which profile resources still need to be there remove the
   # rest including its views
   resource :profile, only: %i[show edit update] do
     member do

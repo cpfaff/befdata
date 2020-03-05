@@ -3,7 +3,6 @@
 # This controller handles all calls for staff information.
 
 class UsersController < ApplicationController
-
   before_action :load_user, only: %i[show edit destroy update]
   skip_before_action :deny_access_to_all
 
@@ -30,11 +29,11 @@ class UsersController < ApplicationController
 
   def index
     # sorting
-    if params[:sort]
-      @users = User.order(sort_column + " " + sort_direction)
-    else
-      @users = User.all
-    end
+    @users = if params[:sort]
+               User.order(sort_column + ' ' + sort_direction)
+             else
+               User.all
+             end
 
     # pagination
     @pagy, @users = pagy(@users)
@@ -97,11 +96,11 @@ class UsersController < ApplicationController
   end
 
   def sort_column
-    User.column_names.include?(params[:sort]) ? params[:sort] : "name"
+    User.column_names.include?(params[:sort]) ? params[:sort] : 'name'
   end
 
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
   end
 
   def users_params

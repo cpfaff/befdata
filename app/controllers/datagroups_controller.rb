@@ -20,9 +20,7 @@ class DatagroupsController < ApplicationController
                                     created_at, updated_at, datacolumns_count,
                                     (select count(*) from categories where datagroup_id = datagroups.id) as categories_count')
 
-    if params[:sort]
-      @datagroups = @datagroups.order(sort_column + " " + sort_direction)
-    end
+    @datagroups = @datagroups.order(sort_column + ' ' + sort_direction) if params[:sort]
 
     @pagy, @datagroups = pagy(@datagroups)
 
@@ -123,14 +121,14 @@ class DatagroupsController < ApplicationController
   # sorting by
   def sort_column
     # allow columns names plus some extras
-    sorting_columns = Datagroup.column_names + ["categories_count"]
+    sorting_columns = Datagroup.column_names + ['categories_count']
     # select the correct sorting columns or default to title
-    sorting_columns.include?(params[:sort]) ? params[:sort] : "title"
+    sorting_columns.include?(params[:sort]) ? params[:sort] : 'title'
   end
 
   # sort direction
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
   end
 
   # load datagroup

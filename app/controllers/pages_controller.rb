@@ -8,13 +8,9 @@ class PagesController < ApplicationController
     end
   end
 
-  def home
-  end
+  def home; end
 
-  def legal
-  end
+  def legal; end
 
-  def help
-  end
-
+  def help; end
 end

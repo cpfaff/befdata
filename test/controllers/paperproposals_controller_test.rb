@@ -32,7 +32,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     @request.env['HTTP_REFERER'] = root_url
     paperproposal = Paperproposal.find 5
     login_nadrowski
-    get :update_vote, params: { id: paperproposal.paperproposal_votes.first.id, paperproposal_vote: { vote: 'accept' } }# vote something
+    get :update_vote, params: { id: paperproposal.paperproposal_votes.first.id, paperproposal_vote: { vote: 'accept' } } # vote something
     assert_equal 1, paperproposal.paperproposal_votes.reload.select { |v| v.vote == 'none' }.count
     get :admin_reset_all_votes, params: { id: paperproposal.id }
     assert_equal 2, paperproposal.paperproposal_votes.reload.select { |v| v.vote == 'none' }.count
@@ -91,7 +91,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
     user = login_nadrowski
     old_notifications_count = Notification.count
 
-    get :admin_approve_all_votes, params: { id: paperproposal.id }# bring to next stage
+    get :admin_approve_all_votes, params: { id: paperproposal.id } # bring to next stage
 
     get :update_vote, params: { id: user.paperproposal_votes.where(vote: 'none').first.id, paperproposal_vote: { vote: 'reject' } }
 
@@ -228,7 +228,7 @@ class PaperproposalsControllerTest < ActionController::TestCase
   test 'should send to board if it is possible' do
     login_and_load_paperproposal 'pinutrientcycling', 'Step 2 Paperproposal'
 
-    post :update_state, params: { id: @paperproposal.id, paperproposal: { board_state: 'submit' }  }
+    post :update_state, params: { id: @paperproposal.id, paperproposal: { board_state: 'submit' } }
     @paperproposal.reload
 
     assert (@paperproposal.board_state == 'submit')

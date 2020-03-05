@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ProjectsController < ApplicationController
-
   # acess control
   access_control do
     allow all, to: %i[index show]
@@ -10,7 +9,7 @@ class ProjectsController < ApplicationController
 
   # actions
   before_action :load_project,
-    only: %i[show edit update destroy]
+                only: %i[show edit update destroy]
 
   skip_before_action :deny_access_to_all
 
@@ -23,7 +22,7 @@ class ProjectsController < ApplicationController
     @projects = Project.all
 
     # order
-    @projects = @projects.order(sort_column + " " + sort_direction)
+    @projects = @projects.order(sort_column + ' ' + sort_direction)
 
     # paginate
     @pagy, @projects = pagy(@projects)
@@ -92,12 +91,12 @@ class ProjectsController < ApplicationController
 
   def sort_column
     # defines default sort column
-    Project.column_names.include?(params[:sort]) ? params[:sort] : "shortname"
+    Project.column_names.include?(params[:sort]) ? params[:sort] : 'shortname'
   end
 
   def sort_direction
     # defines default sort direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
   end
 
   def load_project

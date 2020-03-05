@@ -24,7 +24,7 @@ class ProfilesControllerTest < ActionController::TestCase
   end
   test 'one can update the profile' do
     login_nadrowski
-    post :update, params: { user: { city: 'testcity' }}
+    post :update, params: { user: { city: 'testcity' } }
     assert_redirected_to '/profile'
     assert_equal 'testcity', User.find_by_login('nadrowski').city
   end
@@ -52,8 +52,8 @@ class ProfilesControllerTest < ActionController::TestCase
 
   # votes history has been merged into votes show
   # test 'show voting history' do
-    # login_nadrowski
-    # get :votes_history
-    # assert_success_no_error
+  # login_nadrowski
+  # get :votes_history
+  # assert_success_no_error
   # end
 end

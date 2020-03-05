@@ -50,11 +50,11 @@ class DatasetsControllerTest < ActionController::TestCase
 
   test 'dataset can be downloaded via api key' do
     timeout_seconds = 60
-    exported_file_status = Dataset.second.exported_files.map(&:status).any? {|item| item == "finished"}
+    exported_file_status = Dataset.second.exported_files.map(&:status).any? { |item| item == 'finished' }
 
-    while timeout_seconds > 0 && exported_file_status == false do
-      timeout_seconds = timeout_seconds - 1
-      exported_file_status = Dataset.second.exported_files.map(&:status).any? {|item| item == "finished"}
+    while timeout_seconds > 0 && exported_file_status == false
+      timeout_seconds -= 1
+      exported_file_status = Dataset.second.exported_files.map(&:status).any? { |item| item == 'finished' }
       sleep(1)
     end
 
@@ -78,7 +78,7 @@ class DatasetsControllerTest < ActionController::TestCase
   test 'unlogged-in visitors can not download non free_for_public datasets' do
     ds = Dataset.find_by_title 'Test species name import second version'
     assert !ds.free_for_public?
-    get :download, params: { id: ds.id, format: :csv}
+    get :download, params: { id: ds.id, format: :csv }
     assert_match(/Access denied. Try to log in first./, flash[:error])
   end
 
@@ -121,14 +121,14 @@ class DatasetsControllerTest < ActionController::TestCase
 
   # download page was removed
   # test 'Only datasets with workbook can be downloaded' do
-    # login_nadrowski
-    # ds = Dataset.create(title: 'a dataset without workbook')
-    # get :download, params: { id: ds.id }
-    # assert_redirected_to dataset_path(ds)
-    # assert_not_nil flash[:error]
-    # get :download_page, params: { id: ds.id }
-    # assert_redirected_to dataset_path(ds)
-    # assert_not_nil flash[:error]
+  # login_nadrowski
+  # ds = Dataset.create(title: 'a dataset without workbook')
+  # get :download, params: { id: ds.id }
+  # assert_redirected_to dataset_path(ds)
+  # assert_not_nil flash[:error]
+  # get :download_page, params: { id: ds.id }
+  # assert_redirected_to dataset_path(ds)
+  # assert_not_nil flash[:error]
   # end
 
   # Approval
@@ -184,8 +184,8 @@ class DatasetsControllerTest < ActionController::TestCase
     datatype_2 = 'text'
 
     post :batch_update_columns, params: { id: dataset.id,
-                                datacolumn: [{ id: datacolumn_1_id, datagroup: datagroup_1_id },
-                                             { id: datacolumn_2_id, import_data_type: datatype_2, datagroup: datagroup_2_id }] }
+                                          datacolumn: [{ id: datacolumn_1_id, datagroup: datagroup_1_id },
+                                                       { id: datacolumn_2_id, import_data_type: datatype_2, datagroup: datagroup_2_id }] }
 
     assert_equal datagroup_1_id, Datacolumn.find(datacolumn_1_id).datagroup.id
     assert_equal datatype_2, Datacolumn.find(datacolumn_2_id).import_data_type.to_s
@@ -201,7 +201,7 @@ class DatasetsControllerTest < ActionController::TestCase
     dataset = Dataset.find 5
     datacolumn_id = 62
     post :batch_update_columns, params: { id: dataset.id,
-                                datacolumn: [{ id: datacolumn_id, import_data_type: 'text' }] }
+                                          datacolumn: [{ id: datacolumn_id, import_data_type: 'text' }] }
 
     assert_not_equal Datacolumn.find(datacolumn_id).import_data_type, 'text'
   end
@@ -223,9 +223,9 @@ class DatasetsControllerTest < ActionController::TestCase
     assert_nothing_raised do
       post :update_workbook,
            params: { id: @dataset.id,
-           datafile: {
-             file: fixture_file_upload(File.join('test_data_files', 'uploaded', '4_8346952459374534species first test.xls'))
-           } }
+                     datafile: {
+                       file: fixture_file_upload(File.join('test_data_files', 'uploaded', '4_8346952459374534species first test.xls'))
+                     } }
     end
     assert_nil flash[:error]
     assert_redirected_to dataset_path(@dataset)
@@ -235,9 +235,9 @@ class DatasetsControllerTest < ActionController::TestCase
     # upload another workbook
     post  :update_workbook,
           params: { id: @dataset.id,
-          datafile: {
-            file: fixture_file_upload(File.join('test_files_for_uploads', 'SP5_TargetSpecies_CN_final_8_target_spec_kn_-_short.xls'))
-          } }
+                    datafile: {
+                      file: fixture_file_upload(File.join('test_files_for_uploads', 'SP5_TargetSpecies_CN_final_8_target_spec_kn_-_short.xls'))
+                    } }
 
     assert_redirected_to dataset_path(@dataset)
 

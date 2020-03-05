@@ -10,7 +10,7 @@ class User < ApplicationRecord
   end
 
   acts_as_authorization_subject association_name: :roles,
-    join_table_name: :roles_users
+                                join_table_name: :roles_users
 
   validates_presence_of :lastname, :firstname
 
@@ -19,31 +19,31 @@ class User < ApplicationRecord
   # related paperproposals. Roles include: proponent, main aspect dataset
   # owner, side aspect dataset owner, acknowledged.
   has_many :author_paperproposals,
-    -> { includes :paperproposals },
-    dependent: :destroy
+           -> { includes :paperproposals },
+           dependent: :destroy
 
   has_many :paperproposals_author_table,
-    through: :author_paperproposals,
-    source: :paperproposal
+           through: :author_paperproposals,
+           source: :paperproposal
 
   # paperproposals created by the user
   has_many :owning_paperproposals,
-    class_name: 'Paperproposal',
-    foreign_key: 'author_id'
+           class_name: 'Paperproposal',
+           foreign_key: 'author_id'
 
   # TODO: really dependent destroy?
   has_many :paperproposal_votes,
-    dependent: :destroy
+           dependent: :destroy
 
   has_many :project_board_votes,
-    -> { where project_board_vote: true },
-    class_name: 'PaperproposalVote',
-    source: :paperproposal_votes
+           -> { where project_board_vote: true },
+           class_name: 'PaperproposalVote',
+           source: :paperproposal_votes
 
   has_many :for_paperproposal_votes,
-    -> { where project_board_vote: false },
-    class_name: 'PaperproposalVote',
-    source: :paperproposal_votes
+           -> { where project_board_vote: false },
+           class_name: 'PaperproposalVote',
+           source: :paperproposal_votes
 
   has_many :notifications
 
@@ -61,12 +61,12 @@ class User < ApplicationRecord
                     }
 
   validates_attachment_content_type :avatar,
-    content_type: /image/,
-    if: :avatar_file_name_changed?,
-    message: 'is invalid. Must be a picture such as jpeg or png.'
+                                    content_type: /image/,
+                                    if: :avatar_file_name_changed?,
+                                    message: 'is invalid. Must be a picture such as jpeg or png.'
 
   before_save :change_avatar_file_name,
-    :add_protocol_to_url
+              :add_protocol_to_url
 
   before_destroy :check_destroyable
 

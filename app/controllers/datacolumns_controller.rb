@@ -61,7 +61,7 @@ class DatacolumnsController < ApplicationController
   def approve_invalid_values
     respond_to do |format|
       format.html do
-        # todo: for now I migrated to pagy check if the pagination is still used in the view
+        # TODO: for now I migrated to pagy check if the pagination is still used in the view
         @pagy, @invalid_values = pagy(@datacolumn)
         @count_of_all_invalid_values = @datacolumn.invalid_values.count
       end
@@ -141,7 +141,7 @@ class DatacolumnsController < ApplicationController
     unless @datacolumn.update_attributes(params.require(:datacolumn).permit(:id, :utf8, :authenticity_token, :columnheader,
                                                                             :definition, :unit,
                                                                             :tag_list, :instrumentation,
-                                                                            :informationsource, :comment, people: [] ))
+                                                                            :informationsource, :comment, people: []))
       flash[:error] = @datacolumn.errors.to_a.first.capitalize
       redirect_back(fallback_location: root_url) && return
     end

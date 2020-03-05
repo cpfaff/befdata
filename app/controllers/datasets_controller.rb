@@ -10,7 +10,7 @@ class DatasetsController < ApplicationController
                 only: %i[download approve approve_predefined batch_update_columns approval_quick]
 
   before_action :redirect_unless_import_succeed,
-                only: %i[ download approve approve_predefined approval_quick batch_update_columns]
+                only: %i[download approve approve_predefined approval_quick batch_update_columns]
 
   before_action :redirect_while_importing,
                 only: %i[edit_files update_workbook destroy]
@@ -196,35 +196,22 @@ class DatasetsController < ApplicationController
     # when there is need to create them do so (it may be better to handle this
     # in a javascript function calling for the status and if necessary trigger
     # the correct action in the datafiles related controller.
-    if @exported_excel.status.eql? 'new'
-       @exported_excel.queued_to_be_exported
-    end
+    @exported_excel.queued_to_be_exported if @exported_excel.status.eql? 'new'
 
     if @exported_excel.invalidated_at.present? && @exported_excel.generated_at.present?
-      if @exported_excel.invalidated_at > @exported_excel.generated_at
-         @exported_excel.queued_to_be_exported
-      end
+      @exported_excel.queued_to_be_exported if @exported_excel.invalidated_at > @exported_excel.generated_at
     end
 
-
-    if @exported_csv.status.eql? 'new'
-       @exported_csv.queued_to_be_exported
-    end
+    @exported_csv.queued_to_be_exported if @exported_csv.status.eql? 'new'
 
     if @exported_csv.invalidated_at.present? && @exported_csv.generated_at.present?
-      if @exported_csv.invalidated_at > @exported_csv.generated_at
-         @exported_csv.queued_to_be_exported
-      end
+      @exported_csv.queued_to_be_exported if @exported_csv.invalidated_at > @exported_csv.generated_at
     end
 
-    if @exported_scc_csv.status.eql? 'new'
-       @exported_scc_csv.queued_to_be_exported
-    end
+    @exported_scc_csv.queued_to_be_exported if @exported_scc_csv.status.eql? 'new'
 
     if @exported_scc_csv.invalidated_at.present? && @exported_scc_csv.generated_at.present?
-      if @exported_scc_csv.invalidated_at > @exported_scc_csv.generated_at
-         @exported_scc_csv.queued_to_be_exported
-      end
+      @exported_scc_csv.queued_to_be_exported if @exported_scc_csv.invalidated_at > @exported_scc_csv.generated_at
     end
 
     # answer to
@@ -248,9 +235,7 @@ class DatasetsController < ApplicationController
       @datasets = @datasets.tagged_with(Dataset.all_tags.where(id: @filter.fetch(:tag)).pluck(:name), any: true) unless @filter.fetch(:tag).all?(&:blank?)
     end
 
-    if params[:sort]
-      @datasets = @datasets.order(sort_column + " " + sort_direction)
-    end
+    @datasets = @datasets.order(sort_column + ' ' + sort_direction) if params[:sort]
 
     @pagy, @datasets = pagy(@datasets)
 
@@ -345,11 +330,11 @@ class DatasetsController < ApplicationController
   private
 
   def sort_column
-    Dataset.column_names.include?(params[:sort]) ? params[:sort] : "name"
+    Dataset.column_names.include?(params[:sort]) ? params[:sort] : 'name'
   end
 
   def sort_direction
-    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
   end
 
   def generate_freeformats_csv(_user)

@@ -14,78 +14,77 @@
 # should be offered a co-authorship in the resulting paper.
 
 class Paperproposal < ApplicationRecord
-
   belongs_to :author,
-    class_name: 'User',
-    foreign_key: 'author_id'
+             class_name: 'User',
+             foreign_key: 'author_id'
 
   belongs_to :authored_by_project,
-    class_name: 'Project',
-    foreign_key: :project_id
+             class_name: 'Project',
+             foreign_key: :project_id
 
   # User roles in a paperproposal: proponents, main aspect dataset owner, side
   # aspect dataset owner, acknowledged. many-to-many association with User
   # model through author_paperproposal joint table.
   has_many :author_paperproposals,
-    -> { includes [:user] },
-    dependent: :destroy
+           -> { includes [:user] },
+           dependent: :destroy
 
   has_many :authors, class_name: 'User',
-    source: :user,
-    through: :author_paperproposals
+                     source: :user,
+                     through: :author_paperproposals
 
   # with four conditional association.
   has_many :proponents,
-    -> { where "kind = 'user'" },
-    class_name: 'User',
-    source: :user,
-    through: :author_paperproposals
+           -> { where "kind = 'user'" },
+           class_name: 'User',
+           source: :user,
+           through: :author_paperproposals
 
   has_many :main_aspect_dataset_owners,
-    -> { where "kind = 'main'" },
-    class_name: 'User',
-    source: :user,
-    through: :author_paperproposals
+           -> { where "kind = 'main'" },
+           class_name: 'User',
+           source: :user,
+           through: :author_paperproposals
 
   has_many :side_aspect_dataset_owners,
-    -> { where "kind = 'side'" },
-    class_name: 'User',
-    source: :user,
-    through: :author_paperproposals
+           -> { where "kind = 'side'" },
+           class_name: 'User',
+           source: :user,
+           through: :author_paperproposals
 
   has_many :acknowledgements_from_datasets,
-    -> { where "kind = 'ack'" },
-    class_name: 'User',
-    source: :user,
-    through: :author_paperproposals
+           -> { where "kind = 'ack'" },
+           class_name: 'User',
+           source: :user,
+           through: :author_paperproposals
 
   # User votes on a paperproposal. has_many association with
   # paperproposal_votes model. two conditional association to differentiate
   # project board vote and dataset request vote.(FIXME: dataset owner's vote?)
   has_many :paperproposal_votes,
-    dependent: :destroy
+           dependent: :destroy
 
   has_many :project_board_votes,
-    -> { where project_board_vote: true },
-    class_name: 'PaperproposalVote',
-    source: :paperproposal_votes
+           -> { where project_board_vote: true },
+           class_name: 'PaperproposalVote',
+           source: :paperproposal_votes
 
   has_many :for_data_request_votes,
-    -> { where project_board_vote: false },
-    class_name: 'PaperproposalVote',
-    source: :paperproposal_votes
+           -> { where project_board_vote: false },
+           class_name: 'PaperproposalVote',
+           source: :paperproposal_votes
 
   # habtm association with Dataset model.
   before_destroy :reset_download_rights # needs to be before association definition,see https://rails.lighthouseapp.com/projects/8994/tickets/4386
   has_many :dataset_paperproposals,
-    dependent: :destroy
+           dependent: :destroy
   has_many :datasets,
-    through: :dataset_paperproposals
+           through: :dataset_paperproposals
 
   # one-to-many association with freeformat model.
   has_many :freeformats,
-    as: :freeformattable,
-    dependent: :destroy
+           as: :freeformattable,
+           dependent: :destroy
 
   validates_presence_of :title, :rationale, :author_id
 
@@ -453,7 +452,7 @@ class Paperproposal < ApplicationRecord
     datasets.each do |ds|
       ds.accepts_role! :proposer, author
     end
-    # todo: this one is not delivered compared to others. I have no idea why.
+    # TODO: this one is not delivered compared to others. I have no idea why.
     NotificationMailer.delay.data_request_accepted(self)
     set_lock_status
     save

@@ -62,7 +62,7 @@ class DatacolumnsControllerTest < ActionController::TestCase
     login_nadrowski
     datacolumn_id = 61
 
-    post :create_and_update_datagroup, params: { id: datacolumn_id, new_datagroup: { title: 'test datagroup', description: 'test description' }}
+    post :create_and_update_datagroup, params: { id: datacolumn_id, new_datagroup: { title: 'test datagroup', description: 'test description' } }
 
     assert_success_no_error
     assert_equal 'test datagroup', Datacolumn.find(datacolumn_id).datagroup.title
@@ -105,7 +105,7 @@ class DatacolumnsControllerTest < ActionController::TestCase
     last_invalidated_at_of_excel = dataset.exported_excel.invalidated_at
     last_invalidated_at_of_csv = dataset.exported_csv.invalidated_at
 
-    post :update_metadata, params: { id: datacolumn_id, datacolumn: { definition: 'test definition' }}
+    post :update_metadata, params: { id: datacolumn_id, datacolumn: { definition: 'test definition' } }
 
     assert_success_no_error
     assert_equal 'test definition', Datacolumn.find(datacolumn_id).definition
@@ -120,7 +120,7 @@ class DatacolumnsControllerTest < ActionController::TestCase
     last_invalidated_at_of_excel = dataset.exported_excel.invalidated_at
     last_invalidated_at_of_csv = dataset.exported_csv.invalidated_at
 
-    post :update_invalid_values, params: { id: datacolumn_id, invalid_values: [{ import_value: '<1', short: 'x', long: 'xx', description: 'xxx' }]}
+    post :update_invalid_values, params: { id: datacolumn_id, invalid_values: [{ import_value: '<1', short: 'x', long: 'xx', description: 'xxx' }] }
 
     assert_success_no_error
     cat = Category.find_by_short('x')

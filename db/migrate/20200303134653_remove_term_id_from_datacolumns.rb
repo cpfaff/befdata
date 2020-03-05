@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RemoveTermIdFromDatacolumns < ActiveRecord::Migration[5.0]
   def change
     remove_index :datacolumns, :term_id

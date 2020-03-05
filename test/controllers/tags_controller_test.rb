@@ -37,7 +37,7 @@ class TagsControllerTest < ActionController::TestCase
 
     taggables = Datacolumn.tagged_with(%w[KEY_1 KEY_2], any: true)
 
-    post :merge, params: { keywords: [21, 31], merge_to: '21'} # merge to KEY_1
+    post :merge, params: { keywords: [21, 31], merge_to: '21' } # merge to KEY_1
     assert_success_no_error
 
     assert ActsAsTaggableOn::Tag.find_by_name('KEY_2'), -1

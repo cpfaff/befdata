@@ -25,7 +25,7 @@ class UserSessionsController < ApplicationController
       end
     else
       flash[:error] = @user_session.errors.full_messages.to_sentence
-        redirect_back(fallback_location: root_url)
+      redirect_back(fallback_location: root_url)
     end
   end
 

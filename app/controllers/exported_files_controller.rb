@@ -24,7 +24,7 @@ class ExportedFilesController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.js { render template: "datasets/regenerate_downloads.js.haml"}
+      format.js { render template: 'datasets/regenerate_downloads.js.haml' }
     end
   end
 

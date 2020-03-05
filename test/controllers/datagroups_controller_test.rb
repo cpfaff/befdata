@@ -41,14 +41,14 @@ class DatagroupsControllerTest < ActionController::TestCase
 
   # TODO: The functionality seems to be broken
   # test 'dont accept duplicate categories short via cvs' do
-    # login_nadrowski
-    # request.env['HTTP_REFERER'] = root_url
-    # f = fixture_file_upload(File.join('test_files_for_uploads', 'datagroup_22_categories_faulty.csv.txt'))
+  # login_nadrowski
+  # request.env['HTTP_REFERER'] = root_url
+  # f = fixture_file_upload(File.join('test_files_for_uploads', 'datagroup_22_categories_faulty.csv.txt'))
 
-    # post :update_categories, params: { id: 22, csvfile: { file: f } }
+  # post :update_categories, params: { id: 22, csvfile: { file: f } }
 
-    # assert :success
-    # assert_match /.*unique.*/, flash[:error]
+  # assert :success
+  # assert_match /.*unique.*/, flash[:error]
   # end
 
   test 'merge categories via csv' do

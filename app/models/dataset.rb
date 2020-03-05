@@ -37,16 +37,16 @@ class Dataset < ApplicationRecord
   acts_as_taggable
 
   has_many :datafiles,
-    -> { order 'id DESC' },
-    dependent: :destroy,
-    class_name: 'Datafile'
+           -> { order 'id DESC' },
+           dependent: :destroy,
+           class_name: 'Datafile'
 
   has_one :current_datafile,
-    -> { order 'id DESC' },
-    class_name: 'Datafile'
+          -> { order 'id DESC' },
+          class_name: 'Datafile'
 
   has_many :exported_files,
-    dependent: :destroy
+           dependent: :destroy
 
   # exported excel workbook
   has_one :exported_excel
@@ -58,19 +58,19 @@ class Dataset < ApplicationRecord
   has_one :exported_scc_csv
 
   has_many :datacolumns,
-    -> { order 'columnnr' },
-    dependent: :destroy
+           -> { order 'columnnr' },
+           dependent: :destroy
 
   has_many :sheetcells,
-    through: :datacolumns
+           through: :datacolumns
 
   has_many :datagroups,
-    -> { includes :categories },
-    through: :datacolumns
+           -> { includes :categories },
+           through: :datacolumns
 
   has_many :freeformats,
-    as: :freeformattable,
-    dependent: :destroy
+           as: :freeformattable,
+           dependent: :destroy
 
   has_many :dataset_downloads
 
@@ -95,9 +95,9 @@ class Dataset < ApplicationRecord
            through: :dataset_paperproposals
 
   has_many :proposers,
-    -> { distinct },
-    through: :paperproposals,
-    source: :author
+           -> { distinct },
+           through: :paperproposals,
+           source: :author
 
   has_many :dataset_tags
   has_many :all_tags,
@@ -371,11 +371,11 @@ class Dataset < ApplicationRecord
 
   def set_default_phase
     if project_phase.nil?
-      if PROJECT_PHASE.length > 0
-        self.project_phase = PROJECT_PHASE.length-1
-      else
-        self.project_phase = 0
-      end
+      self.project_phase = if !PROJECT_PHASE.empty?
+                             PROJECT_PHASE.length - 1
+                           else
+                             0
+                           end
     end
   end
 end
