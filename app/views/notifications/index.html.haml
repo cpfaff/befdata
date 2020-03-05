@@ -16,47 +16,108 @@
 // notifications
 .div.pl-2
   .div.pb-3.pt-3
-    - @notifications.sort_by { |item| item.read? ? 1 : 0 }.each do |notification|
-      - read_string = notification.read ? 'read' : 'unread'
-      .card.shadow-sm.mb-4
-        .card-header
-          .font-weight-bold.text-muted
-            %span
-              Notification:
-              = notification.subject
-        .card-body
-          %p.card-text
-            = notification.message.html_safe
-        .card-footer.text-right
-          - if notification.read
-            = link_to "<i class='fas fa-eye-slash'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
-              { class: "btn btn-sm btn-outline-light text-primary",
-              'data-toggle': "tooltip",
-              title: "#{read_string}" ,
-              'data-placement': "auto"}
-          - else
-            = link_to "<i class='fas fa-eye'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
-              { class: "btn btn-sm btn-outline-light text-primary",
-              'data-toggle': "tooltip",
-              title: "#{read_string}" ,
-              'data-placement': "auto"}
-          %span{'data-toggle': 'tooltip', title: 'Delete notification', 'data-placement': 'auto'}
-            = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
-              { class: "btn btn-sm btn-outline-light text-primary",
-              'data-toggle': "modal",
-              'data-target': "#delete_notification"}
-          // delete confirmation modal
-          #delete_notification.modal.fade
-            .modal-dialog.modal-dialog-centered
-              .modal-content
-                / Modal Header
-                .modal-header
-                  %h4.modal-title Delete
-                  %button.close{"data-dismiss" => "modal", :type => "button"} ×
-                / Modal body
-                .modal-body.text-left
-                  Do you really want to delete that notification?
-                / Modal footer
-                .modal-footer
-                  %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
-                  = link_to 'Delete', notification, method: :delete, class: 'btn btn-outline-primary'
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#notification_tab_new", :role => "tab"} New
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#notification_tab_read", :role => "tab"} Read
+          %li.nav-item
+        .tab-content.equal-height
+          // tab metadata
+          #notification_tab_new.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              -# - @notifications.sort_by { |item| item.read? ? 1 : 0 }.each do |notification|
+              - @notifications.where(read: false).each do |notification|
+                - read_string = notification.read ? 'read' : 'unread'
+                .card.shadow-sm.mb-4
+                  .card-header
+                    .font-weight-bold.text-muted
+                      %span
+                        Notification:
+                        = notification.subject
+                  .card-body
+                    %p.card-text
+                      = notification.message.html_safe
+                  .card-footer.text-right
+                    - if notification.read
+                      = link_to "<i class='fas fa-eye-slash'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
+                        { class: "btn btn-sm btn-outline-light text-primary",
+                        'data-toggle': "tooltip",
+                        title: "#{read_string}" ,
+                        'data-placement': "auto"}
+                    - else
+                      = link_to "<i class='fas fa-eye'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
+                        { class: "btn btn-sm btn-outline-light text-primary",
+                        'data-toggle': "tooltip",
+                        title: "#{read_string}" ,
+                        'data-placement': "auto"}
+                    %span{'data-toggle': 'tooltip', title: 'Delete notification', 'data-placement': 'auto'}
+                      = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                        { class: "btn btn-sm btn-outline-light text-primary",
+                        'data-toggle': "modal",
+                        'data-target': "#delete_notification"}
+                    // delete confirmation modal
+                    #delete_notification.modal.fade
+                      .modal-dialog.modal-dialog-centered
+                        .modal-content
+                          / Modal Header
+                          .modal-header
+                            %h4.modal-title Delete
+                            %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                          / Modal body
+                          .modal-body.text-left
+                            Do you really want to delete that notification?
+                          / Modal footer
+                          .modal-footer
+                            %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+                            = link_to 'Delete', notification, method: :delete, class: 'btn btn-outline-primary'
+          #notification_tab_read.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - @notifications.where(read: true).each do |notification|
+                - read_string = notification.read ? 'read' : 'unread'
+                .card.shadow-sm.mb-4
+                  .card-header
+                    .font-weight-bold.text-muted
+                      %span
+                        Notification:
+                        = notification.subject
+                  .card-body
+                    %p.card-text
+                      = notification.message.html_safe
+                  .card-footer.text-right
+                    - if notification.read
+                      = link_to "<i class='fas fa-eye-slash'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
+                        { class: "btn btn-sm btn-outline-light text-primary",
+                        'data-toggle': "tooltip",
+                        title: "#{read_string}" ,
+                        'data-placement': "auto"}
+                    - else
+                      = link_to "<i class='fas fa-eye'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
+                        { class: "btn btn-sm btn-outline-light text-primary",
+                        'data-toggle': "tooltip",
+                        title: "#{read_string}" ,
+                        'data-placement': "auto"}
+                    %span{'data-toggle': 'tooltip', title: 'Delete notification', 'data-placement': 'auto'}
+                      = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                        { class: "btn btn-sm btn-outline-light text-primary",
+                        'data-toggle': "modal",
+                        'data-target': "#delete_notification"}
+                    // delete confirmation modal
+                    #delete_notification.modal.fade
+                      .modal-dialog.modal-dialog-centered
+                        .modal-content
+                          / Modal Header
+                          .modal-header
+                            %h4.modal-title Delete
+                            %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                          / Modal body
+                          .modal-body.text-left
+                            Do you really want to delete that notification?
+                          / Modal footer
+                          .modal-footer
+                            %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+                            = link_to 'Delete', notification, method: :delete, class: 'btn btn-outline-primary'
