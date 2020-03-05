@@ -289,7 +289,6 @@ GEM
     websocket-extensions (0.1.4)
     whenever (1.0.0)
       chronic (>= 0.6.3)
-    will_paginate (3.2.1)
 
 PLATFORMS
   ruby
@@ -337,7 +336,6 @@ DEPENDENCIES
   turnout (~> 2.5.0)
   uglifier (~> 2.7.2)
   whenever (~> 1.0.0)
-  will_paginate (~> 3.2.0)
 
 RUBY VERSION
    ruby 2.3.8p459

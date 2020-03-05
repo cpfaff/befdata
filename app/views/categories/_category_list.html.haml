@@ -22,4 +22,7 @@
         %td= category.description
         %td= category.count
 
-= will_paginate @categories
+// pagination
+.div
+  .pt-3
+    != pagy_bootstrap_nav @pagy

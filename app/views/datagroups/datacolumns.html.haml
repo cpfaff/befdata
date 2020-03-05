@@ -31,7 +31,10 @@
                 = f.text_area :definition, style: 'height:100px;'
                 = f.submit
                 = link_to "Cancel", "#", :class => "button right cancel"
-  = will_paginate @datacolumns
+  // pagination
+  .div
+    .pt-3
+      != pagy_bootstrap_nav @pagy
 
   - if show_edit_link
     :javascript

@@ -81,13 +81,7 @@ gem 'jquery-ui-rails', '~> 6.0.0'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.2.1'
 
-# todo: remove will paginate and 
-# replace with pagy
-
-# paginated queries with Active Record
-gem 'will_paginate', '~> 3.2.0'
-
-# will replace will paginate
+# pagination 
 gem 'pagy', '~> 3.7'
 
 # coffee script adapter
