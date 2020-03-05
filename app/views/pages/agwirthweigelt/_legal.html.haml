@@ -2,6 +2,8 @@
 
 // persons for reference
 // TODO: set the correct ids when the database is set up
+// finally move that kind of things into the config file as
+// far as possible
 - christian_id = 1
 - alex_id = 2
 - helge_id = 3
@@ -44,7 +46,7 @@
                   .font-weight-bold.text-dark
                     Responsible for contents:
                     .font-weight-normal.text-dark
-                      %ul
+                      %ul.list-unstyled
                         %li
                           = link_to "Prof. Dr. Christian wirth", { controller: :users, action: :show, id: christian_id }
                         %li
