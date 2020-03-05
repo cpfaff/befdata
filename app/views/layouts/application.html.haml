@@ -49,6 +49,7 @@
             = content_for?(:content) ? yield(:content) : yield
           - if sidebar_exists
             .col-1.text-center.hide-overflow
+              // todo: investigate. sticky top is not working anymore
               %ul.list-group.sticky-top.pt-3
                 // todo: remove the unused content groups when the ui rewrite is complete
                 - if content_for?(:actions)
