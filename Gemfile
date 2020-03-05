@@ -22,9 +22,6 @@ gem 'authlogic', '~> 4.4.3'
 # gem 'acl9', '~> 2.1.2'
 gem 'acl9', '~> 3.0'
 
-# helper methods for rails 3 models
-gem 'dynamic_form', '~> 1.1.4'
-
 # upload management for active record
 gem 'paperclip', '~> 6.1.0'
 
@@ -124,7 +121,7 @@ group :test, :development do
   # retrieve the binding of a method's caller
   gem 'binding_of_caller', '~> 0.8.0'
 
-  # retrieve the binding of a method's caller
+  # debug with a console 
   gem 'byebug'
 
   # hosted test coverage service (badge)
