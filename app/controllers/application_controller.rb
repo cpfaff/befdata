@@ -6,7 +6,7 @@ class ::ApplicationController < ActionController::Base
   include Pagy::Backend
 
   # user session setup
-  helper_method :current_user_session, :current_user, :current_cart, :get_all_paperproposal_years
+  helper_method :current_user_session, :current_user, :current_cart
   # layout :layout_from_config
 
   access_control :deny_access_to_all do
@@ -34,12 +34,8 @@ class ::ApplicationController < ActionController::Base
 
   def user_may_edit_profile?
     return false unless @user && current_user
-    @user == current_user
-  end
 
-  def get_all_paperproposal_years
-    years = Paperproposal.pluck(:created_at).map(&:year)
-    years.uniq.sort.reverse
+    @user == current_user
   end
 
   protected
