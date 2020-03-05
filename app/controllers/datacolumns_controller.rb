@@ -228,7 +228,7 @@ class DatacolumnsController < ApplicationController
   end
 
   def load_datacolumn_and_dataset
-    @datacolumn = Datacolumn.where(id: params[:id])
+    @datacolumn = Datacolumn.where(id: params[:id]).first
     @dataset = @datacolumn.dataset
   end
 
