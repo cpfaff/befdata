@@ -81,13 +81,13 @@ gem 'jquery-ui-rails', '~> 6.0.0'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks', '~> 5.2.1'
 
-# pagination 
+# pagination
 gem 'pagy', '~> 3.7'
 
 # coffee script adapter
 gem 'coffee-rails', '~> 4.1.0'
 
-# upgrade path 
+# upgrade path
 # assigns and assert_template in tests
 gem 'rails-controller-testing', '~> 1.0.4'
 
@@ -133,7 +133,7 @@ group :test, :development do
   # code formatter
   gem 'rubocop', '~> 0.77.0', require: false
 
-  # Spring speeds up development by keeping your application 
+  # Spring speeds up development by keeping your application
   # running in the background. Read more: https://github.com/rails/spring
   gem 'spring', '~> 2.0.2'
 
@@ -146,7 +146,7 @@ group :test, :development do
 end
 
 group :development do
-  # bundle exec rake doc:rails 
+  # bundle exec rake doc:rails
   # generates the API under doc/api.
   gem 'sdoc', '~> 0.4.0'
 end
