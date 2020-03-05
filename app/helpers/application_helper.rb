@@ -11,8 +11,33 @@ module ApplicationHelper
   include Acl9Helpers
   include Pagy::Frontend
 
+  # check for costum layout
   def with_customized_layout?
     LayoutHelper::BEF_LAYOUT != 'standard'
+  end
+
+  # sort by table columns
+  def sortable(column, title = nil, type = nil)
+    title ||= column.titleize
+    type ||= 'alpha'
+    direction = column == sort_column && sort_direction == 'asc' ? 'desc' : 'asc'
+    if type == 'alpha'
+      if direction == 'asc'
+        link_to fa_icon('sort-alpha-up', text: "#{title}:", right: true),
+                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
+      else
+        link_to fa_icon('sort-alpha-down', text: "#{title}:", right: true),
+                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
+      end
+    else
+      if direction == 'asc'
+        link_to fa_icon('sort-numeric-up', text: "#{title}:", right: true),
+                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
+      else
+        link_to fa_icon('sort-numeric-down', text: "#{title}:", right: true),
+                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
+      end
+    end
   end
 
   # set the title of the page in the browser
@@ -46,6 +71,10 @@ module ApplicationHelper
     Paperproposal.pluck(:state).uniq.sort.map(&:humanize)
   end
 
+  def all_users_names_and_ids_for_select
+    User.select('id, salutation, firstname, lastname').order('lower(firstname), lower(lastname)').collect { |u| [u.to_s, u.id] }
+  end
+
   def all_dataset_access_righs_for_select
     Dataset::ACCESS_CODES.map { |code, id| [code.to_s.humanize, id] }
   end
@@ -59,27 +88,22 @@ module ApplicationHelper
     current_cart.datasets.include? dataset
   end
 
-  # sort by table columns
-  def sortable(column, title = nil, type = nil)
-    title ||= column.titleize
-    type ||= 'alpha'
-    direction = column == sort_column && sort_direction == 'asc' ? 'desc' : 'asc'
-    if type == 'alpha'
-      if direction == 'asc'
-        link_to fa_icon('sort-alpha-up', text: "#{title}:", right: true),
-                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
-      else
-        link_to fa_icon('sort-alpha-down', text: "#{title}:", right: true),
-                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
-      end
+  # datasets related
+  def content_tag_unless_blank(tag, content)
+    content_tag_string(tag, content, nil) unless content.blank?
+  end
+
+  def eml_unit_for_column(column)
+    case column.unit
+    when 'meter' || 'm'
+      'meter'
+    when 'millimeter' || 'mm'
+      'millimeter'
+    when 'gram' || 'g'
+      'gram'
+    when 'gramsPerSquareMeter' || 'g/m^2'
     else
-      if direction == 'asc'
-        link_to fa_icon('sort-numeric-up', text: "#{title}:", right: true),
-                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
-      else
-        link_to fa_icon('sort-numeric-down', text: "#{title}:", right: true),
-                sort: column, direction: direction, search: params[:search], filter: params[:filter], select: params[:select]
-      end
+      'dimensionless'
     end
   end
 end
