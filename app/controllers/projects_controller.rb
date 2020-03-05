@@ -100,6 +100,6 @@ class ProjectsController < ApplicationController
   end
 
   def load_project
-    @project = Project.where(id: params.fetch(:id)).first
+    @project = Project.find(params[:id])
   end
 end
