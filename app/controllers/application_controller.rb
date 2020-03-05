@@ -60,7 +60,6 @@ class ::ApplicationController < ActionController::Base
 
   def require_no_user
     if current_user
-      flash[:error] = 'You must be logged out to access this page'
       redirect_back(fallback_location: root_url)
       false
     end
