@@ -77,10 +77,10 @@ class ::ApplicationController < ActionController::Base
 
   def access_denied
     if current_user
-      flash[:error] = 'Access denied. You do not have the appropriate rights to perform this operation.'
+      flash[:error] = 'Access denied: You do not have the appropriate rights to perform this operation.'
       redirect_back(fallback_location: root_url)
     else
-      flash[:error] = 'Access denied. Try to log in first.'
+      flash[:error] = 'Access denied: Try to log in first.'
       session[:return_to] = request.url if request.get?
       redirect_back(fallback_location: root_url)
     end
