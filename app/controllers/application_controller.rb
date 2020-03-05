@@ -75,17 +75,6 @@ class ::ApplicationController < ActionController::Base
     end
   end
 
-  # specify a collection of sorted-by options, and one of them is the default
-  # eg: validate_sort_params(collection: ['a', 'b'], default: 'a')
-  def validate_sort_params(*options)
-    options = options.extract_options!
-    raise 'A collection of allowed sorting options should be specified!' unless options[:collection].present?
-
-    options[:default] ||= options[:collection].first
-    params[:sort] = options[:default] unless options[:collection].include?(params[:sort])
-    params[:direction] = 'asc' unless %w[desc asc].include?(params[:direction])
-  end
-
   def access_denied
     if current_user
       flash[:error] = 'Access denied. You do not have the appropriate rights to perform this operation.'
