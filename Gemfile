@@ -47,7 +47,7 @@ gem 'activerecord-import', '~> 1.0.0'
 gem 'pg_search', '~> 2.1.0'
 
 # sass adapter
-gem 'sass-rails', '~> 5.0.0'
+gem 'sass-rails', '~> 6.0.0'
 
 # for new ui
 
