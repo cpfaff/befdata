@@ -99,15 +99,26 @@ end
 # uglifier minifies java script
 gem 'uglifier', '~> 2.7.2'
 
-group :test, :development do
-  # unit testing framework
-  gem 'test-unit', '~> 3.3.4'
+group :test do
+  # Adds support for Capybara system testing and selenium driver
+  gem 'capybara', '>= 2.15'
+  gem 'selenium-webdriver'
+  # Easy installation and use of chromedriver to run system tests with Chrome
+  gem 'chromedriver-helper'
 
-  # find missing indexes
-  # gem 'lol_dba', '~> 2.1.8'
+  # unit testing framework
+  # gem 'test-unit', '~> 3.3.4'
 
   # parallelize tests
-  gem 'parallel_tests', '~> 2.29.2'
+  # gem 'parallel_tests', '~> 2.29.2'
+
+  # hosted test coverage service (badge)
+  gem 'coveralls', '~> 0.8.23', require: false
+end
+
+group :development do
+  # find missing indexes
+  # gem 'lol_dba', '~> 2.1.8'
 
   # bindings for the GNOME Libxml2
   gem 'libxml-ruby', '~> 3.1.0'
@@ -124,9 +135,6 @@ group :test, :development do
   # debug with a console 
   gem 'byebug'
 
-  # hosted test coverage service (badge)
-  gem 'coveralls', '~> 0.8.23', require: false
-
   # code formatter
   gem 'rubocop', '~> 0.77.0', require: false
 
@@ -136,14 +144,13 @@ group :test, :development do
 
   # Profiling toolkit
   # gem 'rack-mini-profiler', require: false
-  gem 'bullet', group: 'development'
+  gem 'bullet'
 
   # listen gem to detect on code changes
   gem 'listen', '>= 3.0.5', '< 3.2'
-end
 
-group :development do
   # bundle exec rake doc:rails
   # generates the API under doc/api.
   gem 'sdoc', '~> 0.4.0'
 end
+
