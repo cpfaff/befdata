@@ -61,8 +61,6 @@ class DatacolumnsController < ApplicationController
   def approve_invalid_values
     respond_to do |format|
       format.html do
-        # TODO: for now I migrated to pagy check if the pagination is still used in the view
-        @pagy, @invalid_values = pagy(@datacolumn)
         @count_of_all_invalid_values = @datacolumn.invalid_values.count
       end
       format.csv do
