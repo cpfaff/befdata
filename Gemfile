@@ -82,7 +82,7 @@ gem 'turbolinks', '~> 5.2.1'
 gem 'pagy', '~> 3.7'
 
 # coffee script adapter
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails', '~> 4.2.2'
 
 # upgrade path
 # assigns and assert_template in tests
