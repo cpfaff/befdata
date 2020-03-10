@@ -59,7 +59,11 @@ class UsersController < ApplicationController
   def create
     @user = User.new(users_params)
     if @user.save
-      @user.projectroles = params.fetch(:roles, {})
+
+      if current_user.has_role?(:admin)
+        @user.projectroles = params.fetch(:roles, {})
+      end
+
       redirect_to user_path(@user), notice: "Successfully Created user #{@user.to_label}"
     else
       render action: :new
@@ -72,7 +76,9 @@ class UsersController < ApplicationController
 
   def update
     if @user.update_attributes(users_params)
-      @user.projectroles = params.fetch(:roles, {})
+      if current_user.has_role?(:admin)
+        @user.projectroles = params.fetch(:roles, {})
+      end
       redirect_to user_path(@user), notice: 'Saved successfully'
     else
       render :edit

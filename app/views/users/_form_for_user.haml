@@ -15,10 +15,11 @@
           %a.nav-link.active{"data-toggle" => "tab", :href => "#tab-1", :role => "tab"} Basics
         %li.nav-item
           %a.nav-link{"data-toggle" => "tab", :href => "#tab-2", :role => "tab"} Affiliation
-        %li.nav-item
-          %a.nav-link{"data-toggle" => "tab", :href => "#tab-3", :role => "tab"} Projects
-        %li.nav-item
-          %a.nav-link{"data-toggle" => "tab", :href => "#tab-4", :role => "tab"} Extras
+        - if current_user.has_role?(:admin)
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#tab-3", :role => "tab"} Projects
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#tab-4", :role => "tab"} Extras
       .tab-content.equal-height
         #tab-1.tab-pane.active{:role => "tabpanel"}
           .container
@@ -59,21 +60,22 @@
               = f.input :street
               = f.input :city
               = f.input :country, as: :text
-        #tab-3.tab-pane{:role => "tabpanel"}
-          .container
-            %br
-            = field_set_tag "Associate to project" do
-              #roles
-                %noscript
-                  %p You need javascript enabled to manage user roles. Please enable javascript and refresh page.
-                = render :partial => 'role', collection: project_roles
-              #btn_add_role.btn.btn-sm.btn-outline-success
-                = fa_icon('plus', text: "Add Project")
-        #tab-4.tab-pane{:role => "tabpanel"}
-          .container
-            %br
-            = field_set_tag "Administrative" do
-              = f.input :comment, hint: "Only admins and the project board can see this comment.", input_html: { rows: 10 }
+        - if current_user.has_role?(:admin)
+          #tab-3.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              = field_set_tag "Associate to project" do
+                #roles
+                  %noscript
+                    %p You need javascript enabled to manage user roles. Please enable javascript and refresh page.
+                  = render :partial => 'role', collection: project_roles
+                #btn_add_role.btn.btn-sm.btn-outline-success
+                  = fa_icon('plus', text: "Add Project")
+          #tab-4.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              = field_set_tag "Administrative" do
+                = f.input :comment, hint: "Only admins and the project board can see this comment.", input_html: { rows: 10 }
 
   .container
     %div.pt-5.pb-2
