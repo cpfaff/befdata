@@ -43,7 +43,7 @@ class CategoriesController < ApplicationController
   def new; end
 
   def create
-    @category = @datagroup.categories.build(params.require(:category).permit(:short, :long, :description))
+    @category = @datagroup.categories.build(params.require(:category).permit(:short, :long, :description, :comment))
     respond_to do |format|
       format.json do
         if @datagroup.categories.exists?(['short iLike :s OR long iLike :s', s: @category.short])
