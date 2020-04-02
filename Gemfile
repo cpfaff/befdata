@@ -136,7 +136,7 @@ group :development do
   gem 'byebug'
 
   # code formatter
-  gem 'rubocop', '~> 0.77.0', require: false
+  gem 'rubocop', '~> 0.81.0', require: false
 
   # Spring speeds up development by keeping your application
   # running in the background. Read more: https://github.com/rails/spring
