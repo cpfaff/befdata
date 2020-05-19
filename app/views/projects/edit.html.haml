@@ -10,8 +10,9 @@
 .div.pb-2.pl-2
   .font-weight-bold
     .text-muted.font-weight-bold
-      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
-      Edit: #{@project.name}
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Edit: #{@project.name}", projects_path, class: 'text-muted'
 
 // partial for projects roles
 .div.pl-2
