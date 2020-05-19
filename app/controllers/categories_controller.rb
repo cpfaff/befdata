@@ -20,8 +20,21 @@ class CategoriesController < ApplicationController
       format.csv do
         send_data render_categories_csv, type: 'text/csv', filename: "#{@datagroup.title}_categories.csv", disposition: 'attachment'
       end
-      format.js do
-        @categories = @datagroup.categories.select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
+
+      # todo: clean this mess up
+      # format.js do
+        # @categories = @datagroup.categories.select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
+      # end
+
+       # @categories = @datagroup.categories.select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
+      format.json do
+        # todo: this replaces the old answer with a data table. Lets see if this is still needed as
+        # I think we can move on and remove datatable completely everywhere and replace it by cards
+        # render json: { data: @datagroup.categories,
+                       # draw: params[:draw].to_i,
+                       # recordsTotal: @datagroup.categories.count
+        # }
+        render json: CategoriesDatatable.new(view_context)
       end
     end
   end
@@ -64,6 +77,10 @@ class CategoriesController < ApplicationController
         else
           render json: { error: @category.errors.full_messages.to_sentence }
         end
+      end
+      # check if this is working
+      if @category.destroy
+        format.html { redirect_back(fallback_location: root_url)}
       end
     end
   end
