@@ -85,7 +85,9 @@ Rails.application.routes.draw do
   resources :datagroups do
     resources :categories, only: %i[index create new]
     member do
-      get :upload_categories, :datacolumns
+      # TODO: check if this can be removed
+      # get :upload_categories
+      get :datacolumns
       post :update_categories, :import_categories
     end
   end
