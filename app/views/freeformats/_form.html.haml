@@ -1,13 +1,9 @@
+/ form for adding a freeformat
 - f = form
-
-= f.file_field :file
-%br
-= f.text_area :description, :size => "40x4", :value => freeformat.description
+= f.input :file, as: :file
+= f.input :description, value: freeformat.description
 - if freeformattable.is_a? Paperproposal
-  %br
-  = f.label "is a published paper"
-  = f.check_box :is_essential
-  %br
-  = f.text_area :uri, :size => "40x2", :placeholder => "An URI like a DOI or an external link"
-%br
-= f.submit freeformat.new_record? ? 'Upload File' : 'Update File'
+  = f.input :is_essential, as: :boolean
+  = f.input :uri
+= f.button :submit, style: "display: none;", class: "btn btn-primary"
+

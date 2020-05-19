@@ -54,7 +54,6 @@
       title: "Down" ,
       'data-placement': "auto"}
 
-
 // tabs for content
 .div.pl-2
   .div.pb-3.pt-3
@@ -63,8 +62,6 @@
         %ul#tabs.nav.nav-tabs
           %li.nav-item
             %a.active.nav-link.active{"data-toggle" => "tab", :href => "#dataset_edit_tab_1", :role => "tab"} Datafiles
-          %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#dataset_edit_tab_2", :role => "tab"} Freeformats
         .tab-content.equal-height
           // datafiles
           #dataset_edit_tab_1.tab-pane.active{:role => "tabpanel"}
@@ -97,19 +94,6 @@
                 - else
                   No information available
 
-          // freeformat
-          #dataset_edit_tab_2.tab-pane{:role => "tabpanel"}
-            .container
-              %br
-              - unless @freeformats.empty?
-                %h3 Change freeformat files
-                %p
-                  = render partial: 'freeformats/edit_list'
-
-              %h3 Add freeformat file
-              %p
-                = render partial: 'freeformats/new', locals: { freeformattable: @dataset }
-
 / modals
 
 // replace research data
@@ -138,25 +122,6 @@
           Close
         #submit_annotate_changes_dataset.btn.btn-outline-primary
           Submit
-
-// delete confirmation modal
--# #delete_user.modal
-  -# .modal-dialog.modal-dialog-centered
-    -# .modal-content
-      -# / Modal Header
-      -# .modal-header
-        -# %h4.modal-title Overwrite Confirmation
-        -# %button.close{"data-dismiss" => "modal", :type => "button"} ×
-      -# / Modal body
-      -# .modal-body
-        -# The dataset you just submitted will replace the current
-        -# research data. Are you sure?
-      -# / Modal footer
-      -# .modal-footer
-        -# %button.btn.btn-outline-secondary{"data-dismiss" => "modal", :type => "button"} OK
-        -# = link_to 'Delete', user_path(@user), method: :delete, class: 'btn btn-outline-danger'
-
-/ scripts
 
 / scripts
 
@@ -213,3 +178,24 @@
     var fileName = e.target.files[0].name;
     $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
   });
+
+
+// re-active last active tab on page reload
+:javascript
+  // $(document).on('turbolinks:load', function(){
+  $(document).ready(function() {
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('href'));
+      $(e.target).addClass('active');
+      $(e.relatedTarget).removeClass('active')
+    });
+
+    var lastActiveTab = localStorage.getItem('activeTab');
+
+    if(lastActiveTab){
+      $('.nav-tabs a[href="' + lastActiveTab + '"]').tab('show')
+    } else {
+      $('.nav-tabs a[href="#datagroup_tab_1"]').tab('show')
+    }
+  });
+

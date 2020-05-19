@@ -9,8 +9,10 @@
 .div.pb-2.pl-2
   .font-weight-bold
     .text-muted.font-weight-bold
-      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
-      Show: #{@dataset.title.truncate(80)}
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Show: #{@dataset.title.truncate(80)}", datasets_path, class: 'text-muted'
+
 
 // sidebar
 
@@ -164,8 +166,20 @@
           #dataset_tab_attachments.tab-pane{:role => "tabpanel"}
             .container
               %br
+
+              // actions for dataset freeformats
+              %div.pb-2
+                .font-weight-bold.text-dark
+                  Actions:
+
+                %span{'data-toggle': 'tooltip', title: 'Add freeformat', 'data-placement': 'auto'}
+                  = link_to "<i class='fas fa-plus'></i>".html_safe, "#",
+                    { class: "btn btn-sm btn-outline-light text-success",
+                      'data-toggle': "modal",
+                      'data-target': "#add_freeformat_attachment"}
+
               - if @dataset.freeformats.present?
-                // filter for datasets
+                // filter for dataset freeformats
                 %div.pb-1
                   .font-weight-bold.text-dark
                     Filter:
@@ -401,6 +415,29 @@
         %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
         = link_to 'Delete', dataset_path(@dataset), method: :delete, class: 'btn btn-outline-primary'
 
+
+// add freeformat modal
+#add_freeformat_attachment.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Add attachment
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        = simple_form_for Freeformat.new,
+          url: freeformats_path(freeformattable_id: @dataset.id, freeformattable_type: @dataset.class),
+          html: { multipart: true },
+          wrapper_mappings: { file: :custom_file } do |f|
+          = render partial: 'freeformats/form', locals: { form: f, freeformat: f.object, freeformattable: @dataset}
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+        #submit_new_freeformat_file_form.btn.btn-outline-primary
+          Submit
+
 // if there is a comment let the user see it
 #comment_dataset.modal.fade
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -530,6 +567,24 @@
     });
   });
 
+// re-active last active tab on page reload
+:javascript
+  // $(document).on('turbolinks:load', function(){
+  $(document).ready(function() {
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('href'));
+      $(e.target).addClass('active');
+      $(e.relatedTarget).removeClass('active')
+    });
+
+    var lastActiveTab = localStorage.getItem('activeTab');
+
+    if(lastActiveTab){
+      $('.nav-tabs a[href="' + lastActiveTab + '"]').tab('show')
+    } else {
+      $('.nav-tabs a[href="#datagroup_tab_1"]').tab('show')
+    }
+  });
 
 // filter the users
 :javascript
@@ -685,3 +740,18 @@
       $(".tab-content.equal-height-modal .tab-pane:first").addClass("active");
       $(".tab-content.equal-height-modal").height(maxHeight);
     });
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
+  });
+
+/ modal: when the submit button is clicked on the form
+:javascript
+  $(document).ready(function() {
+    $('#submit_new_freeformat_file_form').click(function () {
+      $(this).closest('.modal-dialog').find('input[type=submit]').click();
+    });
+  });

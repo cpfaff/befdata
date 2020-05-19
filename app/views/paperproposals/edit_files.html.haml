@@ -1,12 +1,296 @@
-- page_title "Manage files of #{@paperproposal.title}"
+-# - page_title "Manage files of #{@paperproposal.title}"
 
-%h2
-  Manage files of
-  = link_to @paperproposal.title, @paperproposal
+-# TODO: Wie in der schow page umsetzen. Ein Plus button unter tools für neue
+-# attachments als formular und ein button für jedes attachment zum editieren
+-# und löschen. Suche drüber fertig.
 
-- unless @freeformats.blank?
-  %h3 Change freeformat files
-  = render partial: 'freeformats/edit_list'
 
-%h3 Add freeformat file
-= render partial: 'freeformats/new', locals: { freeformattable: @paperproposal }
+-# %h2
+  -# Manage files of
+  -# = link_to @paperproposal.title, @paperproposal
+
+-# - unless @freeformats.blank?
+  -# %h3 Change freeformat files
+  -# = render partial: 'freeformats/edit_list'
+
+-# %h3 Add freeformat file
+-# = render partial: 'freeformats/new', locals: { freeformattable: @paperproposal }
+
+
+/ head
+
+// variable
+
+- is_paperproposal_list = @freeformats.first.freeformattable.is_a? Paperproposal
+
+// title
+- page_title "Edit files of #{@paperproposal.title}"
+
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+      Edit Files: #{@paperproposal.title.truncate(80)}
+
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
+
+    // actions
+    .div.pt-2.pb-2
+
+      // placeholder if action bar is empty
+      -# - unless current_user
+        -# .btn.btn-sm.btn-outline-light
+          -# .text-muted
+            -# o
+
+      / section tools
+      .border-top.border-right.border-left.rounded.top-2.pb-1
+        %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-block btn-outline-light text-muted",
+              'data-turbolinks': false }
+      // section tools content
+      .div.pt-2
+        %span{'data-toggle': 'tooltip', title: 'Add new data', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-file-alt'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-outline-light text-success",
+              'data-toggle': "modal",
+              'data-target': "#replace_research_data"}
+
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+
+// tabs for content
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        // attachments
+        #proposal_tab_attachments.tab-pane{:role => "tabpanel"}
+          .container
+            %br
+            - if @paperproposal.freeformats.present?
+              // filter for datasets
+              %div.pb-1
+                .font-weight-bold.text-dark
+                  Filter:
+
+              %div.pb-3
+                .input-group
+                  %input#filter_input_freeformats.form-control{:placeholder => "Type..", :type => "text"}
+                  .input-group-append
+                    = link_to "Reset", "javascript:void(0)".html_safe,
+                      { class: "btn btn-outline-primary", id: "button_clear_freeformats_filter",
+                      'data-toggle': "tooltip",
+                      'data-turbolinks': false,
+                      'title': "Clear Filter" ,
+                      'data-placement': "auto"}
+
+              // cards listing datasets
+              #filter_target_freeformats.card-columns.double
+                - @paperproposal.freeformats.each do |freeformat|
+                  = render partial: freeformat, locals: { index: true }
+
+            - else
+              .font-weight-normal.text-dark
+                No information available
+
+            #filter_target_datasets_empty_note.d-none
+              No information avialable
+
+-# %ul#tabs.nav.nav-tabs
+  -# %li.nav-item
+    -# %a.active.nav-link.active{"data-toggle" => "tab", :href => "#dataset_edit_tab_1", :role => "tab"} Datafiles
+-# .tab-content.equal-height
+  -# // datafiles
+  -# #dataset_edit_tab_1.tab-pane.active{:role => "tabpanel"}
+    -# .container
+      -# %br
+        -# %table
+          -# %thead
+            -# %tr
+              -# %th Filename
+              -# %th Description
+              -# %th Size
+              -# - if is_paperproposal_list
+                -# %th URI
+                -# %th Published Paper
+              -# %th Actions
+          -# %tbody
+            -# -@freeformats.each do |freeformat|
+              -# %tr
+                -# %td
+                  -# = link_to freeformat.file_file_name, download_freeformat_path(freeformat)
+                  -# .hidden{:id => "form_freeformat_change_#{freeformat.id}"}
+                    -# = simple_form_for freeformat, :url => freeformat_path(freeformat), html: { multipart: true },
+                        -# wrapper_mappings: { file: :custom_file } do |f|
+                      -# = f.input :file_file_name, as: :file
+                      -# = f.input :description, :value => freeformat.description
+                      -# - if freeformat.freeformattable.is_a? Paperproposal
+                        -# = f.input :is_essential, as: :boolean
+                        -# = f.input :uri, :placeholder => "An URI like a DOI or an external link"
+                      -# = f.button :submit, "Submit", class: "btn btn-outline-primary rounded"
+                    -# -# = f.button :submit freeformat.new_record? ? 'Upload File' : 'Update File'
+                    -# -# = render :partial => 'freeformats/form', locals: { form: form, freeformat: freeformat, freeformattable: freeformat.freeformattable }
+
+                -# %td= freeformat.description
+                -# %td= number_to_human_size freeformat.file_file_size
+                -# - if is_paperproposal_list
+                  -# %td= freeformat.uri
+                  -# %td= freeformat.is_essential ? "\u2713" : ''
+                -# %td
+                  -# %a.showr{:id => "freeformat_change_#{freeformat.id}"} Edit
+                  -# = link_to 'Delete', freeformat_path(freeformat), data: { confirm: "Are you sure you want to delete #{freeformat.file_file_name}?" }, :method => :delete
+
+
+        -# - if @datafiles.present?
+          -# %table#index_datafiles_table.table.table-striped{ width: "100%"}
+            -# %thead
+              -# %tr
+                -# %th In Use
+                -# %th File name
+                -# %th File size
+                -# %th Uploaded
+                -# %th Action
+            -# %tbody
+              -# - @datafiles.each_with_index do |datafile, index|
+                -# %tr
+                  -# %td
+                    -# - if index == 0
+                      -# .text-muted
+                        -# = fa_icon("fa check")
+                  -# %td= link_to datafile.file_file_name, download_dataset_datafile_path(@dataset, datafile)
+                  -# %td= number_to_human_size(datafile.file_file_size)
+                  -# %td= datafile.file_updated_at
+                  -# %td
+                    -# - if index > 0
+                      -# = link_to 'Delete', dataset_datafile_path(@dataset, datafile), method: :delete, data: { confirm: 'Are you sure?' }, :remote => true, :class => 'delete'
+                    -# - else
+                      -# Protected
+        -# - else
+          -# No information available
+
+
+/ modals
+
+// replace research data
+-# #replace_research_data.modal.fade
+  -# .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    -# .modal-content
+      -# / Modal Header
+      -# .modal-header
+        -# %h4.modal-title
+          -# Replace data
+        -# %button.close{"data-dismiss" => "modal", :type => "button"}
+          -# ×
+      -# / Modal body
+      -# .modal-body
+        -# .text-justify
+        -# You can replace the current research data by upoading a new file here.
+        -# .modal-form
+          -# = simple_form_for :datafile, :url => update_workbook_dataset_path(@dataset), wrapper_mappings: { file: :custom_file }  do |f|
+            -# = f.input :file, as: :file, input_html: { id: 'excel_or_csv_datafile'}
+            -# .div.pb-1
+              -# Note: Only Excel-2003 and CSV files are supported. This will overwrite the currently used data.
+            -# = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
+      -# / Modal footer
+      -# .modal-footer
+        -# %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          -# Close
+        -# #submit_annotate_changes_dataset.btn.btn-outline-primary
+          -# Submit
+
+/ scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
+// table: init
+:javascript
+  $(document).ready(function() {
+    $('#index_datafiles_table').DataTable( {
+      pagingType: "full_numbers",
+      dom: '<"float-left"f><"float-right"l>rt<"float-left pl-1"i><"float-right"p>',
+      order: [[ 0, "desc" ]],
+      language: {
+        search: "Filter:"
+        },
+      search: {
+        regex: true
+      },
+      columnDefs: [
+          { className: 'text-center', targets: [0] }
+        ]
+    } );
+  } );
+
+// tabs: set the tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content.equal-height .tab-pane:first").addClass("active");
+    $(".tab-content.equal-height").height(maxHeight);
+  });
+
+/ modal: when submit button is clicked
+:javascript
+  $(document).ready(function() {
+    $('#submit_annotate_changes_dataset').click(function () {
+      $('.modal-form').find('input[type=submit]').click();
+    });
+  });
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
+  });
+
+
+// re-active last active tab on page reload
+:javascript
+  // $(document).on('turbolinks:load', function(){
+  $(document).ready(function() {
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('href'));
+      $(e.target).addClass('active');
+      $(e.relatedTarget).removeClass('active')
+    });
+
+    var lastActiveTab = localStorage.getItem('activeTab');
+
+    if(lastActiveTab){
+      $('.nav-tabs a[href="' + lastActiveTab + '"]').tab('show')
+    } else {
+      $('.nav-tabs a[href="#datagroup_tab_1"]').tab('show')
+    }
+  });
+

@@ -1,36 +1,165 @@
+// todo: check if this can be removed!
+
+
+/ head
+
+// variables
+
 - is_paperproposal_list = @freeformats.first.freeformattable.is_a? Paperproposal
 
-%table
-  %thead
-    %tr
-      %th Filename
-      %th Description
-      %th Size
-      - if is_paperproposal_list
-        %th URI
-        %th Published Paper
-      %th Actions
-  %tbody
-    -@freeformats.each do |ff|
-      %tr
-        %td
-          = link_to ff.file_file_name, download_freeformat_path(ff)
-          .hidden{:id => "form_freeformat_change_#{ff.id}"}
-            = form_for ff, :url => freeformat_path(ff), :html => {:multipart => true} do |f|
-              = render :partial => 'freeformats/form', :locals => {:form => f, :freeformat => ff, :freeformattable => ff.freeformattable}
-        %td= ff.description
-        %td= number_to_human_size ff.file_file_size
-        - if is_paperproposal_list
-          %td= ff.uri
-          %td= ff.is_essential ? "\u2713" : ''
-        %td
-          %a.showr{:id => "freeformat_change_#{ff.id}"} Edit
-          = link_to 'Delete', freeformat_path(ff), data: { confirm: "Are you sure you want to delete #{ff.file_file_name}?" }, :method => :delete
+/ body
 
+// filter for datacolumns
+- if @freeformats.present?
+  %div.pb-1
+    .font-weight-bold.text-dark
+      Filter:
+
+  %div.pb-3
+    .input-group
+      %input#filter_input_freeformats.form-control{:placeholder => "Type..", :type => "text"}
+      .input-group-append
+        = link_to "Reset", "javascript:void(0)".html_safe,
+          { class: "btn btn-outline-primary", id: "button_clear_freeformats_filter",
+          'data-toggle': "tooltip",
+          'data-turbolinks': false,
+          'title': "Clear Filter" ,
+          'data-placement': "auto"}
+
+  // cards with content
+  #filter_target_freeformats.card-columns.double
+    - @freeformats.each do |freeformat|
+      .card.shadow-sm.mb-4
+        .card-header
+          .font-weight-bold.text-muted
+            Freeformat file
+        .card-body
+          %p.card-text
+            .div.pb-3
+              .font-weight-bold.text-dark
+                Name:
+              - if freeformat.file_file_name.present?
+                .font-weight-normal.text-dark.text-justify
+                  = freeformat.file_file_name
+              - else
+                .font-weight-normal.text-muted
+                  No information available
+            .div.pb-3
+              .font-weight-bold.text-dark
+                Description:
+              - if freeformat.description.present?
+                .font-weight-normal.text-dark.text-justify
+                  = freeformat.description
+              - else
+                .font-weight-normal.text-muted
+                  No information available
+            .div.pb-3
+              .font-weight-bold.text-dark
+                File size:
+              - if freeformat.file_file_size.present?
+                .font-weight-normal.text-dark.text-justify
+                  =  number_to_human_size freeformat.file_file_size
+              - else
+                .font-weight-normal.text-muted
+                  No information available
+            - if is_paperproposal_list
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  URI:
+                - if freeformat.uri.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = freeformat.uri
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  URI:
+                - if freeformat.uri.present?
+                  .font-weight-normal.text-dark.text-justify
+                    = freeformat.uri
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+        .card-footer.text-right
+          %span{'data-toggle': 'tooltip', title: 'Download', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-download'></i>".html_safe, download_freeformat_path(freeformat),
+              { class: "btn btn-sm btn-outline-light text-primary", 'data-turbolinks': false }
+          %span{'data-toggle': 'tooltip', title: 'Edit', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-outline-light text-primary",
+                'data-toggle': "modal",
+                'data-target': "#edit_freeformat_file"}
+          %span{'data-toggle': 'tooltip', title: 'Delete', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-outline-light text-primary",
+                'data-toggle': "modal",
+                'data-target': "#delete_freeformat_file"}
+
+          // item specific moals
+          .text-left
+            // edit freeformat attachment data
+            #edit_freeformat_file.modal.fade
+              .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+                .modal-content
+                  / Modal Header
+                  .modal-header
+                    %h4.modal-title
+                      Edit attachment:
+                    %button.close{"data-dismiss" => "modal", :type => "button"}
+                      ×
+                  / Modal body
+                  .modal-body
+                    .text-justify
+                      You can edit the selected free format attachment here. If
+                      you select a file it will replace the old one. If you
+                      leave it empty
+                    %br
+                    .modal-form
+                      = simple_form_for freeformat, html: { multipart: true }, wrapper_mappings: { file: :custom_file, boolean: :custom_boolean } do |f|
+                        = f.input :file, hint: 'Select and replace the currently attached file'
+                        = f.input :description, value: freeformat.description, hint: 'Adapt the descrittion'
+                        - if freeformat.freeformattable.is_a? Paperproposal
+                          = f.input :uri, placeholder: "An URI.  This can be a DOI or just an external link"
+                          = f.input :is_essential, as: :boolean, hint: 'Tick this if the attachment is an essential component of the suggested proposal e.g. a dataset which is required for the analysis'
+                        = f.button :submit, style: "display: none;", class: "btn btn-primary"
+                  / Modal footer
+                  .modal-footer
+                    %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+                      Close
+                    #submit_edit_freeformat_file_form.btn.btn-outline-primary
+                      Submit
+
+            // delete dataset modal
+            #delete_freeformat_file.modal.fade
+              .modal-dialog.modal-dialog-centered
+                .modal-content
+                  / Modal Header
+                  .modal-header
+                    %h4.modal-title Delete
+                    %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                  / Modal body
+                  .modal-body
+                    Do you really want to delete the attachment?
+                  / Modal footer
+                  .modal-footer
+                    %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+                    = link_to 'Delete', freeformat_path(freeformat), method: :delete, class: 'btn btn-outline-primary'
+
+
+/ scripts
+
+// workaround for displaying selected file
 :javascript
-  $(function() {
-    $(".showr").click(function(){
-      var id = $(this).attr('id');
-      $("#form_" + id).slideToggle();
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
+  });
+
+/ modal: when the submit button is clicked on the form
+:javascript
+  $(document).ready(function() {
+    $('#submit_edit_freeformat_file_form').click(function () {
+      $(this).closest('.modal-dialog').find('input[type=submit]').click();
     });
   });

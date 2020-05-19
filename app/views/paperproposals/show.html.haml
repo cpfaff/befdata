@@ -58,8 +58,10 @@
 .div.pb-2.pl-2
   .font-weight-bold
     .text-muted.font-weight-bold
-      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
-      Show: #{@paperproposal.title.truncate(80)}
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Show: #{@paperproposal.title.truncate(80)}", paperproposals_path, class: 'text-muted'
+
 
 // sidebar
 = content_for :actions do
@@ -90,11 +92,12 @@
       // section info
       - if current_user
         - if may_administrate_paperproposals? || is_paperproposal_author?
-          .border-top.border-right.border-left.rounded.top-2.pb-1
-            %span{'data-toggle': 'tooltip', title: 'Info section', 'data-placement': 'auto'}
-              = link_to "<i class='fas fa-info'></i>".html_safe, "#",
-                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
-                  'data-turbolinks': false }
+          - if @paperproposal.lock
+            .border-top.border-right.border-left.rounded.top-2.pb-1
+              %span{'data-toggle': 'tooltip', title: 'Info section', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-info'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                    'data-turbolinks': false }
 
       // section info content
       - if current_user
@@ -125,18 +128,28 @@
               'data-toggle': "tooltip",
               title: "Edit metadata" ,
               'data-placement': "auto"}
-            = link_to "<i class='fas fa-paperclip'></i>".html_safe, edit_files_paperproposal_path(@paperproposal),
-              { class: "btn btn-sm btn-block btn-outline-light text-success",
-              'data-toggle': "tooltip",
-              title: "Edit attachments" ,
-              'data-placement': "auto"}
+            // todo: finally remove the related view and the path
+            -# = link_to "<i class='fas fa-paperclip'></i>".html_safe, edit_files_paperproposal_path(@paperproposal),
+              -# { class: "btn btn-sm btn-block btn-outline-light text-success",
+              -# 'data-toggle': "tooltip",
+              -# title: "Edit attachments" ,
+              -# 'data-placement': "auto"}
+
         - if may_administrate_paperproposals? || author_may_edit_datasets?
           .div.pt-2
+            // todo: add a modal to add and edit datasets
             = link_to "<i class='fas fa-file-alt'></i>".html_safe, edit_datasets_paperproposal_path(@paperproposal),
               { class: "btn btn-sm btn-block btn-outline-light text-success",
               'data-toggle': "tooltip",
               title: "Edit datasets" ,
               'data-placement': "auto"}
+
+            -# %span{'data-toggle': 'tooltip', title: 'Edit datasets', 'data-placement': 'auto'}
+              -# = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+                -# { class: "btn btn-sm btn-outline-light text-primary",
+                  -# 'data-toggle': "modal",
+                  -# 'data-target': "#edit_datasets"}
+
 
           .div.pb-4
 
@@ -185,8 +198,6 @@
             %a.nav-link{"data-toggle" => "tab", :href => "#proposal_tab_datasets", :role => "tab"} Datasets
           %li.nav-item
             %a.nav-link{"data-toggle" => "tab", :href => "#proposal_tab_attachments", :role => "tab"} Attachments
-          %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#proposal_tab_users", :role => "tab"} Users
         .tab-content.equal-height
           // metadata
           #proposal_tab_metadata.tab-pane.active{:role => "tabpanel"}
@@ -323,6 +334,18 @@
           #proposal_tab_attachments.tab-pane{:role => "tabpanel"}
             .container
               %br
+
+              // actions for dataset freeformats
+              %div.pb-2
+                .font-weight-bold.text-dark
+                  Actions:
+
+                %span{'data-toggle': 'tooltip', title: 'Add attachment', 'data-placement': 'auto'}
+                  = link_to "<i class='fas fa-paperclip'></i>".html_safe, "#",
+                    { class: "btn btn-sm btn-outline-light text-success",
+                      'data-toggle': "modal",
+                      'data-target': "#new_freeformat_file"}
+
               - if @paperproposal.freeformats.present?
                 // filter for datasets
                 %div.pb-1
@@ -353,23 +376,38 @@
                 No information avialable
 
 
-/ modals
-
-// delete confirmation modal
-#delete_proposal.modal.fade
-  .modal-dialog.modal-dialog-centered
+// add new freeformat file
+#new_freeformat_file.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
     .modal-content
       / Modal Header
       .modal-header
-        %h4.modal-title Delete Confirmation
-        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+        %h4.modal-title
+          Add freeformat file
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
       / Modal body
       .modal-body
-        Are you sure?
+        .text-justify
+        %br
+        - new_freeformat = Freeformat.new
+        .modal-form
+          = simple_form_for new_freeformat, html: { multipart: true }, wrapper_mappings: { file: :custom_file, boolean: :custom_boolean } do |f|
+            = f.input :file, hint: 'Select and replace the currently attached file'
+            = f.input :description, value: new_freeformat.description, hint: 'Adapt the descrittion'
+            = f.input :uri, placeholder: "An URI.  This can be a DOI or just an external link"
+            = f.input :is_essential, as: :boolean, hint: 'Tick this if the attachment is an essential component of the suggested proposal e.g. a dataset which is required for the analysis'
+            // in order to be able to add freeformats we need to pass in the type and the id
+            = hidden_field_tag :freeformattable_type, 'Paperproposal'
+            = hidden_field_tag :freeformattable_id, @paperproposal.id
+            = f.button :submit, style: "display: none;", class: "btn btn-primary"
       / Modal footer
       .modal-footer
-        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
-        = link_to 'Delete', safe_delete_paperproposal_path(@paperproposal), method: :delete, class: 'btn btn-outline-primary'
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+        #submit_add_freeformat_file_form.btn.btn-outline-primary
+          Submit
+
 
 / scripts
 
@@ -411,6 +449,40 @@
           }, 400);
             return false;
     });
+  });
+
+// re-active last active tab on page reload
+:javascript
+  // $(document).on('turbolinks:load', function(){
+  $(document).ready(function() {
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('href'));
+      $(e.target).addClass('active');
+      $(e.relatedTarget).removeClass('active')
+    });
+
+    var lastActiveTab = localStorage.getItem('activeTab');
+
+    if(lastActiveTab){
+      $('.nav-tabs a[href="' + lastActiveTab + '"]').tab('show')
+    } else {
+      $('.nav-tabs a[href="#datagroup_tab_1"]').tab('show')
+    }
+  });
+
+/ modal: when the submit button is clicked on the login form
+:javascript
+  $(document).ready(function() {
+    $('#submit_add_freeformat_file_form').click(function () {
+      $('.modal-form').find('input[type=submit]').click();
+    });
+  });
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
   });
 
 // filter the datasets
