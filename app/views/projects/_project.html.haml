@@ -44,3 +44,11 @@
                 = fa_icon('calendar')
                 Updated at:
                 = project.updated_at.strftime("%F")
+        - if current_user
+          .float-right
+            .p-1
+              .btn-group
+                - if current_user.admin? || current_user.data_admin?
+                  %div{'data-toggle': 'tooltip', title: 'Edit metadata', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-tag'></i>".html_safe, edit_project_path(project),
+                      { class: "btn btn-sm btn-block btn-outline-light text-success" }
