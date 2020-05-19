@@ -9,8 +9,9 @@
 .div.pb-2.pl-2
   .font-weight-bold
     .text-muted.font-weight-bold
-      %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
-      Show: #{@user.full_name}
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Show: #{@user.full_name}", users_path, class: 'text-muted'
 
 // sidebar
 = content_for :actions do
@@ -529,6 +530,25 @@
           }, 400);
             return false;
     });
+  });
+
+// re-active last active tab on page reload
+:javascript
+  // $(document).on('turbolinks:load', function(){
+  $(document).ready(function() {
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('href'));
+      $(e.target).addClass('active');
+      $(e.relatedTarget).removeClass('active')
+    });
+
+    var lastActiveTab = localStorage.getItem('activeTab');
+
+    if(lastActiveTab){
+      $('.nav-tabs a[href="' + lastActiveTab + '"]').tab('show')
+    } else {
+      $('.nav-tabs a[href="#datagroup_tab_1"]').tab('show')
+    }
   });
 
 // filter the projects
