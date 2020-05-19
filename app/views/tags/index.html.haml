@@ -1,3 +1,7 @@
+// todo: * delete action calls alert window and not a modal (change to modal)
+//       * the forms to manage tags are still on their own pages. the need to be moved into modals
+//       * remove the partial which contained the forms afterwards
+
 / head
 
 // title
@@ -12,12 +16,327 @@
       %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
       Index: keywords
 
-
 // sidebar
-= show_to :admin, :data_admin do
-  = link_to manage_keywords_path, class: 'button' do
-    = image_tag 'edit.png'
-    Manage keywords
+= content_for :actions do
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
 
-- @tags.each do |tag|
-  = link_to tag.name, keyword_path(tag)
+    // actions
+    .div.pt-2.pb-2
+
+      // placeholder if action bar is empty
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      // section tools
+      - if current_user
+        - if current_user.has_role?(:admin).present? || current_user.has_role?(:data_admin).present?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        - if current_user.has_role?(:admin).present? || current_user.has_role?(:data_admin).present?
+          .div.pt-2
+            = form_tag '', id: 'manage' do
+              %ul#selected.d-none
+              %div#actions-group
+                .div.pt-2
+                  %span{'data-toggle': 'tooltip', title: 'Delete', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                      { class: "btn btn-sm btn-block btn-outline-light text-primary disabled", id: 'delete',
+                        'data-turbolinks': false }
+                .div.pt-2
+                  %span{'data-toggle': 'tooltip', title: 'Rename', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-edit'></i>".html_safe, "#",
+                      { class: "btn btn-sm btn-block btn-outline-light text-primary disabled", id: 'rename',
+                       'data-turbolinks': false }
+                  -# %span{'data-toggle': 'tooltip', title: 'Rename keywords', 'data-placement': 'auto'}
+                    -# = link_to "<i class='fas fa-edit'></i>".html_safe, "#",
+                      -# { class: "btn btn-sm btn-block btn-outline-light text-success",
+                        -# 'data-toggle': "modal",
+                        -# 'data-target': "#rename_keywords"}
+                .div.pt-2
+                  %span{'data-toggle': 'tooltip', title: 'Merge', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-first-aid'></i>".html_safe, "#",
+                      { class: "btn btn-sm btn-block btn-outline-light text-primary disabled", id: 'merge',
+                        'data-turbolinks': false }
+                .div.pt-2
+                  = link_to "<i class='fas fa-check-square'></i>".html_safe, "#",
+                    { class: "btn btn-sm btn-outline-light text-primary disabled", id: "reset",
+                    'data-toggle': "tooltip",
+                    'data-turbolinks': false,
+                    'title': "Remove selection" ,
+                    'data-placement': "auto"}
+          -# .div.pb-4
+
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+
+/ body
+
+// noscript notice
+%noscript
+  Enable javascript to manage keywords
+
+// filters
+.div.pl-2
+  .div.pb-3.pt-3
+    .div.pb-4
+    - if @tags.present?
+      // filter for tags
+      %div.pb-4
+        %h5
+          Filter:
+
+        .input-group
+          %input#filter_input_tags.form-control{:placeholder => "Type..", :type => "text"}
+          .input-group-append
+            = link_to "Reset", "javascript:void(0)".html_safe,
+              { class: "btn btn-outline-primary", id: "button_clear_tags_filter",
+              'data-toggle': "tooltip",
+              'data-turbolinks': false,
+              'title': "Clear Filter" ,
+              'data-placement': "auto"}
+
+      // cards listing tags
+      #filter_target_tags.card-columns.triple
+        .tags
+          - @tags.each do |tag|
+            .tag{id: tag.id}
+              .card.shadow-sm.mb-4
+                .card-header
+                  .font-weight-bold.text-muted
+                    %span
+                      Keyword:
+                      = tag.name
+                .card-body
+                  %p.card-text
+                    .div.pb-3
+                      .font-weight-bold.text-dark
+                        Usage count:
+                      - if tag.count.present?
+                        .font-weight-normal.text-dark
+                          = tag.count
+                      - else
+                        .font-weight-normal.text-muted
+                          No information available
+                .card-footer
+                  .badge.badge-pill.badge-light.m-1
+                    .p-1
+                      = check_box_tag tag.name, tag.id
+
+    - else
+      .font-weight-normal.text-dark
+        No information available
+
+    #filter_target_tags_empty_note.d-none
+      .font-weight-normal.text-dark
+        No information available
+
+
+/ modals
+
+// delete confirmation modal
+#delete_keywords.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Delete
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Are you sure you want to delete the selected keywords?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-secondary{"data-dismiss" => "modal", :type => "button"} Cancel
+        -# = link_to 'Delete', project_path(@project), method: :delete, class: 'btn btn-outline-danger'
+
+
+// comment display modal
+#rename_keywords.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          Rename keywords
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        = form_tag rename_keywords_path do
+          %table#rename-table
+            %thead
+              %tr
+                %th From
+                %th To
+            %tbody
+              - @tags.each do |t|
+                %tr
+                  %td= t.name_changed? ? t.name_was : t.name
+                  %td
+                    = fields_for 'keywords[]', t do |f|
+                      = f.text_field :name
+                    - unless t.errors.empty?
+                      %span.error= t.errors.full_messages.to_sentence
+          = submit_tag :Confirm
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+
+/ scripts
+
+// select, deselect, and actions
+:javascript
+  $(function(){
+    // synchoronize selected area and checkboxes
+    var selected_area = $("ul#selected");
+    var tag_list_area = $(".tags")
+
+    function update_selected_area() {
+      var num_items = tag_list_area.find(':checkbox:checked').length
+      switch(num_items) {
+        case 0:
+          $("#actions-group").find("#delete").addClass('disabled');
+          $("#actions-group").find("#rename").addClass('disabled');
+          $("#actions-group").find("#merge").addClass('disabled');
+          $("#actions-group").find("#reset").addClass('disabled');
+          break;
+        case 1:
+          $("#actions-group").find("#delete").removeClass('disabled');
+          $("#actions-group").find("#rename").removeClass('disabled');
+          $("#actions-group").find("#reset").removeClass('disabled');
+          break;
+        default:
+          $("#actions-group").find("#delete").removeClass('disabled');
+          $("#actions-group").find("#rename").removeClass('disabled');
+          $("#actions-group").find("#merge").removeClass('disabled');
+          $("#actions-group").find("#reset").removeClass('disabled');
+      }
+    }
+
+    function add_to_selected(tag_id, name) {
+      var li=$("<li/>").attr({id: tag_id});
+      var hidden_input = $("<input type='hidden' />").attr({name: 'keywords[]', value: tag_id});
+      var span_name = $("<span/>").text(name);
+      var remove_link = $("<a/>").addClass('remove_parent');
+      li.append(remove_link, hidden_input, span_name).appendTo(selected_area);
+    }
+    function remove_from_selected(tag_id){selected_area.find('li#'+tag_id).remove(); }
+
+    $('#reset').click(function(){
+      selected_area.empty(); $(".tags .tag input:checked").each(function(){this.checked=false});
+      update_selected_area();
+      return(false);
+    });
+
+    $(".tags>.tag input[type=checkbox]").click(function(){
+      if (this.checked) {
+        add_to_selected(this.getAttribute('value'), this.getAttribute('name'));
+      } else {
+        remove_from_selected(this.getAttribute('value'));
+      }
+      update_selected_area();
+    });
+
+    selected_area.on('click', '.remove_parent', function(){
+      var id = $(this).parent('li').attr('id')
+      tag_list_area.find('.tag#'+id+" input:checkbox")[0].checked=false;
+      update_selected_area();
+    });
+
+    // send requests
+    var pre_rename_url = "#{pre_rename_keywords_path}";
+    var pre_merge_url = "#{pre_merge_keywords_path}";
+    var delete_url = "#{delete_keywords_path}";
+
+    $("#actions-group #delete").click(function(){
+      var resp = confirm("Are you sure to delete the selected keywords ?")
+      if (resp){
+        $("form#manage").attr({action: delete_url}).submit();
+      }
+    })
+    $("#actions-group #rename").click(function(){
+      $("form#manage").attr({action: pre_rename_url}).submit();
+    })
+    $("#actions-group #merge").click(function(){
+      $("form#manage").attr({action: pre_merge_url}).submit();
+    })
+  })
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// filter the tags
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_tags').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_tags').find('.card:not(:contains("'+filter+'"))').addClass('d-none');
+          if (!$("#filter_target_tags").find('.card').is(':visible')) {
+            $("#filter_target_tags_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_tags_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_tags_filter').click(function(){
+      $('#filter_input_tags').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_tags').find('.card').removeClass('d-none');
+      $("#filter_target_tags_empty_note").addClass('d-none');
+    });
+  });
+
+// enalbel scroll on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body top on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body bottom on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });

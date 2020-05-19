@@ -11,7 +11,7 @@ class TagsController < ApplicationController
   end
 
   def index
-    @tags = DatasetTag.tag_counts.where('name iLike ?', "%#{keywords_params[:q]}%")
+    @tags = DatasetTag.tag_counts
 
     respond_to do |format|
       format.html
@@ -52,7 +52,7 @@ class TagsController < ApplicationController
     @keywords = all_keywords.reject { |t| t.errors.empty? }
     if @keywords.empty?
       flash[:notice] = "Successfully updated #{all_keywords.length} keywords"
-      redirect_to manage_keywords_path
+      redirect_to keywords_path
     else
       flash.now[:error] = "#{(all_keywords - @keywords).length} keywords were updated successfully; However, #{@keywords.length} keywords were not successfully updated"
       render action: :pre_rename
@@ -81,7 +81,7 @@ class TagsController < ApplicationController
       tg.save(validate: false)
     end
 
-    redirect_to manage_keywords_path, notice: 'Selected keywords were successfully merged.'
+    redirect_to keywords_path, notice: 'Selected keywords were successfully merged.'
   end
 
   private

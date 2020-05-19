@@ -1,37 +1,59 @@
-- page_title "Merge Keywords"
+/ head
 
-- content_for :actions do
-  = link_to manage_keywords_path do
-    = image_tag 'back.png'
-    Back to Re-Select keywords
+// title
+- page_title "Merge keywords"
 
-%h3 Merge keywords
+/ body
 
-%table#merge-table
-  = form_tag merge_keywords_path do
-    %tr
-      %td#merge-from{style: 'width: 33%;'}
-        %ul
-          - @keywords.each do |tag|
-            %li
-              = tag.name
-              = hidden_field_tag 'keywords[]', tag.id, id: nil
-      %td{style: 'width:16px;'}
-        = image_tag 'arrow_join_accept.png'
-      %td{style: 'padding-left: 0px;'}
-        %fieldset
-          = select_tag :merge_to, options_from_collection_for_select(ActsAsTaggableOn::Tag.all, :id, :name),  {:id => "tag_list", :include_blank => true}
-          %div{style: 'position:absolute;'}
-            = label_tag 'new_keyword', 'Or create new keyword'
-            %br
-            = text_field_tag 'new_keyword'
-            %br
-            = submit_tag "Merge"
 
-// todo: replace by bootstrap select picker
--# :javascript
-  -# $("#tag_list").select2({
-    -# allowClear: true,
-    -# width: 'resolve',
-    -# placeholder: 'Select a keyword'
-  -# });
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Merge: keywords", keywords_path, class: 'text-muted'
+
+/ body
+.div.pl-2
+  .div.pb-3.pt-3
+    %table#merge-table
+      = form_tag merge_keywords_path do
+        %tr
+          %td#merge-from{style: 'width: 33%;'}
+            %ul.list-unstyled
+              - @keywords.each do |tag|
+                %li
+                  = tag.name
+                  = hidden_field_tag 'keywords[]', tag.id, id: nil
+          %td{style: 'width:16px;'}
+            = image_tag 'arrow_join_accept.png'
+          %td.pl-0
+            %fieldset
+              = select_tag :merge_to, options_from_collection_for_select(ActsAsTaggableOn::Tag.all, :id, :name),
+                class: 'form-control',
+                id: "keyword_merge_target"
+              %div{style: 'position:absolute;'}
+                = label_tag 'new_keyword', 'Or create new keyword'
+                %br
+                = text_field_tag 'new_keyword', nil, { class: 'form-control' }
+                %br
+                = submit_tag "Merge", class: 'btn btn-outline-primary'
+
+
+/ scripts
+
+// initialize selectpickers
+:javascript
+  $(document).on('turbolinks:load', function() {
+    $('.facet_select').selectpicker({
+      liveSearch: true,
+      liveSearchPlaceholder: "type to filter ...",
+      actionsBox: true
+    });
+  });
+
+  // fix style on cache reload of pickers
+  $(document).on('turbolinks:before-cache', function() {
+    $('.facet_select').selectpicker('destroy').addClass('selectpicker')
+  });
