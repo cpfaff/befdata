@@ -1,30 +1,84 @@
-- page_title "Administrate Votes for #{@paperproposal.title}"
+/ title
 
+- page_title "Administrate votes: #{@paperproposal.title}"
+
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Administrate votes: #{@paperproposal.title.to_s.truncate(80)}", @paperproposal, class: 'text-muted'
+
+// sidebar
 = content_for :actions do
-  %ul
-    %li
-      = link_to admin_approve_all_votes_paperproposal_url(@paperproposal), data: { confirm: 'Are you sure?' } do
-        = image_tag 'checkbox.png'
-        Approve the votes
-    %li
-      = link_to admin_reset_all_votes_paperproposal_url(@paperproposal), data: { confirm: 'Are you sure?' } do
-        = image_tag 'cancel.png'
-        Reset the votes
-    %li
-      = link_to admin_hard_reset_paperproposal_url(@paperproposal), data: { confirm: 'This will delete all votes and download rights. Are you sure?' } do
-        = image_tag 'cancel.png'
-        Hard reset proposal
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
 
-%h2
-  Administrate Votes for
-  = link_to @paperproposal.title, @paperproposal
+    // actions
+    .div.pt-2.pb-2
 
-%h3= @votes_type_text
+      // placeholder if action bar is empty
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
 
-- @votes.each do |vote|
-  %h4
-    On behalf of
-    = link_to vote.user.to_label, vote.user
-  =render :partial => 'paperproposals/open_vote', :locals => {:vote => vote}
+      / section tools
+      - if current_user
+        - if current_user.has_role?(:admin).present?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section tools content
+      - if current_user
+        - if current_user.has_role?(:admin).present?
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Approve all votes', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-check'></i>".html_safe, admin_approve_all_votes_paperproposal_url(@paperproposal),
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Reset all votes', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-undo'></i>".html_safe, admin_reset_all_votes_paperproposal_url(@paperproposal),
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Hard reset paperproposal', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-eraser'></i>".html_safe, admin_hard_reset_paperproposal_url(@paperproposal),
+                { class: "btn btn-sm btn-block btn-outline-light text-success" }
+          .div.pb-4
 
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
 
+// body
+.div.pl-2
+  .div.pb-3.pt-3
+
+    - if @votes.present?
+      #filter_target_votes.card.shadow-sm.mb-4
+        .card-header
+          .text-muted.font-weight-bold.float-left
+            Vote type:
+            = @votes_type_text
+
+        .card-body
+          .card-columns.single
+            - @votes.each do |vote|
+              = render :partial => 'paperproposals/open_vote', :locals => {:vote => vote}
+    - else
+      No information avialable
