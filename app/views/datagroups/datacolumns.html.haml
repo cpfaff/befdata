@@ -1,70 +1,158 @@
-- page_title "Datacolumns belonging to datagroup: #{@datagroup.title}"
+/ head
+
+// title
+- page_title "Edit datacolumns of #{@datagroup.title}"
+
+// variables
 
 - show_edit_link = current_user.admin? || current_user.data_admin?
 
-= content_for :actions do
-  = link_to datagroup_path(@datagroup) do
-    = image_tag "back.png"
-    Back to Datagroup page
+/ body
 
-%h2 Datacolumns belonging to #{link_to @datagroup.title, @datagroup}
-- if @datacolumns.empty?
-  %i No associated datacolumns for this datagroup.
-- else
-  - @datacolumns.includes(:dataset).group_by{|dc| dc.dataset}.each do  |dt, dcs|
-    .group-heading
-      = link_to dt.title, dt
-    %ol.column-group
-      - dcs.each do |datacolumn|
-        %li.column-item
-          - if show_edit_link
-            #loader.hidden Sending request...
-          .info
-            - if show_edit_link
-              = link_to 'Edit', "#", :class => "form_loader right"
-            .columnheader= datacolumn.columnheader
-            .definition= datacolumn.definition
-          - if show_edit_link
-            .js-form-content.hidden
-              = form_for datacolumn, html: {:remote => true, 'data-type' => :json} do |f|
-                = f.text_field :columnheader
-                = f.text_area :definition, style: 'height:100px;'
-                = f.submit
-                = link_to "Cancel", "#", :class => "button right cancel"
-  // pagination
-  .div
-    .pt-3
-      != pagy_bootstrap_nav @pagy
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Edit datacolumns of: #{@datagroup.title.truncate(80)}", datagroup_path(@datagroup), class: 'text-muted'
 
-  - if show_edit_link
-    :javascript
-      $(function(){
-        $(".column-item .form_loader").click(function(){
-          var info = $(this).parent(".info");
-          var form = info.next(".js-form-content");
-          $("input#datacolumn_columnheader", form).val($(".columnheader",info).text());
-          $("textarea#datacolumn_definition", form).val($(".definition",info).text());
-          info.toggle().next(".js-form-content").toggle();
-          $('textarea', form).height($('textarea', form)[0].scrollHeight+'px');
-          return(false);
-        });
-        $('.column-item .cancel').click(function(){
-          $(this).closest('.js-form-content').toggle().prev(".info").toggle();
-          return(false);
-        })
-        $(".column-item form").submit(function(){
-          $(this).closest(".column-item").find("#loader").show();
-        });
-        $(".column-item form").on('ajax:success', function(evernt, data){
-          var info = $(this).closest(".column-item").find(".info");
-          if(data.error){
-            info.prev("#loader").toggle();
-            alert(data.error);
-          }
-          else{
-            $(".columnheader",info).text(data.columnheader);
-            $(".definition",info).text(data.definition);
-            $(this).parent().toggle().prevAll(".info, #loader").toggle();
-          }
-        });
-      })
+// tabs for content
+.div.pl-2
+  .div.pb-3.pt-3
+
+  - if @datacolumns.empty?
+    .font-weight-normal.text-muted
+      No information available
+  - else
+    %div.pb-3
+      .input-group
+        %input#filter_input_datacolumns.form-control{:placeholder => "Type..", :type => "text"}
+        .input-group-append
+          = link_to "Reset", "javascript:void(0)".html_safe,
+            { class: "btn btn-outline-primary", id: "button_clear_datacolumns_filter",
+            'data-toggle': "tooltip",
+            'data-turbolinks': false,
+            'title': "Clear Filter" ,
+            'data-placement': "auto"}
+
+
+    - @datacolumns.includes(:dataset).group_by{ |dc| dc.dataset}.each do |dt, dcs|
+
+      #filter_target_datacolumns.card.shadow-sm.mb-4
+        .card-header
+          .text-muted.font-weight-bold.float-left
+            Dataset:
+            = link_to dt.title.truncate(80), dt, class: "text-muted"
+
+        .card-body
+          .card-columns.single
+
+          - dcs.each do |datacolumn|
+            .card.shadow-sm.mb-3
+              .card-header
+                .text-muted.font-weight-bold.float-left
+                  Column:
+                  = datacolumn.columnheader
+              .card-body
+                .card-text
+                  .font-weight-bold.text-dark
+                    Description:
+                  - if datacolumn.definition.present?
+                    .font-weight-normal.text-dark.text-justify
+                      = datacolumn.definition
+                  - else
+                    .font-weight-normal.text-muted
+                      No information available
+
+              .card-footer.text-right
+                - if show_edit_link
+                  %span{'data-toggle': 'tooltip', title: 'Edit datacolumn', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+                      { class: "btn btn-sm btn-outline-light text-success",
+                      'data-toggle': "modal",
+                      'data-target': "#edit_datacolumn#{datacolumn.id}"}
+                - else
+                  %span{'data-toggle': 'tooltip', title: 'Edit datacolumn', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+                      { class: "btn btn-sm btn-outline-light text-success disabled",
+                      'data-toggle': "modal",
+                      'data-target': "#edit_datacolumn#{datacolumn.id}"}
+
+                // edit modal
+                .modal.fade{id: "edit_datacolumn#{datacolumn.id}"}
+                  .modal-dialog.modal-dialog-centered
+                    .modal-content
+                      / Modal Header
+                      .modal-header
+                        %h4.modal-title Edit datacolumn
+                        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                      / Modal body
+                      .modal-body
+                        = simple_form_for datacolumn do |f|
+                          = f.input :columnheader
+                          = f.input :definition
+                          = f.button :submit, class: 'btn btn-outline-primary'
+                      / Modal footer
+                      .modal-footer
+                        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+
+    // pagination
+    .div
+      .pt-3
+        != pagy_bootstrap_nav @pagy
+
+/ scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datagroups_path').find('.nav-item').addClass('active');
+  });
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// filter the datacolumns
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datacolumns').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datacolumns').find('.card:not(:contains("'+filter+'"))').addClass('d-none');
+          if (!$("#filter_target_datacolumns").find('.card').is(':visible')) {
+            $("#filter_target_datacolumns_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datacolumns_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_datacolumns_filter').click(function(){
+      $('#filter_input_datacolumns').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_datacolumns').find('.card').removeClass('d-none');
+      $("#filter_target_datacolumns_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_datacolumns').each(function(){
+        $(this).val('');
+        $('#filter_target_datacolumns').find('.card').removeClass('d-none');
+        $("#filter_target_datacolumns_empty_note").addClass('d-none');
+      });
+    });
+  });

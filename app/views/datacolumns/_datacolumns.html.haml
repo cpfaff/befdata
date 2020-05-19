@@ -23,9 +23,18 @@
       .card.shadow-sm.mb-4
         .card-header
           .font-weight-bold.text-muted
-            = column.columnheader
+            Dataset column
         .card-body
           %p.card-text
+            .div.pb-3
+              .font-weight-bold.text-dark
+                Name:
+              - if column.columnheader.present?
+                .font-weight-normal.text-dark.text-justify
+                  = column.columnheader
+              - else
+                .font-weight-normal.text-muted
+                  No information available
             .div.pb-3
               .font-weight-bold.text-dark
                 Definition:
@@ -104,6 +113,10 @@
               %span{'data-toggle': 'tooltip', title: 'Approve datacolumn', 'data-placement': 'auto'}
                 = link_to "<i class='fas fa-thumbs-up'></i>".html_safe, approval_overview_datacolumn_url(column),
                 { class: "btn btn-sm btn-outline-light text-success" }
+          - else
+            %span{'data-toggle': 'tooltip', title: 'Approve datacolumn', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-thumbs-up'></i>".html_safe, approval_overview_datacolumn_url(column),
+              { class: "btn btn-sm btn-outline-light text-success disabled" }
 
 - else
   .font-weight-normal.text-muted

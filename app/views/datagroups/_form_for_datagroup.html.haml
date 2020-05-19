@@ -12,10 +12,14 @@
             = f.input :title
             = f.input :description, :input_html => {:rows => 10}
             = f.input :comment, :input_html => {:rows => 10}
-            - if @datagroup.new_record?
-              %div
-                = check_box_tag :import
-                = label_tag :import, 'Go on to add categories'
+            -# todo: check if you can implement adding categories right away from here.
+            -# the form has been removed and now adding and mofiying categories is possible
+            -# using csv files in a form in a modal. Maybe open the modal right away or
+            -# allow adding the categories here from a file in the future.
+            -# - if @datagroup.new_record?
+              -# %div
+                -# = check_box_tag :import
+                -# = label_tag :import, 'Go on to add categories'
 
   .container
     %div.pt-5.pb-2
