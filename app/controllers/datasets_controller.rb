@@ -231,7 +231,12 @@ class DatasetsController < ApplicationController
       @filter = params.fetch(:search).permit(:query, project_phase: [], access_code: [], tag: [])
       @datasets = @datasets.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
       @datasets = @datasets.where(access_code: @filter.fetch(:access_code)) unless @filter.fetch(:access_code).all?(&:blank?)
-      @datasets = @datasets.where(project_phase: @filter.fetch(:project_phase)) unless @filter.fetch(:project_phase).all?(&:blank?)
+
+      # depending on configuration of the application  we have project phases or not
+      if PHASE_CONFIG.present?
+        @datasets = @datasets.where(project_phase: @filter.fetch(:project_phase)) unless @filter.fetch(:project_phase).all?(&:blank?)
+      end
+
       @datasets = @datasets.tagged_with(Dataset.all_tags.where(id: @filter.fetch(:tag)).pluck(:name), any: true) unless @filter.fetch(:tag).all?(&:blank?)
     end
 
