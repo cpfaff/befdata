@@ -63,15 +63,28 @@
 // filters
 .div.pl-2
   .div.pb-3.pt-3
-    %h5
-      Filter:
-
-    .input-group
-      %input#filter_input_projects.form-control{:placeholder => "Type..", :type => "text"}
-      .input-group-append
-        = link_to "Reset", "javascript:void(0)".html_safe,
-          { class: "btn btn-outline-primary", id: "button_clear_projects_filter",
-          'data-turbolinks': false, }
+    = simple_form_for :search, url: projects_path, method: :get do |f|
+      / search bar
+      %h5
+        Search:
+      - if params.has_key?(:search) ? params[:search].has_key?(:query) : false
+        = f.input :query, required: false, label: false do
+          .input-group
+            = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
+            .input-group-append
+              #project_search_button.btn.btn-outline-primary
+                Submit
+            .input-group-append
+              = link_to "Reset", projects_path, class: "btn btn-outline-primary"
+      - else
+        = f.input :query, required: false, label: false do
+          .input-group
+            = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
+            .input-group-append
+              #project_search_button.btn.btn-outline-primary
+                Submit
+            .input-group-append
+              = link_to "Reset", projects_path, class: "btn btn-outline-primary"
 
   // sorting
   .div.pb-4
@@ -106,50 +119,6 @@
 
 
 / scripts
-
-// filter the projects
-:javascript
-  $(document).ready(function() {
-    $('#filter_input_projects').keyup(function (){
-      $('.card').removeClass('d-none');
-        var filter = $(this).val(); // get the value of the input, which we filter on
-          $('#filter_target_projects').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
-          if (!$("#filter_target_projects").find('.card').is(':visible')) {
-            $("#filter_target_projects_empty_note").removeClass('d-none');
-          } else {
-            $("#filter_target_projects_empty_note").addClass('d-none');
-          };
-      });
-    });
-
-  $(document).ready(function() {
-    $('#button_clear_projects_filter').click(function(){
-      $('#filter_input_projects').each(function(){
-        $(this).val('');
-      });
-      $('#filter_target_projects').find('.card').removeClass('d-none');
-      $("#filter_target_projects_empty_note").addClass('d-none');
-    });
-  });
-
-  $(document).ready(function() {
-    $('.nav-link').click(function(){
-      $('#filter_input_projects').each(function(){
-        $(this).val('');
-        $('#filter_target_projects').find('.card').removeClass('d-none');
-        $("#filter_target_projects_empty_note").addClass('d-none');
-      });
-    });
-  });
-
-// resubmit the form on changes in the selection menu
-:javascript
-  $(document).ready(function() {
-    $('select').on('change', function() {
-      var $form = $(this).closest('form');
-      $form.find('input[type=submit]').click();
-    });
-  });
 
 // setup hover shadow on the cards
 :javascript

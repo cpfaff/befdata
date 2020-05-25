@@ -14,6 +14,15 @@ class Project < ApplicationRecord
 
   before_destroy :check_destroyable
 
+  # includes
+  include PgSearch
+
+  pg_search_scope :search, against: {
+    shortname: 'A',
+    name: 'A',
+    description: 'B'
+  }
+
   def to_s
     name.to_s
   end

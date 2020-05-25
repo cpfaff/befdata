@@ -21,8 +21,13 @@ class ProjectsController < ApplicationController
     # get
     @projects = Project.all
 
+    if params[:search]
+      @filter = params.fetch(:search).permit(:query)
+      @projects = @projects.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+    end
+
     # order
-    @projects = @projects.order(sort_column + ' ' + sort_direction)
+    @projects = @projects.order(sort_column + ' ' + sort_direction) if params[:sort]
 
     # paginate
     @pagy, @projects = pagy(@projects)
