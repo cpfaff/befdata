@@ -80,8 +80,9 @@
                   - @dataset.datacolumns.each do |column|
                     .pb-2
                       %li.nav-item
-                        = link_to "Column: #{column.columnnr} (#{column.approval_stage})", approval_overview_datacolumn_url(column),
-                          {:class => "nav-link #{'active' if params[:id] == column.id.to_s}"}
+                        %span{'data-toggle': 'tooltip', title: column.columnheader, 'data-placement': 'auto'}
+                          = link_to "Column: #{column.columnnr} (#{column.approval_stage})", approval_overview_datacolumn_url(column),
+                            {:class => "nav-link #{'active' if params[:id] == column.id.to_s}"}
           .col-10
             - tab_height = @dataset.datacolumns.count
             - if @datacolumn
