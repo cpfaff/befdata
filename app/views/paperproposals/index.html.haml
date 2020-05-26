@@ -105,39 +105,39 @@
                 Submit
             .input-group-append
               = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
-      / project phase
-      %h5
-        Select:
-      - if params.has_key?(:search) ? params[:search].has_key?(:external_state) : false
-        = f.input :external_state,
-          as: :select,
-          label: "External Status",
-          required: false,
-          collection: all_paperproposal_external_states_for_select,
-          selected: params[:search][:external_state],
-          input_html: { multiple: true, class: "facet_select"}
-      - else
-        = f.input :external_state,
-          as: :select,
-          label: "External Status",
-          required: false,
-          collection: all_paperproposal_external_states_for_select,
-          input_html: { multiple: true, class: "facet_select"}
-      - if params.has_key?(:search) ? params[:search].has_key?(:internal_state) : false
-        = f.input :internal_state,
-          as: :select,
-          label: "Internal Status",
-          required: false,
-          collection: all_paperproposal_internal_states_for_select,
-          selected: params[:search][:internal_state],
-          input_html: { multiple: true, class: "facet_select"}
-      - else
-        = f.input :internal_state,
-          as: :select,
-          label: "Internal Status",
-          required: false,
-          collection: all_paperproposal_internal_states_for_select,
-          input_html: { multiple: true, class: "facet_select"}
+      - if current_user
+        %h5
+          Select:
+        - if params.has_key?(:search) ? params[:search].has_key?(:external_state) : false
+          = f.input :external_state,
+            as: :select,
+            label: "External Status",
+            required: false,
+            collection: all_paperproposal_external_states_for_select,
+            selected: params[:search][:external_state],
+            input_html: { multiple: true, class: "facet_select"}
+        - else
+          = f.input :external_state,
+            as: :select,
+            label: "External Status",
+            required: false,
+            collection: all_paperproposal_external_states_for_select,
+            input_html: { multiple: true, class: "facet_select"}
+        - if params.has_key?(:search) ? params[:search].has_key?(:internal_state) : false
+          = f.input :internal_state,
+            as: :select,
+            label: "Internal Status",
+            required: false,
+            collection: all_paperproposal_internal_states_for_select,
+            selected: params[:search][:internal_state],
+            input_html: { multiple: true, class: "facet_select"}
+        - else
+          = f.input :internal_state,
+            as: :select,
+            label: "Internal Status",
+            required: false,
+            collection: all_paperproposal_internal_states_for_select,
+            input_html: { multiple: true, class: "facet_select"}
       = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
 
   // sorting
