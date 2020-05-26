@@ -82,13 +82,28 @@
 // filters
 .div.pl-2
   .div.pb-3.pt-3
-    %h5
-      Filter:
-
-    .input-group
-      %input#filter_input_proposals.form-control{:placeholder => "Type..", :type => "text"}
-      .input-group-append
-        = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
+    = simple_form_for :search, url: paperproposals_path, method: :get do |f|
+      / search bar
+      %h5
+        Search:
+      - if params.has_key?(:search) ? params[:search].has_key?(:query) : false
+        = f.input :query, required: false, label: false do
+          .input-group
+            = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
+            .input-group-append
+              #project_search_button.btn.btn-outline-primary
+                Submit
+            .input-group-append
+              = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
+      - else
+        = f.input :query, required: false, label: false do
+          .input-group
+            = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
+            .input-group-append
+              #project_search_button.btn.btn-outline-primary
+                Submit
+            .input-group-append
+              = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
 
   // select
   .pb-2

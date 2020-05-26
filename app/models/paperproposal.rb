@@ -104,6 +104,23 @@ class Paperproposal < ApplicationRecord
            'side' => 'Side aspect data provider',
            'ack' => 'Acknowledged' }.freeze
 
+  # includes
+  include PgSearch
+
+  # search scope
+  pg_search_scope :search, against: {
+    title: 'A',
+    initial_title: 'A',
+    rationale: 'A',
+    envisaged_journal: 'B'
+  },
+  using: {
+    tsearch: {
+      dictionary: 'english',
+      prefix: true
+    }
+  }
+
   def set_initial_title
     self.initial_title = title
   end

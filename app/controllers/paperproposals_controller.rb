@@ -50,6 +50,12 @@ class PaperproposalsController < ApplicationController
                                              :side_aspect_dataset_owners,
                                              :authored_by_project)
 
+    # reduce by search
+    if params[:search]
+      @filter = params.fetch(:search).permit(:query)
+      @paperproposals = @paperproposals.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+    end
+
     # reduce by selection
     if params[:select]
       @selection = params.fetch(:select).permit(internal_state: [], external_state: [])
@@ -57,7 +63,7 @@ class PaperproposalsController < ApplicationController
       @paperproposals = @paperproposals.where(state: @selection.fetch(:external_state)) unless @selection.fetch(:external_state).all?(&:blank?)
     end
 
-    # filter the selction
+    # sort by selection
     @paperproposals = @paperproposals.order(sort_column + ' ' + sort_direction) if params[:sort]
 
     @pagy, @paperproposals = pagy(@paperproposals)
