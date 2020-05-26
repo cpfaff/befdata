@@ -18,6 +18,21 @@ class Datagroup < ApplicationRecord
   before_validation :fill_missing_description
   after_update :expire_exported_files
 
+  # includes
+  include PgSearch
+
+  # search scope
+  pg_search_scope :search, against: {
+    title: 'A',
+    description: 'A'
+  },
+  using: {
+    tsearch: {
+      dictionary: 'english',
+      prefix: true
+    }
+  }
+
   def check_if_destroyable
     errors.add(:base, "'#{title}' is a system datagroup, thus can't be deleted") && (return false) if is_system_datagroup
     errors.add(:base, "'#{title}' has associated datacolumns, thus can't be deleted") && (return false) if datacolumns(true).present?

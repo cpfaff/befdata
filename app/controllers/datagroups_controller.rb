@@ -16,14 +16,25 @@ class DatagroupsController < ApplicationController
   helper_method :sort_column, :sort_direction
 
   def index
+    # get all
     @datagroups = Datagroup.select('id, title, description,
                                     created_at, updated_at, datacolumns_count,
                                     (select count(*) from categories where datagroup_id = datagroups.id) as categories_count')
 
+    # sort
     @datagroups = @datagroups.order(sort_column + ' ' + sort_direction) if params[:sort]
 
+    # search
+    if params[:search]
+      @filter = params.fetch(:search).permit(:query)
+      @datagroups = @datagroups.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+    end
+
+
+    # paginate
     @pagy, @datagroups = pagy(@datagroups)
 
+    # respond
     respond_to do |format|
       format.html
       format.xml
