@@ -17,13 +17,17 @@ class Project < ApplicationRecord
   # includes
   include PgSearch
 
+  # search scope
   pg_search_scope :search, against: {
     shortname: 'A',
     name: 'A',
     description: 'B'
   },
   using: {
-    tsearch: { prefix: true }
+    tsearch: {
+      dictionary: 'english',
+      prefix: true
+    }
   }
 
   def to_s
