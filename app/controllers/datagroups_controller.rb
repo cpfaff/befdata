@@ -71,10 +71,10 @@ class DatagroupsController < ApplicationController
   def destroy
     unless @datagroup.datasets.empty?
       flash[:error] = "Datagroup has associated datasets thus can't be deleted"
-      redirect_back(fallback_location: root_url)
+      redirect_back(fallback_location: root_url) and return
     end
     if @datagroup.destroy
-      redirect_to datagroups_path, notice: "Deleted #{@datagroup.title}"
+      redirect_to datagroups_path, notice: "Deleted #{@datagroup.title}" and return
     else
       flash[:error] = @datagroup.errors.full_messages.to_sentence
       redirect_back(fallback_location: root_url)
