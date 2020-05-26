@@ -93,7 +93,10 @@ class User < ApplicationRecord
     country: 'A',
   },
   using: {
-    tsearch: { prefix: true }
+    tsearch: {
+      dictionary: 'english',
+      prefix: true
+    }
   }
 
   def to_s
