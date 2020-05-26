@@ -28,12 +28,17 @@ class UsersController < ApplicationController
   helper_method :sort_column, :sort_direction
 
   def index
+    @users = User.all
+
+    if params[:search]
+      @filter = params.fetch(:search).permit(:query)
+      @users = @users.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+    end
+
     # sorting
-    @users = if params[:sort]
-               User.order(sort_column + ' ' + sort_direction)
-             else
-               User.all
-             end
+     if params[:sort]
+       @users = @users.order(sort_column + ' ' + sort_direction)
+     end
 
     # pagination
     @pagy, @users = pagy(@users)

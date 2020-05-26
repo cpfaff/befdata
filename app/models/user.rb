@@ -70,6 +70,32 @@ class User < ApplicationRecord
 
   before_destroy :check_destroyable
 
+  # includes
+  include PgSearch
+
+  pg_search_scope :search,
+    against: {
+    login: 'A',
+    email: 'A',
+    firstname: 'A',
+    middlenames: 'A',
+    lastname: 'A',
+    salutation: 'A',
+    comment: 'A',
+    url: 'A',
+    institution_name: 'A',
+    affiliation: 'A',
+    institution_url: 'A',
+    institution_phone: 'A',
+    institution_fax: 'A',
+    street: 'A',
+    city: 'A',
+    country: 'A',
+  },
+  using: {
+    tsearch: { prefix: true }
+  }
+
   def to_s
     if salutation.blank?
       "#{firstname} #{lastname}"
