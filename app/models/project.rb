@@ -21,6 +21,9 @@ class Project < ApplicationRecord
     shortname: 'A',
     name: 'A',
     description: 'B'
+  },
+  using: {
+    tsearch: { prefix: true }
   }
 
   def to_s
