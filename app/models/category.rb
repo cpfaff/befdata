@@ -35,7 +35,7 @@ class Category < ApplicationRecord
   def check_for_sheetcells_associated
     sc = sheetcells(true)
     unless sc.empty? || (sc.count == 1 && sc.first.destroyed?)
-      errors[:base] = "#{short} has associated sheetcells, thus can't be deleted"
+      errors.add(:base, "#{short} has associated sheetcells, thus can't be deleted")
       false
     end
   end
