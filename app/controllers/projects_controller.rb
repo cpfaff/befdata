@@ -18,16 +18,19 @@ class ProjectsController < ApplicationController
 
   # methods
   def index
-    # get
+    # get all
     @projects = Project.all
 
+    # order (needs to take place before search)
+    if params[:sort]
+      @projects = @projects.order(sort_column + ' ' + sort_direction)
+    end
+
+    # search
     if params[:search]
       @filter = params.fetch(:search).permit(:query)
       @projects = @projects.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
     end
-
-    # order
-    @projects = @projects.order(sort_column + ' ' + sort_direction) if params[:sort]
 
     # paginate
     @pagy, @projects = pagy(@projects)

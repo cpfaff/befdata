@@ -50,24 +50,28 @@ class PaperproposalsController < ApplicationController
                                              :side_aspect_dataset_owners,
                                              :authored_by_project)
 
-    # reduce by search
+    # sort
+    if params[:sort]
+      @paperproposals = @paperproposals.order(sort_column + ' ' + sort_direction)
+    end
+
+    # search
     if params[:search]
-      @filter = params.fetch(:search).permit(:query)
+      # build filter
+      @filter = params.fetch(:search).permit(:query, internal_state: [], external_state: [])
+
+      # search by query
       @paperproposals = @paperproposals.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+
+      # reduce by select
+      @paperproposals = @paperproposals.where(board_state: @filter.fetch(:internal_state)) unless @filter.fetch(:internal_state).all?(&:blank?)
+      @paperproposals = @paperproposals.where(state: @filter.fetch(:external_state)) unless @filter.fetch(:external_state).all?(&:blank?)
     end
 
-    # reduce by selection
-    if params[:select]
-      @selection = params.fetch(:select).permit(internal_state: [], external_state: [])
-      @paperproposals = @paperproposals.where(board_state: @selection.fetch(:internal_state)) unless @selection.fetch(:internal_state).all?(&:blank?)
-      @paperproposals = @paperproposals.where(state: @selection.fetch(:external_state)) unless @selection.fetch(:external_state).all?(&:blank?)
-    end
-
-    # sort by selection
-    @paperproposals = @paperproposals.order(sort_column + ' ' + sort_direction) if params[:sort]
-
+    # paginate
     @pagy, @paperproposals = pagy(@paperproposals)
 
+    # respond
     respond_to do |format|
       format.html
       format.csv do

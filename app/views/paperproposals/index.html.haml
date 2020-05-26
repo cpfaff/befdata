@@ -81,7 +81,8 @@
 
 // filters
 .div.pl-2
-  .div.pb-3.pt-3
+  // search, select
+  .pb-2.pt-3
     = simple_form_for :search, url: paperproposals_path, method: :get do |f|
       / search bar
       %h5
@@ -91,7 +92,7 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
             .input-group-append
-              #project_search_button.btn.btn-outline-primary
+              #dataset_search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
@@ -100,48 +101,44 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
             .input-group-append
-              #project_search_button.btn.btn-outline-primary
+              #dataset_search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
-
-  // select
-  .pb-2
-    = simple_form_for :select, url: paperproposals_path, method: :get do |f|
-      / board state
+      / project phase
       %h5
         Select:
-      - if params.has_key?(:select) ? params[:select].has_key?(:external_state) : false
-        = f.input :external_state,
-          as: :select,
-          label: "External Status",
-          required: false,
-          collection: all_paperproposal_external_states_for_select,
-          selected: params[:select][:external_state],
-          input_html: { multiple: true, class: "facet_select"}
-      - else
-        = f.input :external_state,
-          as: :select,
-          label: "External Status",
-          required: false,
-          collection: all_paperproposal_external_states_for_select,
-          input_html: { multiple: true, class: "facet_select"}
-      - if params.has_key?(:select) ? params[:select].has_key?(:internal_state) : false
-        = f.input :internal_state,
-          as: :select,
-          label: "Internal Status",
-          required: false,
-          collection: all_paperproposal_internal_states_for_select,
-          selected: params[:select][:internal_state],
-          input_html: { multiple: true, class: "facet_select"}
-      - else
-        = f.input :internal_state,
-          as: :select,
-          label: "Internal Status",
-          required: false,
-          collection: all_paperproposal_internal_states_for_select,
-          input_html: { multiple: true, class: "facet_select"}
-      = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
+        - if params.has_key?(:search) ? params[:search].has_key?(:external_state) : false
+          = f.input :external_state,
+            as: :select,
+            label: "External Status",
+            required: false,
+            collection: all_paperproposal_external_states_for_select,
+            selected: params[:search][:external_state],
+            input_html: { multiple: true, class: "facet_select"}
+        - else
+          = f.input :external_state,
+            as: :select,
+            label: "External Status",
+            required: false,
+            collection: all_paperproposal_external_states_for_select,
+            input_html: { multiple: true, class: "facet_select"}
+        - if params.has_key?(:search) ? params[:search].has_key?(:internal_state) : false
+          = f.input :internal_state,
+            as: :select,
+            label: "Internal Status",
+            required: false,
+            collection: all_paperproposal_internal_states_for_select,
+            selected: params[:search][:internal_state],
+            input_html: { multiple: true, class: "facet_select"}
+        - else
+          = f.input :internal_state,
+            as: :select,
+            label: "Internal Status",
+            required: false,
+            collection: all_paperproposal_internal_states_for_select,
+            input_html: { multiple: true, class: "facet_select"}
+        = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
 
   // sorting
   .div.pb-4
@@ -230,18 +227,3 @@
             return false;
     });
   });
-
-// filter the proposals
-:javascript
-  $(document).ready(function() {
-    $('#filter_input_proposals').keyup(function (){
-      $('.card').removeClass('d-none');
-        var filter = $(this).val(); // get the value of the input, which we filter on
-          $('#filter_target_proposals').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
-          if (!$("#filter_target_proposals").find('.card').is(':visible')) {
-            $("#filter_target_proposals_empty_note").removeClass('d-none');
-          } else {
-            $("#filter_target_proposals_empty_note").addClass('d-none');
-          };
-      });
-    });

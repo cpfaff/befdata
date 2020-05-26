@@ -224,12 +224,21 @@ class DatasetsController < ApplicationController
   end
 
   def index
+    # get all
     @datasets = Dataset.all
     @tagged_datasets = DatasetTag.all
 
+    # sort
+    if params[:sort]
+      @datasets = @datasets.order(sort_column + ' ' + sort_direction)
+    end
+
+    # search
     if params[:search]
       @filter = params.fetch(:search).permit(:query, project_phase: [], access_code: [], tag: [])
+
       @datasets = @datasets.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+
       @datasets = @datasets.where(access_code: @filter.fetch(:access_code)) unless @filter.fetch(:access_code).all?(&:blank?)
 
       # depending on configuration of the application  we have project phases or not
@@ -240,10 +249,10 @@ class DatasetsController < ApplicationController
       @datasets = @datasets.tagged_with(Dataset.all_tags.where(id: @filter.fetch(:tag)).pluck(:name), any: true) unless @filter.fetch(:tag).all?(&:blank?)
     end
 
-    @datasets = @datasets.order(sort_column + ' ' + sort_direction) if params[:sort]
-
+    # paginate
     @pagy, @datasets = pagy(@datasets)
 
+    # respond
     respond_to do |format|
       format.html
       format.xml { render xml: @datasets }
