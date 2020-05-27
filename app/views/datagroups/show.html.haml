@@ -163,45 +163,77 @@
             .container
               %br
               - if @categories.present?
-                = content_tag :table, role: :datatable,
-                  id: 'index_datagroups_categories_table',
-                  class: 'table table-striped w-100',
-                  data: { url: datagroup_categories_path(@datagroup.id, format: :json) } do
-                  %thead
-                    %tr
-                      %th Short
-                      %th Long
-                      %th Description
-                      %th Action
-                  %tbody
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
 
-                -# %table#index_datagroups_categories_table.table.table-striped{ width: "100%"}
-                  -# %thead
-                    -# %tr
-                      -# %th Short
-                      -# %th Long
-                      -# %th Description
-                      -# %th Occurences
-                  -# - @categories.to_a.each do |category|
-                    -# %tr
-                      -# %td= category.short
-                      -# %td= category.long
-                      -# %td= category.description
-                      -# %td= category.count
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_categories.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_categories_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                #filter_target_categories.card-columns.triple
+                  - @categories.each do |category|
+                    .card.shadow-sm.mb-4
+                      .card-header
+                        .font-weight-bold.text-muted
+                          %span
+                            Category:
+                      .card-body
+                        %p.card-text
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              Short:
+                            - if category.short.present?
+                              .font-weight-normal.text-dark
+                                = category.short
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              Long:
+                            - if category.long.present?
+                              .font-weight-normal.text-dark
+                                = category.long
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              Description:
+                            - if category.description.present?
+                              .font-weight-normal.text-dark
+                                = category.description
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                          .div.pb-3
+                            .font-weight-bold.text-dark
+                              Occurences:
+                            - if category.count.present?
+                              .font-weight-normal.text-dark
+                                = category.count
+                            - else
+                              .font-weight-normal.text-muted
+                                No information available
+
+                #filter_target_categories_empty_note.d-none
+                  No information available
 
               - else
-                No information available
+                .font-weight-normal.text-dark
+                  No information available
 
-              -# - if @datagroup.categories.present?
-                -# Categories:
-                -# = image_tag 'spinner.gif', :id => 'img-loader'
-                -# %noscript Please enable javascript to view the categories.
-                -# #categories
-                  -# #loader.hidden Loading ...
-                  -# #categories_table
-              -# - else
-                -# Categories:
-                -# No information available
 
           // datasets
           #datagroup_tab_3.tab-pane{:role => "tabpanel"}
@@ -228,13 +260,15 @@
                 #filter_target_datasets.card-columns.single
                   - @datasets.each do |dataset|
                     = render partial: dataset
+
+                #filter_target_datasets_empty_note.d-none
+                  .font-weight-normal.text-dark
+                    No information available
+
               - else
                 .font-weight-normal.text-dark
                   No information available
 
-              #filter_target_datasets_empty_note.d-none
-                .font-weight-normal.text-dark
-                  No information available
 
 / modals
 
@@ -428,6 +462,41 @@
     $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
   });
 
+// filter the categories
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_categories').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_categories').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_categories").find('.card').is(':visible')) {
+            $("#filter_target_categories_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_categories_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_categories_filter').click(function(){
+      $('#filter_input_categories').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_categories').find('.card').removeClass('d-none');
+      $("#filter_target_categories_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_categories').each(function(){
+        $(this).val('');
+        $('#filter_target_categories').find('.card').removeClass('d-none');
+        $("#filter_target_categories_empty_note").addClass('d-none');
+      });
+    });
+  });
+
 // filter the datasets
 :javascript
   $(document).ready(function() {
@@ -460,5 +529,14 @@
         $('#filter_target_datasets').find('.card').removeClass('d-none');
         $("#filter_target_datasets_empty_note").addClass('d-none');
       });
+    });
+  });
+
+
+/ modal: when the submit button is clicked on the form
+:javascript
+  $(document).ready(function() {
+    $('.submit_edit_category_form').click(function () {
+      $(this).closest('.modal-content').find('input[type=submit]').click();
     });
   });
