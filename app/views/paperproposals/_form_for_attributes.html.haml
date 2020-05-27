@@ -39,7 +39,7 @@
               class: 'filter-option form-control',
               id: "user_selection"
           %br
-          = f.input :project_id, as: :select, collection: all_projects_for_select, input_html: { multiple: true }
+          = f.input :project_id, as: :select, collection: all_projects_for_select
   .container
     %div.pt-5.pb-2
       - if @paperproposal.new_record?

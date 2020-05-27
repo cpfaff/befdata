@@ -271,18 +271,17 @@ class PaperproposalsController < ApplicationController
   end
 
   def paperproposal_params
-    params.require(:paperproposal).permit(:utf8, :authenticity_token,
-                                          :title, :rationale,
+    params.require(:paperproposal).permit(:title,
+                                          :rationale,
                                           :envisaged_journal,
-                                          :state,
                                           :'envisaged_date(1i)',
                                           :'envisaged_date(2i)',
                                           :'envisaged_date(3i)',
+                                          :state,
                                           :external_data,
                                           :comment,
                                           :author_id,
                                           :project_id,
-                                          not_needed: [:param],
                                           people: [])
   end
 end
