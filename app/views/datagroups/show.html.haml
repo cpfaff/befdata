@@ -110,22 +110,20 @@
                   'data-target': "#delete_datagroup"}
           .div.pb-4
 
-    // section download
-    - if @datagroup.categories.present?
-      .border-top.border-right.border-left.rounded-top.pb-1
-        %span{'data-toggle': 'tooltip', title: 'Download section', 'data-placement': 'auto'}
-          = link_to "<i class='fas fa-download'></i>".html_safe, "#",
-            { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
-              'data-turbolinks': false }
-    // section content
-    - if @datagroup.categories.present?
-      .div.pt-2
-        // download categories
-        %div{'data-toggle': 'tooltip', title: 'Downlod category CSV', 'data-placement': 'auto'}
-          = link_to "<i class='fas fa-file-alt'></i>".html_safe, datagroup_categories_path(@datagroup, format: :csv),
-            { class: "btn btn-sm btn-block btn-outline-light text-success" }
-
-      .div.pb-4
+      // section download
+      - if @datagroup.categories.present?
+        .border-top.border-right.border-left.rounded-top.pb-1
+          %span{'data-toggle': 'tooltip', title: 'Download section', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-download'></i>".html_safe, "#",
+              { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                'data-turbolinks': false }
+      // section content
+      - if @datagroup.categories.present?
+        .div.pt-2
+          // download categories
+          %div{'data-toggle': 'tooltip', title: 'Downlod category CSV', 'data-placement': 'auto'}
+            = link_to "<i class='fas fa-file-alt'></i>".html_safe, datagroup_categories_path(@datagroup, format: :csv),
+              { class: "btn btn-sm btn-block btn-outline-light text-success" }
 
     // scroll to bottom
     = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
