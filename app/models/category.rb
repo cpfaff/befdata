@@ -36,7 +36,7 @@ class Category < ApplicationRecord
     sc = sheetcells(true)
     unless sc.empty? || (sc.count == 1 && sc.first.destroyed?)
       errors.add(:base, "#{short} has associated sheetcells, thus can't be deleted")
-      false
+      throw(:abort)
     end
   end
 
