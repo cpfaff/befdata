@@ -64,7 +64,7 @@
 
 // filters
 .div.pl-2
-  .div.pb-3.pt-3
+  .div.pb-2.pt-3
     = simple_form_for :search, url: users_path, method: :get do |f|
       / search bar
       %h5
@@ -105,7 +105,7 @@
 
   // content
   - if @users.present?
-    #filter_target_users.card-columns.double
+    #filter_target_users.card-columns.triple
       - @users.each do |user|
         // render partial projects
         = render partial: user
