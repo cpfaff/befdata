@@ -86,12 +86,11 @@
       / section tools
       - if current_user
         - if current_user.admin? || current_user.data_admin?
-          - if @datasets.empty?
-            .border-top.border-right.border-left.rounded.top-2.pb-1
-              %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
-                = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
-                  { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
-                    'data-turbolinks': false }
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Tools section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-wrench'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
 
       / section tools content
       - if current_user
@@ -101,6 +100,12 @@
               %div{'data-toggle': 'tooltip', title: 'Delete datagroup', 'data-placement': 'auto'}
                 = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
                   { class: "btn btn-sm btn-block btn-outline-light text-success",
+                  'data-toggle': "modal",
+                  'data-target': "#delete_datagroup"}
+            - else
+              %div{'data-toggle': 'tooltip', title: 'Not deletable (in use)', 'data-placement': 'auto'}
+                = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+                  { class: "btn btn-sm btn-block btn-outline-light text-success disabled",
                   'data-toggle': "modal",
                   'data-target': "#delete_datagroup"}
           .div.pb-4
