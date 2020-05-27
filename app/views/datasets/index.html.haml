@@ -88,57 +88,58 @@
             .input-group-append
               = link_to "Reset", datasets_path, class: "btn btn-outline-primary"
       / project phase
-      %h5
-        Select:
-      - if PHASE_CONFIG.present?
-        - if params.has_key?(:search) ? params[:search].has_key?(:project_phase) : false
-          = f.input :project_phase,
+      .pt-2
+        %h5
+          Select:
+        - if PHASE_CONFIG.present?
+          - if params.has_key?(:search) ? params[:search].has_key?(:project_phase) : false
+            = f.input :project_phase,
+              as: :select,
+              label: "Project Phase",
+              required: false,
+              collection: all_project_phases_for_select,
+              selected: params[:search][:project_phase],
+              input_html: { multiple: true, class: "facet_select"}
+          - else
+            = f.input :project_phase,
+              as: :select,
+              label: "Project Phase",
+              required: false,
+              collection: all_project_phases_for_select,
+              input_html: { multiple: true, class: "facet_select"}
+        / access rights
+        - if params.has_key?(:search) ? params[:search].has_key?(:access_code) : false
+          = f.input :access_code,
             as: :select,
-            label: "Project Phase",
+            label: "Access Rights",
             required: false,
-            collection: all_project_phases_for_select,
-            selected: params[:search][:project_phase],
+            collection: all_dataset_access_righs_for_select,
+            selected: params[:search][:access_code],
             input_html: { multiple: true, class: "facet_select"}
         - else
-          = f.input :project_phase,
+          = f.input :access_code,
             as: :select,
-            label: "Project Phase",
+            label: "Access Rights",
             required: false,
-            collection: all_project_phases_for_select,
+            collection: all_dataset_access_righs_for_select,
             input_html: { multiple: true, class: "facet_select"}
-      / access rights
-      - if params.has_key?(:search) ? params[:search].has_key?(:access_code) : false
-        = f.input :access_code,
-          as: :select,
-          label: "Access Rights",
-          required: false,
-          collection: all_dataset_access_righs_for_select,
-          selected: params[:search][:access_code],
-          input_html: { multiple: true, class: "facet_select"}
-      - else
-        = f.input :access_code,
-          as: :select,
-          label: "Access Rights",
-          required: false,
-          collection: all_dataset_access_righs_for_select,
-          input_html: { multiple: true, class: "facet_select"}
-      / access rights
-      - if params.has_key?(:search) ? params[:search].has_key?(:tag) : false
-        = f.input :tag,
-          as: :select,
-          label: "Keywords",
-          required: false,
-          collection: all_dataset_tags_for_select,
-          selected: params[:search][:tag],
-          input_html: { multiple: true, class: "facet_select"}
-      - else
-        = f.input :tag,
-          as: :select,
-          label: "Keyword",
-          required: false,
-          collection: all_dataset_tags_for_select,
-          input_html: { multiple: true, class: "facet_select"}
-      = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
+        / access rights
+        - if params.has_key?(:search) ? params[:search].has_key?(:tag) : false
+          = f.input :tag,
+            as: :select,
+            label: "Keywords",
+            required: false,
+            collection: all_dataset_tags_for_select,
+            selected: params[:search][:tag],
+            input_html: { multiple: true, class: "facet_select"}
+        - else
+          = f.input :tag,
+            as: :select,
+            label: "Keyword",
+            required: false,
+            collection: all_dataset_tags_for_select,
+            input_html: { multiple: true, class: "facet_select"}
+        = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
 
   // sorting
   .div.pb-4
