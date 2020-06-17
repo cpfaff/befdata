@@ -70,7 +70,7 @@
                 Keywords:
               - if column.tags.present?
                 .font-weight-normal.text-dark.text-justify
-                  = raw column.tags.map{|t| link_to t.name, keyword_path(t.id)}.join(", ")
+                  = raw column.tags.map{|t| t.name }.join(", ")
               - else
                 .font-weight-normal.text-muted
                   No information available
