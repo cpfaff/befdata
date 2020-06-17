@@ -50,7 +50,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :keywords, controller: 'tags', only: %i[index show] do
+  resources :keywords, controller: 'tags', only: %i[index] do
     collection do
       get :manage
       post :delete, :pre_rename, :pre_merge, :rename, :merge
