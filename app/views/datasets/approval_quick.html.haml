@@ -23,36 +23,38 @@
     automatically filled in if possible. Empty or unchanged boxes will be left
     unchanged.
 
-= form_tag controller: 'datasets', action: 'batch_update_columns' do
-  %table
-    %thead
-      %tr
-        %th Header
-        %th Datagroup
-        %th Datatype
-    %tbody
-      -@dataset.datacolumns.includes(:datagroup).each do |c|
-        = hidden_field_tag "datacolumn[][id]", c.id
-        %tr.pb-1
-          %td
-            = link_to c.columnheader, approval_overview_datacolumn_url(c)
-          %td
-            = select_tag "datacolumn[][datagroup]",
-              options_from_collection_for_select(@datagroups,"id","title", (c.datagroup_id if c.datagroup_approved?)),
-              { include_blank: true, class: 'select' }
-          %td
-            = select_tag "datacolumn[][import_data_type]",
-              options_from_collection_for_select(@datatypes,"name","name",
-              (c.import_data_type if c.datatype_approved?)),
-              { include_blank: true, class: 'select' }
+#quick-approval-form
+  = form_tag controller: 'datasets', action: 'batch_update_columns' do
+    %table
+      %thead
+        %tr
+          %th Header
+          %th Datagroup
+          %th Datatype
+      %tbody
+        -@dataset.datacolumns.includes(:datagroup).each do |c|
+          = hidden_field_tag "datacolumn[][id]", c.id
+          %tr.pb-1
+            %td
+              = link_to c.columnheader, approval_overview_datacolumn_url(c)
+            %td
+              = select_tag "datacolumn[][datagroup]",
+                options_from_collection_for_select(@datagroups,"id","title", (c.datagroup_id if c.datagroup_approved?)),
+                { include_blank: true, class: 'select' }
+            %td
+              = select_tag "datacolumn[][import_data_type]",
+                options_from_collection_for_select(@datatypes,"name","name",
+                (c.import_data_type if c.datatype_approved?)),
+                { include_blank: true, class: 'select' }
 
-  %div.pt-5.pb-2
-    = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, dataset_path(@dataset),
-      { class: "btn btn-outline-primary" }
-    = link_to "Approve all", "#",
-      { class: "btn btn-outline-primary",
-        'data-toggle': "modal",
-        'data-target': "#approve_dataset_group_and_type"}
+    %div.pt-5.pb-2
+      = submit_tag 'OK', class: 'btn btn-outline-primary d-none'
+      = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, dataset_path(@dataset),
+        { class: "btn btn-outline-primary" }
+      = link_to "Approve all", "#",
+        { class: "btn btn-outline-primary",
+          'data-toggle': "modal",
+          'data-target': "#approve_dataset_group_and_type"}
 
 / modals
 
@@ -62,15 +64,16 @@
     .modal-content
       / Modal Header
       .modal-header
-        %h4.modal-title Save values?
+        %h4.modal-title Save values
         %button.close{"data-dismiss" => "modal", :type => "button"} ×
       / Modal body
       .modal-body
-        Are you sure?
+        A quick approval can change a lot at once. Are you sure to
+        apply and save your changes?
       / Modal footer
       .modal-footer
         %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
-        = submit_tag 'OK', class: 'btn btn-outline-primary'
+        = submit_tag 'OK', class: 'btn btn-outline-primary', id: 'submit-quick-approval'
 
 / scripts
 
