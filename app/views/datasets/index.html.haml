@@ -74,7 +74,7 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
             .input-group-append
-              #dataset_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", datasets_path, class: "btn btn-outline-primary"
@@ -83,7 +83,7 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
             .input-group-append
-              #dataset_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", datasets_path, class: "btn btn-outline-primary"
@@ -196,7 +196,7 @@
 
   // when search button is clicked
   $(document).ready(function() {
-    $('#dataset_search_button').click(function () {
+    $('#search_button').click(function () {
       var $form = $(this).closest('form');
       $form.find('input[type=submit]').click();
     });
