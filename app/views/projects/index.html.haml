@@ -85,6 +85,7 @@
                 Submit
             .input-group-append
               = link_to "Reset", projects_path, class: "btn btn-outline-primary"
+      = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
 
   // sorting
   .div.pb-4
@@ -149,5 +150,15 @@
         scrollTop: $('html, body').get(0).scrollHeight
           }, 400);
             return false;
+    });
+  });
+
+// submit the form
+:javascript
+  // when search button is clicked
+  $(document).ready(function() {
+    $('#project_search_button').click(function () {
+      var $form = $(this).closest('form');
+      $form.find('input[type=submit]').click();
     });
   });
