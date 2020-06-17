@@ -69,7 +69,7 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
             .input-group-append
-              #project_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", datagroups_path, class: "btn btn-outline-primary"
@@ -78,10 +78,11 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
             .input-group-append
-              #project_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", datagroups_path, class: "btn btn-outline-primary"
+      = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
 
   // sorting
   .div.pb-4
@@ -102,14 +103,11 @@
 
   // content
   - if @datagroups.present?
-    #filter_target_datagroups.card-columns.single
+    .card-columns.single
       - @datagroups.each do |datagroup|
         = render partial: datagroup
   - else
     No information avialable
-
-  #filter_target_datagroups_empty_note.d-none
-    No information available
 
   // pagination
   .div
@@ -118,18 +116,6 @@
 
 
 / scripts
-
-// setup hover shadow on the cards
-:javascript
-  $(document).ready(function() {
-    $( ".card" ).hover(
-      function() {
-        $(this).addClass('shadow').css('cursor', 'pointer');
-      }, function() {
-        $(this).removeClass('shadow');
-      }
-    );
-  });
 
 // setup hover shadow on the cards
 :javascript
@@ -163,27 +149,14 @@
     });
   });
 
-// filter the datagroups
-:javascript
-  $(document).ready(function() {
-    $('#filter_input_datagroups').keyup(function (){
-      $('.card').removeClass('d-none');
-        var filter = $(this).val(); // get the value of the input, which we filter on
-          $('#filter_target_datagroups').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
-          if (!$("#filter_target_datagroups").find('.card').is(':visible')) {
-            $("#filter_target_datagroups_empty_note").removeClass('d-none');
-          } else {
-            $("#filter_target_datagroups_empty_note").addClass('d-none');
-          };
-      });
-    });
 
+// submit the form
+:javascript
+  // when search button is clicked
   $(document).ready(function() {
-    $('#button_clear_datagroups_filter').click(function(){
-      $('#filter_input_datagroups').each(function(){
-        $(this).val('');
-      });
-      $('#filter_target_datagroups').find('.card').removeClass('d-none');
-      $("#filter_target_datagroups_empty_note").addClass('d-none');
+    $('#search_button').click(function () {
+      var $form = $(this).closest('form');
+      $form.find('input[type=submit]').click();
     });
   });
+

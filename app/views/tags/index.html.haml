@@ -107,7 +107,7 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
             .input-group-append
-              #keyword_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", keywords_path, class: "btn btn-outline-primary"
@@ -116,10 +116,11 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
             .input-group-append
-              #keyword_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", keywords_path, class: "btn btn-outline-primary"
+      = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
 
   // sorting
   .div.pb-4
@@ -262,6 +263,17 @@
       }
     );
   });
+
+// submit the form
+:javascript
+  // when search button is clicked
+  $(document).ready(function() {
+    $('#search_button').click(function () {
+      var $form = $(this).closest('form');
+      $form.find('input[type=submit]').click();
+    });
+  });
+
 
 // clicking on cards selects the tag for manipulation
 :javascript
