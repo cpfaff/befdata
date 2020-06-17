@@ -92,7 +92,7 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
             .input-group-append
-              #dataset_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
@@ -101,7 +101,7 @@
           .input-group
             = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
             .input-group-append
-              #dataset_search_button.btn.btn-outline-primary
+              #search_button.btn.btn-outline-primary
                 Submit
             .input-group-append
               = link_to "Reset", paperproposals_path, class: "btn btn-outline-primary"
@@ -188,10 +188,19 @@
     $('.facet_select').selectpicker('destroy').addClass('selectpicker')
   });
 
-// resubmit the form on changes in the selection menu
+// submit the form
 :javascript
+  // when selection is changed
   $(document).ready(function() {
     $('select').on('change', function() {
+      var $form = $(this).closest('form');
+      $form.find('input[type=submit]').click();
+    });
+  });
+
+  // when search button is clicked
+  $(document).ready(function() {
+    $('#search_button').click(function () {
       var $form = $(this).closest('form');
       $form.find('input[type=submit]').click();
     });
