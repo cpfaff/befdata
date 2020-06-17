@@ -17,28 +17,55 @@
 / body
 .div.pl-2
   .div.pb-3.pt-3
-    %table#merge-table
-      = form_tag merge_keywords_path do
-        %tr
-          %td#merge-from{style: 'width: 33%;'}
-            %ul.list-unstyled
-              - @keywords.each do |tag|
-                %li
-                  = tag.name
-                  = hidden_field_tag 'keywords[]', tag.id, id: nil
-          %td{style: 'width:16px;'}
-            = image_tag 'arrow_join_accept.png'
-          %td.pl-0
-            %fieldset
-              = select_tag :merge_to, options_from_collection_for_select(ActsAsTaggableOn::Tag.all, :id, :name),
-                class: 'form-control',
-                id: "keyword_merge_target"
-              %div{style: 'position:absolute;'}
-                = label_tag 'new_keyword', 'Or create new keyword'
-                %br
-                = text_field_tag 'new_keyword', nil, { class: 'form-control' }
-                %br
-                = submit_tag "Merge", class: 'btn btn-outline-primary'
+    %ul.nav.nav-tabs
+      %li.nav-item
+        %a.nav-link.active{"data-toggle" => "tab", :href => "#tab-1", :role => "tab"} Renamer
+    .tab-content.equal-height
+      #tab-1.tab-pane.active{:role => "tabpanel"}
+        .container
+          %br
+
+          %p.text-justify
+            Here you can merge the selected keywords. On the left hand side you
+            find the selected keyword and on the right hand side you can choose
+            a target keword to merge them into. For the target you can choose
+            from existing keywords or create a new one. When you are done click
+            on merge.
+
+          %table#merge-table
+            = form_tag merge_keywords_path do
+              .table-responsive
+                %table.table.table-striped#rename-table
+                  %thead
+                    %tr
+                      %th Selected
+                      %th
+                      %th Merge into
+                  %tbody
+                    %tr
+                      %td
+                        .pt-2
+                          %ul.list-unstyled
+                            - @keywords.each do |tag|
+                              %li
+                                = tag.name
+                                = hidden_field_tag 'keywords[]', tag.id, id: nil
+                      %td
+                        .pt-4
+                          = image_tag 'arrow_join_accept.png'
+                      %td
+                        .pt-2
+                          %fieldset
+                            = label_tag 'merge_to', 'Select existing keyword'
+                            = select_tag :merge_to, options_from_collection_for_select(ActsAsTaggableOn::Tag.all, :id, :name), class: 'form-control form_select'
+                            %div.pt-4
+                              = label_tag 'new_keyword', 'Create new keyword'
+                              %br
+                              = text_field_tag 'new_keyword', nil, { class: 'form-control' }
+                              %br
+                              = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, keywords_path,
+                                { class: "btn btn-outline-primary" }
+                              = submit_tag "Merge", class: 'btn btn-outline-primary'
 
 
 / scripts
@@ -46,7 +73,7 @@
 // initialize selectpickers
 :javascript
   $(document).on('turbolinks:load', function() {
-    $('.facet_select').selectpicker({
+    $('.form_select').selectpicker({
       liveSearch: true,
       liveSearchPlaceholder: "type to filter ...",
       actionsBox: true
@@ -55,5 +82,5 @@
 
   // fix style on cache reload of pickers
   $(document).on('turbolinks:before-cache', function() {
-    $('.facet_select').selectpicker('destroy').addClass('selectpicker')
+    $('.form_select').selectpicker('destroy').addClass('selectpicker')
   });

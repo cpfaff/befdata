@@ -1,6 +1,4 @@
 // todo: * delete action calls alert window and not a modal (change to modal)
-//       * the forms to manage tags are still on their own pages. the need to be moved into modals
-//       * remove the partial which contained the forms afterwards
 
 / head
 
@@ -49,6 +47,7 @@
         - if current_user.has_role?(:admin).present? || current_user.has_role?(:data_admin).present?
           .div.pt-2
             = form_tag '', id: 'manage' do
+              -# %ul#selected.d-none
               %ul#selected.d-none
               %div#actions-group
                 .div.pt-2
@@ -95,26 +94,48 @@
 %noscript
   Enable javascript to manage keywords
 
+
+// filters
+.div.pl-2
+  .div.pb-2.pt-3
+    = simple_form_for :search, url: keywords_path, method: :get do |f|
+      / search bar
+      %h5
+        Search:
+      - if params.has_key?(:search) ? params[:search].has_key?(:query) : false
+        = f.input :query, required: false, label: false do
+          .input-group
+            = f.input_field :query, class: "form-control", placeholder: "Type...", value: params[:search][:query]
+            .input-group-append
+              #keyword_search_button.btn.btn-outline-primary
+                Submit
+            .input-group-append
+              = link_to "Reset", keywords_path, class: "btn btn-outline-primary"
+      - else
+        = f.input :query, required: false, label: false do
+          .input-group
+            = f.input_field :query, class: "form-control", placeholder: "Type...", value: ""
+            .input-group-append
+              #keyword_search_button.btn.btn-outline-primary
+                Submit
+            .input-group-append
+              = link_to "Reset", keywords_path, class: "btn btn-outline-primary"
+
+  // sorting
+  .div.pb-4
+    %h5
+      Sort:
+    .btn-group
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "name"
+      #sort_button.btn.btn-outline-light.gray-border
+        = sortable "taggins_count", "Usage", "numeric"
+
 // filters
 .div.pl-2
   .div.pb-3.pt-3
     .div.pb-4
     - if @tags.present?
-      // filter for tags
-      %div.pb-4
-        %h5
-          Filter:
-
-        .input-group
-          %input#filter_input_tags.form-control{:placeholder => "Type..", :type => "text"}
-          .input-group-append
-            = link_to "Reset", "javascript:void(0)".html_safe,
-              { class: "btn btn-outline-primary", id: "button_clear_tags_filter",
-              'data-toggle': "tooltip",
-              'data-turbolinks': false,
-              'title': "Clear Filter" ,
-              'data-placement': "auto"}
-
       // cards listing tags
       #filter_target_tags.card-columns.triple
         .tags
@@ -125,9 +146,19 @@
                   .font-weight-bold.text-muted
                     %span
                       Keyword:
-                      = tag.name
                 .card-body
                   %p.card-text
+                    .div.pb-3
+                      .font-weight-bold.text-dark
+                        Name:
+                      - if tag.name.present?
+                        .font-weight-normal.text-dark
+                          = tag.name
+                      - else
+                        .font-weight-normal.text-muted
+                          No information available
+
+
                     .div.pb-3
                       .font-weight-bold.text-dark
                         Usage count:
@@ -138,18 +169,13 @@
                         .font-weight-normal.text-muted
                           No information available
                 .card-footer
-                  .badge.badge-pill.badge-light.m-1
-                    .p-1
-                      = check_box_tag tag.name, tag.id
+                  .custom-control.custom-checkbox
+                    = check_box_tag tag.name, tag.id, false, class: "custom-control-input d-none", id: "tagSelect_#{tag.id}"
+                    = label_tag :checkbox, "", class: "custom-control-label d-none", for: "tagSelect_#{tag.id}"
 
     - else
       .font-weight-normal.text-dark
         No information available
-
-    #filter_target_tags_empty_note.d-none
-      .font-weight-normal.text-dark
-        No information available
-
 
 / modals
 
@@ -169,7 +195,6 @@
         %button.btn.btn-outline-secondary{"data-dismiss" => "modal", :type => "button"} Cancel
         -# = link_to 'Delete', project_path(@project), method: :delete, class: 'btn btn-outline-danger'
 
-
 // comment display modal
 #rename_keywords.modal.fade
   .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
@@ -182,6 +207,7 @@
           ×
       / Modal body
       .modal-body
+        = params.inspect
         = form_tag rename_keywords_path do
           %table#rename-table
             %thead
@@ -203,123 +229,7 @@
         %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
           Close
 
-
 / scripts
-
-// select, deselect, and actions
-:javascript
-  $(function(){
-    // synchoronize selected area and checkboxes
-    var selected_area = $("ul#selected");
-    var tag_list_area = $(".tags")
-
-    function update_selected_area() {
-      var num_items = tag_list_area.find(':checkbox:checked').length
-      switch(num_items) {
-        case 0:
-          $("#actions-group").find("#delete").addClass('disabled');
-          $("#actions-group").find("#rename").addClass('disabled');
-          $("#actions-group").find("#merge").addClass('disabled');
-          $("#actions-group").find("#reset").addClass('disabled');
-          break;
-        case 1:
-          $("#actions-group").find("#delete").removeClass('disabled');
-          $("#actions-group").find("#rename").removeClass('disabled');
-          $("#actions-group").find("#reset").removeClass('disabled');
-          break;
-        default:
-          $("#actions-group").find("#delete").removeClass('disabled');
-          $("#actions-group").find("#rename").removeClass('disabled');
-          $("#actions-group").find("#merge").removeClass('disabled');
-          $("#actions-group").find("#reset").removeClass('disabled');
-      }
-    }
-
-    function add_to_selected(tag_id, name) {
-      var li=$("<li/>").attr({id: tag_id});
-      var hidden_input = $("<input type='hidden' />").attr({name: 'keywords[]', value: tag_id});
-      var span_name = $("<span/>").text(name);
-      var remove_link = $("<a/>").addClass('remove_parent');
-      li.append(remove_link, hidden_input, span_name).appendTo(selected_area);
-    }
-    function remove_from_selected(tag_id){selected_area.find('li#'+tag_id).remove(); }
-
-    $('#reset').click(function(){
-      selected_area.empty(); $(".tags .tag input:checked").each(function(){this.checked=false});
-      update_selected_area();
-      return(false);
-    });
-
-    $(".tags>.tag input[type=checkbox]").click(function(){
-      if (this.checked) {
-        add_to_selected(this.getAttribute('value'), this.getAttribute('name'));
-      } else {
-        remove_from_selected(this.getAttribute('value'));
-      }
-      update_selected_area();
-    });
-
-    selected_area.on('click', '.remove_parent', function(){
-      var id = $(this).parent('li').attr('id')
-      tag_list_area.find('.tag#'+id+" input:checkbox")[0].checked=false;
-      update_selected_area();
-    });
-
-    // send requests
-    var pre_rename_url = "#{pre_rename_keywords_path}";
-    var pre_merge_url = "#{pre_merge_keywords_path}";
-    var delete_url = "#{delete_keywords_path}";
-
-    $("#actions-group #delete").click(function(){
-      var resp = confirm("Are you sure to delete the selected keywords ?")
-      if (resp){
-        $("form#manage").attr({action: delete_url}).submit();
-      }
-    })
-    $("#actions-group #rename").click(function(){
-      $("form#manage").attr({action: pre_rename_url}).submit();
-    })
-    $("#actions-group #merge").click(function(){
-      $("form#manage").attr({action: pre_merge_url}).submit();
-    })
-  })
-
-// setup hover shadow on the cards
-:javascript
-  $(document).ready(function() {
-    $( ".card" ).hover(
-      function() {
-        $(this).addClass('shadow').css('cursor', 'pointer');
-      }, function() {
-        $(this).removeClass('shadow');
-      }
-    );
-  });
-
-// filter the tags
-:javascript
-  $(document).ready(function() {
-    $('#filter_input_tags').keyup(function (){
-      $('.card').removeClass('d-none');
-        var filter = $(this).val(); // get the value of the input, which we filter on
-          $('#filter_target_tags').find('.card:not(:contains("'+filter+'"))').addClass('d-none');
-          if (!$("#filter_target_tags").find('.card').is(':visible')) {
-            $("#filter_target_tags_empty_note").removeClass('d-none');
-          } else {
-            $("#filter_target_tags_empty_note").addClass('d-none');
-          };
-      });
-    });
-
-  $(document).ready(function() {
-    $('#button_clear_tags_filter').click(function(){
-      $('#filter_input_tags').each(function(){
-        $(this).val('');
-      });
-      $('#filter_target_tags').find('.card').removeClass('d-none');
-      $("#filter_target_tags_empty_note").addClass('d-none');
-    });
-  });
 
 // enalbel scroll on button click
 :javascript
@@ -340,3 +250,110 @@
             return false;
     });
   });
+
+// setup hover shadow on the cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
+      }
+    );
+  });
+
+// clicking on cards selects the tag for manipulation
+:javascript
+  $(document).ready(function() {
+
+    var selected_area = $("ul#selected");
+    var tag_list_area = $(".tags")
+
+    function update_menu_bar() {
+      var num_items = tag_list_area.find(':checkbox:checked').length
+      switch(+num_items) {
+        case 0:
+          $("#actions-group").find("#delete").addClass('disabled');
+          $("#actions-group").find("#rename").addClass('disabled');
+          $("#actions-group").find("#merge").addClass('disabled');
+          $("#actions-group").find("#reset").addClass('disabled');
+          break;
+        case 1:
+          $("#actions-group").find("#delete").addClass('disabled');
+          $("#actions-group").find("#rename").addClass('disabled');
+          $("#actions-group").find("#merge").addClass('disabled');
+          $("#actions-group").find("#reset").addClass('disabled');
+
+          $("#actions-group").find("#delete").removeClass('disabled');
+          $("#actions-group").find("#rename").removeClass('disabled');
+          $("#actions-group").find("#reset").removeClass('disabled');
+          break;
+        default:
+          $("#actions-group").find("#delete").removeClass('disabled');
+          $("#actions-group").find("#rename").removeClass('disabled');
+          $("#actions-group").find("#merge").removeClass('disabled');
+          $("#actions-group").find("#reset").removeClass('disabled');
+      }
+    }
+
+    // send requests
+    var pre_rename_url = "#{pre_rename_keywords_path}";
+    var pre_merge_url = "#{pre_merge_keywords_path}";
+    var delete_url = "#{delete_keywords_path}";
+
+    // submit actions
+    $("#actions-group #delete").click(function(){
+      var resp = confirm("Are you sure to delete the selected keywords ?")
+      if (resp){
+        $("form#manage").attr({action: delete_url}).submit();
+      }
+    })
+    $("#actions-group #rename").click(function(){
+      $("form#manage").attr({action: pre_rename_url}).submit();
+    })
+    $("#actions-group #merge").click(function(){
+      $("form#manage").attr({action: pre_merge_url}).submit();
+    })
+
+    // reset selection
+    $('#reset').click(function(){
+      $(".tags .tag input:checked").each(function(){
+        this.checked=false
+        $(this).closest('.card').removeClass('border-success');
+      });
+      update_menu_bar();
+      return(false);
+    });
+
+    $( ".card" ).click(
+      function() {
+
+        var tag_checkbox = $(this).find('input[type=checkbox]');
+
+        // handle the added tags in hidden form
+        function add_to_selected(tag_id, name) {
+          var li=$("<li/>").attr({id: tag_id});
+          var hidden_input = $("<input type='hidden' />").attr({name: 'keywords[]', value: tag_id});
+          var span_name = $("<span/>").text(name);
+          var remove_link = $("<a/>").addClass('remove_parent');
+          li.append(remove_link, hidden_input, span_name).appendTo(selected_area);
+        }
+
+
+        function remove_from_selected(tag_id){selected_area.find('li#'+tag_id).remove(); }
+
+        if (tag_checkbox.prop('checked') == true) {
+          tag_checkbox.prop('checked', false);
+          remove_from_selected(tag_checkbox.attr('value'));
+          $(this).removeClass('border-success');
+          update_menu_bar();
+        } else {
+          tag_checkbox.prop('checked', true);
+          add_to_selected(tag_checkbox.attr('value'), tag_checkbox.attr('name'));
+          $(this).addClass('border-success');
+          update_menu_bar();
+        };
+      });
+  });
+

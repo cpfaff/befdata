@@ -3,6 +3,7 @@
 class TagsController < ApplicationController
   skip_before_action :deny_access_to_all
   before_action :load_keywords, only: %i[delete pre_rename pre_merge merge]
+  # todo: adapt the access control.
   access_control do
     allow all, to: %i[index show]
     actions :manage, :pre_rename, :rename, :delete, :pre_merge, :merge do
@@ -10,8 +11,32 @@ class TagsController < ApplicationController
     end
   end
 
+  # helpers
+  helper_method :sort_column, :sort_direction
+
+  # extensions
+
+  # concern: search on tags
+  class ActsAsTaggableOn::Tag
+    include Searchable
+  end
+
   def index
-    @tags = DatasetTag.tag_counts
+    @tags = ActsAsTaggableOn::Tag.all
+
+    # order (needs to take place before search)
+    if params[:sort]
+      @tags = @tags.order(sort_column + ' ' + sort_direction)
+    end
+
+    # search
+    if params[:search]
+      @filter = params.fetch(:search).permit(:query)
+      @tags = @tags.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+    end
+
+    # paginate
+    # @pagy, @tags = pagy(@tags)
 
     respond_to do |format|
       format.html
@@ -85,6 +110,16 @@ class TagsController < ApplicationController
   end
 
   private
+
+  def sort_column
+    # defines default sort column
+    ActsAsTaggableOn::Tag.column_names.include?(params[:sort]) ? params[:sort] : 'taggings_count'
+  end
+
+  def sort_direction
+    # defines default sort direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
+  end
 
   def load_keywords
     @keywords = ActsAsTaggableOn::Tag.find(keywords_params[:keywords])

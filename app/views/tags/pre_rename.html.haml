@@ -14,20 +14,43 @@
 
 .div.pl-2
   .div.pb-3.pt-3
-    = form_tag rename_keywords_path do
-      %table#rename-table
-        %thead
-          %tr
-            %th From
-            %th To
-        %tbody
-          - @keywords.each do |t|
-            %tr.pb-4.pl-4.pr-4
-              %td= t.name_changed? ? t.name_was : t.name
-              %td
-                = fields_for 'keywords[]', t do |f|
-                  = f.text_field :name, class: 'form-control'
-                - unless t.errors.empty?
-                  %span.error= t.errors.full_messages.to_sentence
-      .pt-4
-        = submit_tag :Confirm, class: 'btn btn-outline-primary'
+    %ul.nav.nav-tabs
+      %li.nav-item
+        %a.nav-link.active{"data-toggle" => "tab", :href => "#tab-1", :role => "tab"} Renamer
+    .tab-content.equal-height
+      #tab-1.tab-pane.active{:role => "tabpanel"}
+        .container
+          %br
+
+          %p.text-justify
+            Here you can rename the selected keywords. On the left hand side
+            you find the selected keyword and on the right hand side you can
+            change the name. When you are done click on confirm.
+
+          = form_tag rename_keywords_path do
+            .table-responsive
+              %table.table.table-striped#rename-table
+                %thead
+                  %tr
+                    %th From
+                    %th
+                    %th To
+                %tbody
+                  - @keywords.each do |t|
+                    %tr
+                      %td
+                        .mt-2.mb-2.pl-2.pr-2
+                          = t.name_changed? ? t.name_was : t.name
+                      %td
+                        .mt-2.mb-2.pl-5.pr-5
+                          %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+                      %td
+                        .mt-2.mb-2.pl-2.pr-2
+                          = fields_for 'keywords[]', t do |f|
+                            = f.text_field :name, class: 'form-control'
+                          - unless t.errors.empty?
+                            %span.error= t.errors.full_messages.to_sentence
+              .pt-4
+                = link_to "<i class='fas fa-angle-double-left' vertical-align: middle;'></i> Back".html_safe, keywords_path,
+                  { class: "btn btn-outline-primary" }
+                = submit_tag :Confirm, class: 'btn btn-outline-primary'
