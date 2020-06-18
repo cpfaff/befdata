@@ -442,7 +442,27 @@
     }
   });
 
-// data table
+// enalbel scroll on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body top on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body bottom on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });
+
+// todo: check remove: data table
 :javascript
   $(document).on('turbolinks:load', function(){
     $("table[role='datatable']").each(function(){
