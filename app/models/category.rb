@@ -13,6 +13,22 @@ class Category < ApplicationRecord
   before_destroy :check_for_sheetcells_associated
   after_update :expire_related_exported_datasets
 
+  # includes
+  include PgSearch
+
+  # search scope
+  pg_search_scope :search, against: {
+    short: 'A',
+    long: 'A',
+    description: 'B'
+  },
+  using: {
+    tsearch: {
+      dictionary: 'english',
+      prefix: true
+    }
+  }
+
   def self.delete_orphan_categories
     # delete categories that has no assciated sheetcells
     to_be_deleted = Category.joins('left outer join sheetcells on sheetcells.category_id = categories.id')
@@ -37,14 +53,6 @@ class Category < ApplicationRecord
     unless sc.empty? || (sc.count == 1 && sc.first.destroyed?)
       errors.add(:base, "#{short} has associated sheetcells, thus can't be deleted")
       throw(:abort)
-    end
-  end
-
-  def self.search(search)
-    if search
-      where('short iLIKE :q OR long iLIKE :q OR description iLIKE :q', q: "%#{search}%")
-    else
-      all
     end
   end
 
