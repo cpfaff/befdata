@@ -1,69 +1,353 @@
-- page_title "Category: #{@category.short}"
+/ todo:
 
-- content_for :actions do
-  - unless @category.sheetcells.empty?
-    = link_to category_path(:id => @category, :format => :csv) do
-      = image_tag("save.png")
-      Download Sheetcells as CSV
-    - if current_user.has_role?(:admin)
-      = link_to upload_sheetcells_category_path do
-        = image_tag("file-upload.png")
-        Upload Sheetcells as CSV
-  = link_to datagroups_path do
-    = image_tag "list-ordered.png"
-    List Datagroups
+// the comment goes into an info section
+-# %h4 Comment
+-# %p= @category.comment
 
-%h2= "Category: #{@category.short}"
-%h4 Long
-%p= @category.long
-%h4 Description
-%p= @category.description
-%h4 Comment
-%p= @category.comment
-- unless @category.datagroup.blank?
-  %h4 Datagroup
-  %p= link_to @category.datagroup.title, @category.datagroup
+// the chanes are picked up and displayed on page reload. Maybe add this back
+-# - @changes = flash[:updates]
+-# - if @changes && !@changes.empty?
+  -# %h3 Changed
+  -# %table#category-sheetcell-changes.tablesorter
+    -# %thead
+      -# %tr
+        -# %th ID
+        -# %th Action
+        -# %th Category
+    -# %tbody
+      -# - @changes.each do |ch|
+        -# %tr
+          -# %td= ch[0]
+          -# %td= ch[1]
+          -# %td
+            -# - unless ch[2].blank?
+              -# = link_to ch[3], category_path(ch[2])
 
-- if @category.sheetcells.empty?
-  %h3 No Occurrences found
-- else
-  %h3 Occurrences distribution (#{@category.sheetcells.count} sheetcells in total)
-  %table#category-occurrences-table.tablesorter
-    %thead
-      %tr
-        %th Import Value
-        %th Columnheader
-        %th Dataset
-        %th count
-    %tbody
-      - @sheetcells.each do |sc|
-        %tr
-          %td= sc.import_value
-          %td= sc.datacolumn.columnheader
-          %td= render :partial => sc.datacolumn.dataset, :locals => {:with_cart => true, :with_comment => false}
-          %td= sc.count
-  :javascript
-    $(document).ready(function()
-      {
-        $("#category-occurrences-table").tablesorter( {sortList: [[3,1], [2,0], [1,0], [0,0]]} );
+/ title
+
+- page_title "Category: #{@category.short.to_s}"
+
+/ body
+
+// heading
+.div.pb-2.pl-2
+  .font-weight-bold
+    .text-muted.font-weight-bold
+      %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
+        %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
+        = link_to "Show: #{@category.short.to_s}", datagroups_path, class: 'text-muted'
+
+// sidebar
+= content_for :actions do
+  #actions.pt-1
+    // scroll to top
+    = link_to "<i class='fas fa-angle-double-up'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-top",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      'title': "Up" ,
+      'data-placement': "auto"}
+
+    // actions
+    .div.pt-2.pb-2
+
+      // placeholder if action bar is empty
+      - unless current_user
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
+      / section edit
+      - if current_user
+        - if current_user.has_role?(:admin).present?
+          .border-top.border-right.border-left.rounded.top-2.pb-1
+            %span{'data-toggle': 'tooltip', title: 'Edit section', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+                  'data-turbolinks': false }
+      // section edit content
+      - if current_user
+        - if current_user.has_role?(:admin).present?
+          .div.pt-2
+            %span{'data-toggle': 'tooltip', title: 'Manage categories', 'data-placement': 'auto'}
+              = link_to "<i class='fas fa-layer-group'></i>".html_safe, "#",
+                { class: "btn btn-sm btn-block btn-outline-light text-success",
+                  'data-toggle': "modal",
+                  'data-target': "#manage_datagroup_category_sheetcells"}
+
+    // scroll to bottom
+    = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
+      { class: "btn btn-sm btn-outline-light text-secondary", id: "back-to-bottom",
+      'data-toggle': "tooltip",
+      'data-turbolinks': false,
+      title: "Down" ,
+      'data-placement': "auto"}
+
+// tabs with content
+
+// filters
+.div.pl-2
+  .div.pb-3.pt-3
+    .row
+      .col
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#category_tab_1", :role => "tab"} Metadata
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#category_tab_2", :role => "tab"} Occurences
+        .tab-content.equal-height
+          // tab metadata
+          #category_tab_1.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Shortname:
+                - if @category.short.present?
+                  .font-weight-normal.text-dark
+                    = @category.short
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Name:
+                - if @category.long.present?
+                  .font-weight-normal.text-dark
+                    = @category.long
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Description:
+                - if @category.description.present?
+                  .font-weight-normal.text-dark
+                    = @category.description
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  In datagroup:
+                - if @category.datagroup.present?
+                  .font-weight-normal.text-dark
+                    = link_to @category.datagroup.title, @category.datagroup
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Created at:
+                - if @category.created_at.present?
+                  .font-weight-normal.text-dark
+                    = @category.created_at.to_date
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+              .div.pb-3
+                .font-weight-bold.text-dark
+                  Updated at:
+                - if @category.updated_at.present?
+                  .font-weight-normal.text-dark
+                    = @category.updated_at.to_date
+                - else
+                  .font-weight-normal.text-muted
+                    No information available
+
+          // tab datasets
+          #category_tab_2.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+              - if @category.sheetcells.present?
+                // filter for datasets
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_datasets.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_datasets_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_datasets.card-columns.single
+                  - @sheetcells.each do |sheetcell|
+                    = render partial: sheetcell.datacolumn.dataset, locals: { with_cart: true, with_comment: false, category: @category, sheetcell: sheetcell }
+
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_datasets_empty_note.d-none
+                .font-weight-normal.text-dark
+                  No information available
+
+// modals
+
+
+// manage datagroups categories
+#manage_datagroup_category_sheetcells.modal.fade
+  .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title
+          Manage datagroup categories
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          ×
+      / Modal body
+      .modal-body
+        %ul#tabs.nav.nav-tabs
+          %li.nav-item
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#manage_datagroup_categories_change", :role => "tab"} Change
+        .tab-content.equal-height-modal
+          // metadata
+          #manage_datagroup_categories_change.tab-pane.active{:role => "tabpanel"}
+            .container
+              %br
+
+              %p
+                Here you can manage the actual values in the datasets which are
+                stored in your database. All values which are linked to a
+                particular datagroup are presented here to you for change. You
+                can rename them e.g. to fix spelling mistakes. This is a
+                powerful tool which allows to harmonize all categorial data
+                across your database. Use it carefully and wisely as it will
+                change the original data!
+              %p
+                First download the #{link_to "csv file", category_path(id: @category, format: :csv)}.
+                In that file you make your changes to the respective categories names. When you are done with your
+                changes you upload the file using the form below.
+
+              = simple_form_for :csvfile, url: { controller: :categories, action: :update_sheetcells, id: @category.id },
+                html: { multipart: true },
+                wrapper_mappings: { file: :custom_file } do |f|
+                = f.error_notification
+                = f.input :file, as: :file, required: true
+                .btn-group
+                  %div{'data-toggle': 'tooltip', title: 'Downlod category csv', 'data-placement': 'auto'}
+                    = link_to "Download csv".html_safe, category_path(id: @category, format: :csv),
+                      { class: "btn btn btn-outline-primary mr-2" }
+                  = f.button :submit, "Upload", class: "btn btn-outline-primary rounded"
+
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+
+/ scripts
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
+// enable hover shadow on cards
+:javascript
+  $(document).ready(function() {
+    $( ".card" ).hover(
+      function() {
+        $(this).addClass('shadow').css('cursor', 'pointer');
+      }, function() {
+        $(this).removeClass('shadow');
       }
     );
+  });
 
-- @changes = flash[:updates]
-- if @changes && !@changes.empty?
-  %h3 Changed
-  %table#category-sheetcell-changes.tablesorter
-    %thead
-      %tr
-        %th ID
-        %th Action
-        %th Category
-    %tbody
-      - @changes.each do |ch|
-        %tr
-          %td= ch[0]
-          %td= ch[1]
-          %td
-            - unless ch[2].blank?
-              = link_to ch[3], category_path(ch[2])
+// set tabs to equal height
+:javascript
+  $(document).ready(function() {
+    var maxHeight=0;
+    $(".tab-content.equal-height .tab-pane").each(function(){
+      $(this).addClass("active");
+        var height = $(this).height();
+        maxHeight = height>maxHeight?height:maxHeight;
+        $(this).removeClass("active");
+    });
+    $(".tab-content.equal-height .tab-pane:first").addClass("active");
+    $(".tab-content.equal-height").height(maxHeight);
+  });
 
+// enalbel scroll on button click
+:javascript
+  $(document).ready(function(){
+    // scroll body top on click
+    $('#back-to-top').click(function () {
+      $('body,html').animate({
+        scrollTop: 0
+          }, 400);
+            return false;
+    });
+
+    // scroll body bottom on click
+    $('#back-to-bottom').click(function () {
+      $('body,html').animate({
+        scrollTop: $('html, body').get(0).scrollHeight
+          }, 400);
+            return false;
+    });
+  });
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
+  });
+
+// filter the categories
+:javascript
+  $(document).ready(function() {
+    $('#filter_input_datasets').keyup(function (){
+      $('.card').removeClass('d-none');
+        var filter = $(this).val(); // get the value of the input, which we filter on
+          $('#filter_target_datasets').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_datasets").find('.card').is(':visible')) {
+            $("#filter_target_datasets_empty_note").removeClass('d-none');
+          } else {
+            $("#filter_target_datasets_empty_note").addClass('d-none');
+          };
+      });
+    });
+
+  $(document).ready(function() {
+    $('#button_clear_categories_filter').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+      });
+      $('#filter_target_datasets').find('.card').removeClass('d-none');
+      $("#filter_target_datasets_empty_note").addClass('d-none');
+    });
+  });
+
+  $(document).ready(function() {
+    $('.nav-link').click(function(){
+      $('#filter_input_datasets').each(function(){
+        $(this).val('');
+        $('#filter_target_datasets').find('.card').removeClass('d-none');
+        $("#filter_target_datasets_empty_note").addClass('d-none');
+      });
+    });
+  });
+
+
+// modal: when the submit button is clicked on the form
+:javascript
+  $(document).ready(function() {
+    $('.submit_edit_category_form').click(function () {
+      $(this).closest('.modal-content').find('input[type=submit]').click();
+    });
+  });
