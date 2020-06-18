@@ -1,5 +1,7 @@
 
 - cart_item ||=nil
+- category ||=nil
+- sheetcell ||=nil
 
 = link_to dataset do
   .card.shadow-sm.mb-4
@@ -17,42 +19,63 @@
               No information avialable
       .pt-2.pb-3
         .float-left
-          .badge.badge-pill.badge-light.m-1
-            .p-1
-              - if dataset.users.count
-                = fa_icon('user')
-                Users:
-                = dataset.users.count
-          .badge.badge-pill.badge-light.m-1
-            .p-1
-              - if dataset.projects.count
-                = fa_icon('object-group')
-                Projects:
-                = dataset.projects.count
-          .badge.badge-pill.badge-light.m-1
-            .p-1
-              - if dataset.datafiles_count
-                = fa_icon('file')
-                Datafiles:
-                = dataset.datafiles_count
-          .badge.badge-pill.badge-light.m-1
-            .p-1
-              - if dataset.freeformats_count
-                = fa_icon('paperclip')
-                Attachments:
-                = dataset.freeformats_count
-          .badge.badge-pill.badge-light.m-1
-            .p-1
-              - if dataset.created_at
-                = fa_icon('calendar')
-                Created at:
-                = dataset.created_at.strftime("%F")
-          .badge.badge-pill.badge-light.m-1
-            .p-1
-              - if dataset.updated_at
-                = fa_icon('calendar')
-                Updated at:
-                = dataset.updated_at.strftime("%F")
+          - if category.present?
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if sheetcell.import_value.present?
+                  = fa_icon('fas fa-file-import')
+                  Category:
+                  = sheetcell.import_value
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if sheetcell.datacolumn.columnheader.present?
+                  = fa_icon('fas fa-columns')
+                  In Columnheader:
+                  = sheetcell.datacolumn.columnheader
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if sheetcell.count.present?
+                  = fa_icon('fas fa-calculator')
+                  Category count:
+                  = sheetcell.count
+          - else
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if dataset.users.count
+                  = fa_icon('user')
+                  Users:
+                  = dataset.users.count
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if dataset.projects.count
+                  = fa_icon('object-group')
+                  Projects:
+                  = dataset.projects.count
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if dataset.datafiles_count
+                  = fa_icon('file')
+                  Datafiles:
+                  = dataset.datafiles_count
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if dataset.freeformats_count
+                  = fa_icon('paperclip')
+                  Attachments:
+                  = dataset.freeformats_count
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if dataset.created_at
+                  = fa_icon('calendar')
+                  Created at:
+                  = dataset.created_at.strftime("%F")
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                - if dataset.updated_at
+                  = fa_icon('calendar')
+                  Updated at:
+                  = dataset.updated_at.strftime("%F")
+
         - if current_user
           .float-right
             .p-1
