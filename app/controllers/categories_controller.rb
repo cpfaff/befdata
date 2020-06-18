@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-  before_action :load_datagroup, only: %i[index new create]
+  before_action :load_datagroup, only: %i[new create]
   before_action :load_category, only: %i[show destroy upload_sheetcells update_sheetcells]
 
   skip_before_action :deny_access_to_all
@@ -15,26 +15,32 @@ class CategoriesController < ApplicationController
     end
   end
 
+  # helpers
+  helper_method :sort_column, :sort_direction
+
   def index
+    # get all
+    @categories = Category.all
+
+    # order (needs to take place before search)
+    if params[:sort]
+      @categories = @categories.order(sort_column + ' ' + sort_direction)
+    end
+
+    # search
+    if params[:search]
+      @filter = params.fetch(:search).permit(:query)
+      @categories = @categories.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
+    end
+
+    # paginate
+    @pagy, @categories = pagy(@categories)
+
+    # respond
     respond_to do |format|
+      format.html
       format.csv do
         send_data render_categories_csv, type: 'text/csv', filename: "#{@datagroup.title}_categories.csv", disposition: 'attachment'
-      end
-
-      # todo: clean this mess up
-      # format.js do
-        # @categories = @datagroup.categories.select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
-      # end
-
-       # @categories = @datagroup.categories.select('id, short, long, description, (select count(sheetcells.id) from sheetcells where sheetcells.category_id = categories.id) as count')
-      format.json do
-        # todo: this replaces the old answer with a data table. Lets see if this is still needed as
-        # I think we can move on and remove datatable completely everywhere and replace it by cards
-        # render json: { data: @datagroup.categories,
-                       # draw: params[:draw].to_i,
-                       # recordsTotal: @datagroup.categories.count
-        # }
-        render json: CategoriesDatatable.new(view_context)
       end
     end
   end
@@ -107,6 +113,16 @@ class CategoriesController < ApplicationController
   end
 
   private
+
+  def sort_column
+    # defines default sort column
+    Project.column_names.include?(params[:sort]) ? params[:sort] : 'short'
+  end
+
+  def sort_direction
+    # defines default sort direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : 'asc'
+  end
 
   def render_sheetcells_csv
     csv_string = CSV.generate do |csv|

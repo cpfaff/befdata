@@ -92,7 +92,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :categories, only: %i[show destroy] do
+  resources :categories, only: %i[index show destroy] do
     member do
       get :upload_sheetcells
       post :update_sheetcells
