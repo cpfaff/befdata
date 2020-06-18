@@ -117,6 +117,12 @@
 
 / scripts
 
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+  });
+
 // setup hover shadow on the cards
 :javascript
   $(document).ready(function() {
