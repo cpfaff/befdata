@@ -107,7 +107,7 @@ group :test do
   gem 'chromedriver-helper'
 
   # unit testing framework
-  # gem 'test-unit', '~> 3.3.4'
+  gem 'test-unit', '~> 3.3.4'
 
   # parallelize tests
   # gem 'parallel_tests', '~> 2.29.2'
