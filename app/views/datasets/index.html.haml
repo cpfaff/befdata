@@ -44,11 +44,22 @@
             'data-toggle': "tooltip",
             title: "Add new dataset" ,
             'data-placement': "auto"}
-          = link_to "<i class='fas fa-list'></i>".html_safe, datagroups_path,
-            { class: "btn btn-sm btn-block btn-outline-light text-success",
-            'data-toggle': "tooltip",
-            title: "Show datagroups" ,
-            'data-placement': "auto"}
+          - if current_user.has_role?(:admin).present?
+            = link_to "<i class='fas fa-network-wired'></i>".html_safe, datagroups_path,
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Manage datagroups" ,
+              'data-placement': "auto"}
+            = link_to "<i class='fas fa-list'></i>".html_safe, categories_path,
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Manage categories" ,
+              'data-placement': "auto"}
+            = link_to "<i class='fas fa-key'></i>".html_safe, keywords_path,
+              { class: "btn btn-sm btn-block btn-outline-light text-success",
+              'data-toggle': "tooltip",
+              title: "Manage keywords" ,
+              'data-placement': "auto"}
       // add a separator if more actions are appended
       -# .div.pb-4
 
