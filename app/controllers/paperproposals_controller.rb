@@ -68,7 +68,7 @@ class PaperproposalsController < ApplicationController
       @paperproposals = @paperproposals.search(@filter.fetch(:query)).order(:id) unless @filter.fetch(:query).empty?
 
       # reduce by select
-      @paperproposals = @paperproposals.where(board_state: @filter.fetch(:internal_state)) unless @filter.fetch(:internal_state).all?(&:blank?)
+      @paperproposals = @paperproposals.where(board_state: @filter.fetch(:internal_state, {})) unless @filter.fetch(:internal_state, {}).all?(&:blank?)
       @paperproposals = @paperproposals.where(state: @filter.fetch(:external_state)) unless @filter.fetch(:external_state).all?(&:blank?)
     end
 

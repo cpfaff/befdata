@@ -118,21 +118,23 @@
             required: false,
             collection: all_paperproposal_external_states_for_select,
             input_html: { multiple: true, class: "facet_select"}
-        - if params.has_key?(:search) ? params[:search].has_key?(:internal_state) : false
-          = f.input :internal_state,
-            as: :select,
-            label: "Internal Status",
-            required: false,
-            collection: all_paperproposal_internal_states_for_select,
-            selected: params[:search][:internal_state],
-            input_html: { multiple: true, class: "facet_select"}
-        - else
-          = f.input :internal_state,
-            as: :select,
-            label: "Internal Status",
-            required: false,
-            collection: all_paperproposal_internal_states_for_select,
-            input_html: { multiple: true, class: "facet_select"}
+        - if current_user
+          - if params.has_key?(:search) ? params[:search].has_key?(:internal_state) : false
+            = f.input :internal_state,
+              as: :select,
+              label: "Internal Status",
+              required: false,
+              collection: all_paperproposal_internal_states_for_select,
+              selected: params[:search][:internal_state],
+              input_html: { multiple: true, class: "facet_select"}
+          - else
+            = f.input :internal_state,
+              as: :select,
+              label: "Internal Status",
+              required: false,
+              collection: all_paperproposal_internal_states_for_select,
+              input_html: { multiple: true, class: "facet_select"}
+
       = f.button :submit, "Submit", class: "btn btn-outline-primary", :style => "display: none;"
 
   // sorting
