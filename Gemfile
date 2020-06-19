@@ -124,7 +124,7 @@ group :development do
   gem 'libxml-ruby', '~> 3.1.0'
 
   # web server
-  gem 'puma', '~> 4.3.0'
+  gem 'puma', '~> 4.3.5'
 
   # gem 'debugger'
   gem 'better_errors', '~> 2.5.1'
