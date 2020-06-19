@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-  before_action :load_datagroup, only: %i[new create]
+  before_action :load_datagroup, only: %i[index new create]
   before_action :load_category, only: %i[show destroy upload_sheetcells update_sheetcells]
 
   skip_before_action :deny_access_to_all
@@ -143,7 +143,7 @@ class CategoriesController < ApplicationController
   end
 
   def load_datagroup
-    @datagroup = Datagroup.find_by_id(params.require(:datagroup_id).to_i)
+    @datagroup = Datagroup.find_by_id(params.fetch(:datagroup_id, nil))
   end
 
   def load_category
