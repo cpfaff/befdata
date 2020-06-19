@@ -147,6 +147,7 @@
                   .font-weight-bold.text-muted
                     %span
                       Keyword:
+                      = tag.id
                 .card-body
                   %p.card-text
                     .div.pb-3
@@ -163,9 +164,9 @@
                     .div.pb-3
                       .font-weight-bold.text-dark
                         Usage count:
-                      - if tag.count.present?
+                      - if tag.taggings_count.present?
                         .font-weight-normal.text-dark
-                          = tag.count
+                          = tag.taggings_count
                       - else
                         .font-weight-normal.text-muted
                           No information available
