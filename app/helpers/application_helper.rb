@@ -56,7 +56,7 @@ module ApplicationHelper
   end
 
   def all_tags_for_select
-    ActsAsTaggableOn::Tag.all.map { |tag| [tag.name, tag.id] }.uniq
+    ActsAsTaggableOn::Tag.all.map { |tag| [tag.name, tag.id] }.sort.uniq
   end
 
   def all_dataset_tags_for_select
