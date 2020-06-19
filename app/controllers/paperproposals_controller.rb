@@ -49,6 +49,10 @@ class PaperproposalsController < ApplicationController
                                              :main_aspect_dataset_owners,
                                              :side_aspect_dataset_owners,
                                              :authored_by_project)
+    # restrict if not logged in
+    unless current_user
+      @paperproposals = @paperproposals.where(state: 'accepted')
+    end
 
     # sort
     if params[:sort]

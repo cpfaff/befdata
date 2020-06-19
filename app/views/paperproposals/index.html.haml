@@ -1,10 +1,5 @@
 / header
 
-// variables
-
-- unless current_user
-  - @paperproposals = @paperproposals.select{ |p| p.state == 'accepted'}
-
 // title
 - page_title "Papers"
 
