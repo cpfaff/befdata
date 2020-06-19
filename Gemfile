@@ -97,7 +97,7 @@ group :production do
 end
 
 # uglifier minifies java script
-gem 'uglifier', '~> 2.7.2'
+gem 'uglifier', '~> 4.2.0'
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
