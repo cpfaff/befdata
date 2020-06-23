@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   end
 
   match 'legal' => 'pages#legal', :as => :legal, via: %i[get post]
-  get 'help' => redirect('https://github.com/befdata/befdata/wiki'), :as => :help
+  get 'help' => redirect('https://github.com/cpfaff/befdata/wiki'), :as => :help
 
   # resources :datasets, :except => [:index] do
   resources :datasets do
