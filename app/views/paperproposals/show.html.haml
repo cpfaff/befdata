@@ -336,15 +336,17 @@
               %br
 
               // actions for dataset freeformats
-              %div.pb-2
-                .font-weight-bold.text-dark
-                  Actions:
+              - if may_administrate_paperproposals? || is_paperproposal_author?
+                - if may_administrate_paperproposals? || author_may_edit?
+                  %div.pb-2
+                    .font-weight-bold.text-dark
+                      Actions:
 
-                %span{'data-toggle': 'tooltip', title: 'Add attachment', 'data-placement': 'auto'}
-                  = link_to "<i class='fas fa-paperclip'></i>".html_safe, "#",
-                    { class: "btn btn-sm btn-outline-light text-success",
-                      'data-toggle': "modal",
-                      'data-target': "#new_freeformat_file"}
+                    %span{'data-toggle': 'tooltip', title: 'Add attachment', 'data-placement': 'auto'}
+                      = link_to "<i class='fas fa-paperclip'></i>".html_safe, "#",
+                        { class: "btn btn-sm btn-outline-light text-success",
+                          'data-toggle': "modal",
+                          'data-target': "#new_freeformat_file"}
 
               - if @paperproposal.freeformats.present?
                 // filter for datasets
