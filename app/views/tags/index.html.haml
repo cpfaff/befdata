@@ -151,7 +151,7 @@
                 .card-header
                   .font-weight-bold.text-muted
                     %span
-                      Keyword:
+                      Keyword: #
                       = tag.id
                 .card-body
                   %p.card-text
@@ -288,96 +288,98 @@
 
 
 // clicking on cards selects the tag for manipulation
-:javascript
-  $(document).ready(function() {
 
-    var selected_area = $("ul#selected");
-    var tag_list_area = $(".tags")
+- if current_user
+  - if current_user.has_role?(:admin) || current_user.has_role?(:data_admin)
+    :javascript
+      $(document).ready(function() {
 
-    function update_menu_bar() {
-      var num_items = tag_list_area.find(':checkbox:checked').length
-      switch(+num_items) {
-        case 0:
-          $("#actions-group").find("#delete").addClass('disabled');
-          $("#actions-group").find("#rename").addClass('disabled');
-          $("#actions-group").find("#merge").addClass('disabled');
-          $("#actions-group").find("#reset").addClass('disabled');
-          break;
-        case 1:
-          $("#actions-group").find("#delete").addClass('disabled');
-          $("#actions-group").find("#rename").addClass('disabled');
-          $("#actions-group").find("#merge").addClass('disabled');
-          $("#actions-group").find("#reset").addClass('disabled');
+        var selected_area = $("ul#selected");
+        var tag_list_area = $(".tags")
 
-          $("#actions-group").find("#delete").removeClass('disabled');
-          $("#actions-group").find("#rename").removeClass('disabled');
-          $("#actions-group").find("#reset").removeClass('disabled');
-          break;
-        default:
-          $("#actions-group").find("#delete").removeClass('disabled');
-          $("#actions-group").find("#rename").removeClass('disabled');
-          $("#actions-group").find("#merge").removeClass('disabled');
-          $("#actions-group").find("#reset").removeClass('disabled');
-      }
-    }
+        function update_menu_bar() {
+          var num_items = tag_list_area.find(':checkbox:checked').length
+          switch(+num_items) {
+            case 0:
+              $("#actions-group").find("#delete").addClass('disabled');
+              $("#actions-group").find("#rename").addClass('disabled');
+              $("#actions-group").find("#merge").addClass('disabled');
+              $("#actions-group").find("#reset").addClass('disabled');
+              break;
+            case 1:
+              $("#actions-group").find("#delete").addClass('disabled');
+              $("#actions-group").find("#rename").addClass('disabled');
+              $("#actions-group").find("#merge").addClass('disabled');
+              $("#actions-group").find("#reset").addClass('disabled');
 
-    // send requests
-    var pre_rename_url = "#{pre_rename_keywords_path}";
-    var pre_merge_url = "#{pre_merge_keywords_path}";
-    var delete_url = "#{delete_keywords_path}";
-
-    // submit actions
-    $("#actions-group #delete").click(function(){
-      var resp = confirm("Are you sure to delete the selected keywords ?")
-      if (resp){
-        $("form#manage").attr({action: delete_url}).submit();
-      }
-    })
-    $("#actions-group #rename").click(function(){
-      $("form#manage").attr({action: pre_rename_url}).submit();
-    })
-    $("#actions-group #merge").click(function(){
-      $("form#manage").attr({action: pre_merge_url}).submit();
-    })
-
-    // reset selection
-    $('#reset').click(function(){
-      $(".tags .tag input:checked").each(function(){
-        this.checked=false
-        $(this).closest('.card').removeClass('border-success');
-      });
-      update_menu_bar();
-      return(false);
-    });
-
-    $( ".card" ).click(
-      function() {
-
-        var tag_checkbox = $(this).find('input[type=checkbox]');
-
-        // handle the added tags in hidden form
-        function add_to_selected(tag_id, name) {
-          var li=$("<li/>").attr({id: tag_id});
-          var hidden_input = $("<input type='hidden' />").attr({name: 'keywords[]', value: tag_id});
-          var span_name = $("<span/>").text(name);
-          var remove_link = $("<a/>").addClass('remove_parent');
-          li.append(remove_link, hidden_input, span_name).appendTo(selected_area);
+              $("#actions-group").find("#delete").removeClass('disabled');
+              $("#actions-group").find("#rename").removeClass('disabled');
+              $("#actions-group").find("#reset").removeClass('disabled');
+              break;
+            default:
+              $("#actions-group").find("#delete").removeClass('disabled');
+              $("#actions-group").find("#rename").removeClass('disabled');
+              $("#actions-group").find("#merge").removeClass('disabled');
+              $("#actions-group").find("#reset").removeClass('disabled');
+          }
         }
 
+        // send requests
+        var pre_rename_url = "#{pre_rename_keywords_path}";
+        var pre_merge_url = "#{pre_merge_keywords_path}";
+        var delete_url = "#{delete_keywords_path}";
 
-        function remove_from_selected(tag_id){selected_area.find('li#'+tag_id).remove(); }
+        // submit actions
+        $("#actions-group #delete").click(function(){
+          var resp = confirm("Are you sure to delete the selected keywords ?")
+          if (resp){
+            $("form#manage").attr({action: delete_url}).submit();
+          }
+        })
+        $("#actions-group #rename").click(function(){
+          $("form#manage").attr({action: pre_rename_url}).submit();
+        })
+        $("#actions-group #merge").click(function(){
+          $("form#manage").attr({action: pre_merge_url}).submit();
+        })
 
-        if (tag_checkbox.prop('checked') == true) {
-          tag_checkbox.prop('checked', false);
-          remove_from_selected(tag_checkbox.attr('value'));
-          $(this).removeClass('border-success');
+        // reset selection
+        $('#reset').click(function(){
+          $(".tags .tag input:checked").each(function(){
+            this.checked=false
+            $(this).closest('.card').removeClass('border-success');
+          });
           update_menu_bar();
-        } else {
-          tag_checkbox.prop('checked', true);
-          add_to_selected(tag_checkbox.attr('value'), tag_checkbox.attr('name'));
-          $(this).addClass('border-success');
-          update_menu_bar();
-        };
+          return(false);
+        });
+
+        $( ".card" ).click(
+          function() {
+
+            var tag_checkbox = $(this).find('input[type=checkbox]');
+
+            // handle the added tags in hidden form
+            function add_to_selected(tag_id, name) {
+              var li=$("<li/>").attr({id: tag_id});
+              var hidden_input = $("<input type='hidden' />").attr({name: 'keywords[]', value: tag_id});
+              var span_name = $("<span/>").text(name);
+              var remove_link = $("<a/>").addClass('remove_parent');
+              li.append(remove_link, hidden_input, span_name).appendTo(selected_area);
+            }
+
+
+            function remove_from_selected(tag_id){selected_area.find('li#'+tag_id).remove(); }
+
+            if (tag_checkbox.prop('checked') == true) {
+              tag_checkbox.prop('checked', false);
+              remove_from_selected(tag_checkbox.attr('value'));
+              $(this).removeClass('border-success');
+              update_menu_bar();
+            } else {
+              tag_checkbox.prop('checked', true);
+              add_to_selected(tag_checkbox.attr('value'), tag_checkbox.attr('name'));
+              $(this).addClass('border-success');
+              update_menu_bar();
+            };
+          });
       });
-  });
-
