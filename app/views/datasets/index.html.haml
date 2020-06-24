@@ -60,22 +60,22 @@
               'data-toggle': "tooltip",
               title: "Manage keywords" ,
               'data-placement': "auto"}
-      // add a separator if more actions are appended
-      .div.pb-4
 
     // section download
-    .border-top.border-right.border-left.rounded-top.pb-1
-      %span{'data-toggle': 'tooltip', title: 'Download section', 'data-placement': 'auto'}
-        = link_to "<i class='fas fa-download'></i>".html_safe, "#",
-          { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
-            'data-turbolinks': false }
-    // section content
-    .div.pt-2
-      // download data
-      %span{'data-toggle': 'tooltip', title: 'Download dataset template', 'data-placement': 'auto'}
-        #download_button.disable_on_import
-          = link_to "<i class='fas fa-file-alt'></i>".html_safe, "/templates/befdata_workbook_empty_v013.xls",
-            { class: "btn btn-sm btn-block btn-outline-light text-success " }
+    - if current_user
+      .div.pb-4
+      .border-top.border-right.border-left.rounded-top.pb-1
+        %span{'data-toggle': 'tooltip', title: 'Download section', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-download'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
+              'data-turbolinks': false }
+      // section content
+      .div.pt-2
+        // download data
+        %span{'data-toggle': 'tooltip', title: 'Download dataset template', 'data-placement': 'auto'}
+          #download_button.disable_on_import
+            = link_to "<i class='fas fa-file-alt'></i>".html_safe, "/templates/befdata_workbook_empty_v013.xls",
+              { class: "btn btn-sm btn-block btn-outline-light text-success " }
 
     // scroll down
     = link_to "<i class='fas fa-angle-double-down'></i>".html_safe, "#",
