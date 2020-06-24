@@ -57,6 +57,11 @@
           .text-muted
             o
 
+      - unless current_user.admin?
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
       / section edit
       - if current_user
         - if current_user.has_role?(:admin).present?

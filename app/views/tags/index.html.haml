@@ -34,6 +34,11 @@
           .text-muted
             o
 
+      - unless current_user.has_role?(:admin).present? || current_user.has_role?(:data_admin).present?
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
       // section tools
       - if current_user
         - if current_user.has_role?(:admin).present? || current_user.has_role?(:data_admin).present?

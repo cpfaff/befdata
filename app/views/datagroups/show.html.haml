@@ -33,6 +33,11 @@
           .text-muted
             o
 
+      - unless current_user.admin? || current_user.data_admin?
+        .btn.btn-sm.btn-outline-light
+          .text-muted
+            o
+
       // section info
       - if current_user
         - if @datagroup.comment.present?

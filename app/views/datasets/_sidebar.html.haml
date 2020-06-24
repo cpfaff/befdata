@@ -25,7 +25,7 @@
               { class: "btn btn-sm btn-block btn-outline-light text-muted disabled",
                 'data-turbolinks': false }
     // section info content
-    - if current_user || dataset.include_license?
+    - if current_user
       - if dataset.comment.present?
         = show_to :admin, :data_admin, :project_board do
           .div.pt-2
@@ -40,7 +40,6 @@
             { class: "btn btn-sm btn-block btn-outline-light text-success",
               'data-toggle': "modal",
               'data-target': "#license_dataset"}
-    - if current_user
       - if dataset.dataset_downloads_count > 0
         %span{'data-toggle': 'tooltip', title: 'Show download history', 'data-placement': 'auto'}
           = link_to "<i class='fas fa-history'></i>".html_safe, "#",
