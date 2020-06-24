@@ -17,20 +17,12 @@
             No information available
       .pt-2.pb-3
         .float-left
-
-          - if datagroup.created_at.present?
+          - if datagroup.id.present?
             .badge.badge-pill.badge-light.m-1
               .p-1
-                = fa_icon('calendar')
-                Created at:
-                = datagroup.created_at.strftime("%F")
-
-          - if datagroup.updated_at.present?
-            .badge.badge-pill.badge-light.m-1
-              .p-1
-                = fa_icon('calendar')
-                Updated at:
-                = datagroup.updated_at.strftime("%F")
+                = fa_icon('hashtag')
+                ID:
+                = datagroup.id
 
           - if datagroup.categories_count.present?
             .badge.badge-pill.badge-light.m-1
@@ -45,3 +37,17 @@
                 = fa_icon('columns')
                 Datacolumns:
                 = datagroup.datacolumns_count
+
+          - if datagroup.created_at.present?
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                = fa_icon('calendar')
+                Created at:
+                = datagroup.created_at.strftime("%F")
+
+          - if datagroup.updated_at.present?
+            .badge.badge-pill.badge-light.m-1
+              .p-1
+                = fa_icon('calendar')
+                Updated at:
+                = datagroup.updated_at.strftime("%F")
