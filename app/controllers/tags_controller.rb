@@ -6,8 +6,8 @@ class TagsController < ApplicationController
 
   # todo: adapt the access control.
   access_control do
-    actions :index, :show do
-      allow :admin, :data_admin
+    actions :index do
+      allow logged_in
     end
     actions :manage, :pre_rename, :rename, :delete, :pre_merge, :merge do
       allow :admin, :data_admin
