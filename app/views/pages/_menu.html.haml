@@ -24,6 +24,9 @@
         #navigation_datagroups_path
           %li.nav-item{class: current_page?(datagroups_path) && 'active'}
             = link_to 'Datagroups', datagroups_path, class: "nav-link"
+        #navigation_categories_path
+          %li.nav-item{class: current_page?(categories_path) && 'active'}
+            = link_to 'Categories', categories_path, class: "nav-link"
         #navigation_keywords_path
           %li.nav-item{class: current_page?(keywords_path) && 'active'}
             = link_to 'Keywords', keywords_path, class: "nav-link"

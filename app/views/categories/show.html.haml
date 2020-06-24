@@ -35,7 +35,7 @@
     .text-muted.font-weight-bold
       %span{'data-toggle': 'tooltip', title: 'Back to index', 'data-placement': 'auto'}
         %i.fas.fa-angle-double-right{style: 'vertical-align: middle;'}
-        = link_to "Show: #{@category.short.to_s}", datagroups_path, class: 'text-muted'
+        = link_to "Show: #{@category.short.to_s}", categories_path, class: 'text-muted'
 
 // sidebar
 = content_for :actions do
@@ -252,7 +252,7 @@
 // activate the correct main navigation link
 :javascript
   $(document).ready(function() {
-    $('#navigation_datasets_path').find('.nav-item').addClass('active');
+    $('#navigation_categories_path').find('.nav-item').addClass('active');
   });
 
 // enable hover shadow on cards
