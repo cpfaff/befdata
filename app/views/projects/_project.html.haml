@@ -18,6 +18,12 @@
         .float-left
           .badge.badge-pill.badge-light.m-1
             .p-1
+              - if project.id.present?
+                = fa_icon('hashtag')
+                Id:
+                = project.id
+          .badge.badge-pill.badge-light.m-1
+            .p-1
               - if project.users.count
                 = fa_icon('user')
                 Users:

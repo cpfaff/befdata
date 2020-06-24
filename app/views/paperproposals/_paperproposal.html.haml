@@ -17,6 +17,12 @@
         .float-left
           .badge.badge-pill.badge-light.m-1
             .p-1
+              - if paperproposal.id.present?
+                = fa_icon('hashtag')
+                Id:
+                = paperproposal.id
+          .badge.badge-pill.badge-light.m-1
+            .p-1
               - if paperproposal.authors.count
                 = fa_icon('user')
                 Users:

@@ -41,6 +41,12 @@
           - else
             .badge.badge-pill.badge-light.m-1
               .p-1
+                - if dataset.id.present?
+                  = fa_icon('hashtag')
+                  Id:
+                  = dataset.id
+            .badge.badge-pill.badge-light.m-1
+              .p-1
                 - if dataset.users.count
                   = fa_icon('user')
                   Users:
