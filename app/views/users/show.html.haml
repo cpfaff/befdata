@@ -538,25 +538,6 @@
     });
   });
 
-// re-active last active tab on page reload
-:javascript
-  // $(document).on('turbolinks:load', function(){
-  $(document).ready(function() {
-    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
-      localStorage.setItem('activeTab', $(e.target).attr('href'));
-      $(e.target).addClass('active');
-      $(e.relatedTarget).removeClass('active')
-    });
-
-    var lastActiveTab = localStorage.getItem('activeTab');
-
-    if(lastActiveTab){
-      $('.nav-tabs a[href="' + lastActiveTab + '"]').tab('show')
-    } else {
-      $('.nav-tabs a[href="#datagroup_tab_1"]').tab('show')
-    }
-  });
-
 // filter the projects
 :javascript
   $(document).ready(function() {
