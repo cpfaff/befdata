@@ -25,7 +25,7 @@
           .container
             %br
             = field_set_tag "Profile" do
-              = f.input :salutation
+              = f.input :salutation, label: 'Title'
               = f.input :firstname, required: true
               = f.input :middlenames
               = f.input :lastname, required: true
