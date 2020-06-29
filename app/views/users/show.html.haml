@@ -33,10 +33,11 @@
           .text-muted
             o
 
-      - unless current_user.has_role?(:admin) || @user == current_user
-        .btn.btn-sm.btn-outline-light
-          .text-muted
-            o
+      - if current_user
+        - unless current_user.has_role?(:admin) || @user == current_user
+          .btn.btn-sm.btn-outline-light
+            .text-muted
+              o
 
       // section info
       - if current_user
