@@ -40,6 +40,14 @@
               = project.authored_paperproposals.count
           .badge.badge-pill.badge-light.m-1
             .p-1
+              = fa_icon('paperclip')
+              Attachments:
+              - if project.freeformats_count.present?
+                = project.freeformats_count
+              - else
+                = 0
+          .badge.badge-pill.badge-light.m-1
+            .p-1
               - if project.created_at
                 = fa_icon('calendar')
                 Created at:
