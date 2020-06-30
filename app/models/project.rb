@@ -62,7 +62,7 @@ class Project < ApplicationRecord
 
   def check_destroyable
     unless destroyable?
-      errors.add(:base, "#{shortname} still owns some resources, thus can not be deleted!")
+      errors.add(:base, "#{shortname} still is linked to some resources like datasets, users, and proposals. Thus it can not be deleted!")
       false
     end
   end
