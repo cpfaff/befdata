@@ -165,6 +165,15 @@
                         .font-weight-normal.text-muted
                           No information available
 
+                    .div.pb-3
+                      .font-weight-bold.text-dark
+                        Definition:
+                      - if tag.definition.present?
+                        .font-weight-normal.text-dark
+                          = tag.definition
+                      - else
+                        .font-weight-normal.text-muted
+                          No information available
 
                     .div.pb-3
                       .font-weight-bold.text-dark
