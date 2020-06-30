@@ -129,6 +129,8 @@
           %li.nav-item
             %a.active.nav-link.active{"data-toggle" => "tab", :href => "#project_tab_1", :role => "tab"} Metadata
           %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_attachments", :role => "tab"} Attachments
+          %li.nav-item
             %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_2", :role => "tab"} Users
           %li.nav-item
             %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_3", :role => "tab"} Datasets
@@ -188,6 +190,57 @@
                 - else
                   .font-weight-normal.text-muted
                     No information available
+
+          // attachments
+          #project_tab_attachments.tab-pane{:role => "tabpanel"}
+            .container
+              %br
+
+              // actions for dataset freeformats
+              - if current_user.has_role?(:admin)
+                %div.pb-2
+                  .font-weight-bold.text-dark
+                    Actions:
+
+                  %span{'data-toggle': 'tooltip', title: 'Add attachment', 'data-placement': 'auto'}
+                    = link_to "<i class='fas fa-paperclip'></i>".html_safe, "#",
+                      { class: "btn btn-sm btn-outline-light text-success",
+                        'data-toggle': "modal",
+                        'data-target': "#add_freeformat_attachment"}
+
+              - if @project.freeformats.present?
+                // filter for dataset freeformats
+                %div.pb-1
+                  .font-weight-bold.text-dark
+                    Filter:
+
+                %div.pb-3
+                  .input-group
+                    %input#filter_input_freeformats.form-control{:placeholder => "Type..", :type => "text"}
+                    .input-group-append
+                      = link_to "Reset", "javascript:void(0)".html_safe,
+                        { class: "btn btn-outline-primary", id: "button_clear_freeformats_filter",
+                        'data-toggle': "tooltip",
+                        'data-turbolinks': false,
+                        'title': "Clear Filter" ,
+                        'data-placement': "auto"}
+
+                // cards listing datasets
+                #filter_target_freeformats.card-columns.double
+                  - @project.freeformats.each do |freeformat|
+                    = render partial: freeformat, locals: { index: true }
+
+                #filter_target_freeformats_empty_note.d-none
+                  No information available
+
+              - else
+                .font-weight-normal.text-dark
+                  No information available
+
+              #filter_target_freeformats_empty_note.d-none
+                No information avialable
+
+
           // tab users
           #project_tab_2.tab-pane{:role => "tabpanel"}
             .container
@@ -361,6 +414,28 @@
 - if current_user
   = render :partial => "users/email_list_modal",
     locals: { contacts: @project.users.reject(&:alumni) }
+
+// add freeformat modal
+#add_freeformat_attachment.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Add attachment
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        = simple_form_for Freeformat.new,
+          url: freeformats_path(freeformattable_id: @project.id, freeformattable_type: @project.class),
+          html: { multipart: true },
+          wrapper_mappings: { file: :custom_file } do |f|
+          = render partial: 'freeformats/form', locals: { form: f, freeformat: f.object, freeformattable: @project }
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+          Close
+        #submit_new_freeformat_file_form.btn.btn-outline-primary
+          Submit
 
 
 / scripts
@@ -539,5 +614,13 @@
         $('#filter_target_users').find('.card').removeClass('d-none');
         $("#filter_target_users_empty_note").addClass('d-none');
       });
+    });
+  });
+
+/ modal: when the submit button is clicked on the form
+:javascript
+  $(document).ready(function() {
+    $('#submit_new_freeformat_file_form').click(function () {
+      $(this).closest('.modal-dialog').find('input[type=submit]').click();
     });
   });

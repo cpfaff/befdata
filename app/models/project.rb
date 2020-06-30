@@ -9,6 +9,10 @@ class Project < ApplicationRecord
   has_and_belongs_to_many :datasets
   has_many :authored_paperproposals, class_name: 'Paperproposal', foreign_key: :project_id
 
+  has_many :freeformats,
+           as: :freeformattable,
+           dependent: :destroy
+
   validates_presence_of :shortname, :name
   validates_uniqueness_of :shortname, :name
 
