@@ -197,16 +197,17 @@
               %br
 
               // actions for dataset freeformats
-              - if current_user.has_role?(:admin)
-                %div.pb-2
-                  .font-weight-bold.text-dark
-                    Actions:
+              - if current_user
+                - if current_user.has_role?(:admin)
+                  %div.pb-2
+                    .font-weight-bold.text-dark
+                      Actions:
 
-                  %span{'data-toggle': 'tooltip', title: 'Add attachment', 'data-placement': 'auto'}
-                    = link_to "<i class='fas fa-paperclip'></i>".html_safe, "#",
-                      { class: "btn btn-sm btn-outline-light text-success",
-                        'data-toggle': "modal",
-                        'data-target': "#add_freeformat_attachment"}
+                    %span{'data-toggle': 'tooltip', title: 'Add attachment', 'data-placement': 'auto'}
+                      = link_to "<i class='fas fa-paperclip'></i>".html_safe, "#",
+                        { class: "btn btn-sm btn-outline-light text-success",
+                          'data-toggle': "modal",
+                          'data-target': "#add_freeformat_attachment"}
 
               - if @project.freeformats.present?
                 // filter for dataset freeformats
