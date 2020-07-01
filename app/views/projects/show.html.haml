@@ -127,18 +127,18 @@
       .col
         %ul#tabs.nav.nav-tabs
           %li.nav-item
-            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#project_tab_1", :role => "tab"} Metadata
+            %a.active.nav-link.active{"data-toggle" => "tab", :href => "#project_tab_metadata", :role => "tab"} Metadata
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_users", :role => "tab"} Users
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_datasets", :role => "tab"} Datasets
+          %li.nav-item
+            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_proposals", :role => "tab"} Proposals
           %li.nav-item
             %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_attachments", :role => "tab"} Attachments
-          %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_2", :role => "tab"} Users
-          %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_3", :role => "tab"} Datasets
-          %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_4", :role => "tab"} Proposals
         .tab-content.equal-height
           // tab metadata
-          #project_tab_1.tab-pane.active{:role => "tabpanel"}
+          #project_tab_metadata.tab-pane.active{:role => "tabpanel"}
             .container
               %br
               .div.pb-3
@@ -243,7 +243,7 @@
 
 
           // tab users
-          #project_tab_2.tab-pane{:role => "tabpanel"}
+          #project_tab_users.tab-pane{:role => "tabpanel"}
             .container
               %br
               // cards with users
@@ -277,7 +277,7 @@
                   No information available
 
           // tab datasets
-          #project_tab_3.tab-pane{:role => "tabpanel"}
+          #project_tab_datasets.tab-pane{:role => "tabpanel"}
             .container
               %br
               - if @project_datasets.present?
@@ -310,7 +310,7 @@
                   No information available
 
           // tab proposals
-          #project_tab_4.tab-pane{:role => "tabpanel"}
+          #project_tab_proposals.tab-pane{:role => "tabpanel"}
             .container
               %br
               // when you are logged in
