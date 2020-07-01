@@ -111,12 +111,12 @@
           - if @dataset.can_be_edited_by? current_user
             - if column.values_stored?
               .disable_on_import
-                %span{'data-toggle': 'tooltip', title: 'Values Approved', 'data-placement': 'auto'}
+                %span{'data-toggle': 'tooltip', title: 'Column is approved.', 'data-placement': 'auto'}
                   = link_to "<i class='fas fa-thumbs-up'></i>".html_safe, approval_overview_datacolumn_url(column),
                   { class: "btn btn-sm btn-outline-light text-success" }
             - else
               .disable_on_import
-                %span{'data-toggle': 'tooltip', title: 'Check approval', 'data-placement': 'auto'}
+                %span{'data-toggle': 'tooltip', title: 'Approve column now', 'data-placement': 'auto'}
                   = link_to "<i class='fas fa-thumbs-down'></i>".html_safe, approval_overview_datacolumn_url(column),
                   { class: "btn btn-sm btn-outline-light text-danger" }
 
