@@ -24,15 +24,17 @@
       - sidebar_exists = content_for?(:actions)
     // pushes the footer down the viewport
     #wrap
-      // pushes the footer down the viewport
+      // pushes the footer down the viewport (for now disabled in the application.css)
       #main.container.clear-top
         .row
           .col-12
-            = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/head"
+            // a logo ih the header
             -# = link_to image_tag('header-logo.png')
+            = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/head"
         .row
           .col-12
             .pt-2
+              // main navigation bar
               = render partial: 'pages/menu'
         .row
           .col-12
@@ -45,19 +47,19 @@
                         %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} ×
                         = content_tag :div, msg, :id => "flash_#{name}"
         .row
-          %div{:class => sidebar_exists ? "col-sm-10 col-md-10 col-lg-11 order-1" : "col-12"}
+          %div{:class => sidebar_exists ? "col-lg-11 col-md-11 col-sm-10 order-1" : "col-12"}
             = content_for?(:content) ? yield(:content) : yield
 
           - if sidebar_exists
-            .col-lg-1.col-md-2.col-sm-2.text-center.hide-overflow.order-xs-1.order-sm-2.order-md-2.order-lg-2
-              // todo: investigate. sticky top is not working anymore
-              %ul.list-group.sticky-top.pt-3
-                - if content_for?(:actions)
-                  %li.list-group-item
-                    %span
-                      = yield :actions
+            .col-lg-1.col-md-1.col-sm-2.order-lg-2.order-md-2.order-sm-2
+              %div.sticky-top.pt-3
+                %ul.list-group.text-center
+                  - if content_for?(:actions)
+                    %li.list-group-item
+                      %span
+                        = yield :actions
 
-    // pushes the footer down the viewport
+    // pushes the footer down the viewport (for now disabled in the application.css)
     %footer#footer
       .container.pt-3
         = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/foot"

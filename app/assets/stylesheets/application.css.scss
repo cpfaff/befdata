@@ -52,20 +52,24 @@ html, body {
   min-height: 100%;
 }
 
+// these two push the footer down the viewport. This however
+// breaks the stick top sidebar which is handy.
 // main content let footer free
-#main {
-  overflow:auto;
-  padding-bottom:150px; /* this needs to be bigger than footer height*/
-}
+// #main {
+  // overflow:auto;
+  // padding-bottom:150px; 
+  // // [> this needs to be bigger than footer height<]
+// }
 
-// footer to bottom
-#footer {
-  position: relative;
-  margin-top: -150px; /* negative value of footer height */
-  height: 150px;
-  clear:both;
-  padding-top:20px;
-} 
+// // // footer to bottom
+// #footer {
+  // position: relative;
+  // margin-top: -150px; 
+  // // [> negative value of footer height <]
+  // height: 150px;
+  // clear:both;
+  // padding-top:20px;
+// } 
 
 // the navigation bar 
 
