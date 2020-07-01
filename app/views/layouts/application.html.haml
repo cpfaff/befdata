@@ -45,10 +45,11 @@
                         %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} ×
                         = content_tag :div, msg, :id => "flash_#{name}"
         .row
-          %div{:class => sidebar_exists ? "col-11" : "col-12"}
+          %div{:class => sidebar_exists ? "col-sm-10 col-md-10 col-lg-11 order-1" : "col-12"}
             = content_for?(:content) ? yield(:content) : yield
+
           - if sidebar_exists
-            .col-1.text-center.hide-overflow
+            .col-lg-1.col-md-2.col-sm-2.text-center.hide-overflow.order-xs-1.order-sm-2.order-md-2.order-lg-2
               // todo: investigate. sticky top is not working anymore
               %ul.list-group.sticky-top.pt-3
                 // todo: remove the unused content groups when the ui rewrite is complete
