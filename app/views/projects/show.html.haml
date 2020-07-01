@@ -660,3 +660,10 @@
       $(this).closest('.modal-dialog').find('input[type=submit]').click();
     });
   });
+
+// workaround for displaying selected file
+:javascript
+  $('.custom-file-input').change(function(e){
+    var fileName = e.target.files[0].name;
+    $(`.custom-file-label[for=${e.currentTarget['id']}]`).html(fileName);
+  });
