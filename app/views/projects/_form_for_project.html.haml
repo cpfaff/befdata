@@ -144,3 +144,10 @@
     $(".tab-content .tab-pane:first").addClass("active");
     $(".tab-content").height(maxHeight);
   });
+
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_projects_path').find('.nav-item').addClass('active');
+  });
