@@ -202,3 +202,17 @@ hr.header-footer.separator-lightgray {
     column-count: 3;
   }
 }
+
+.masonry { 
+  display: flex;
+  flex-flow: row wrap;
+  // margin-left: -8px; [> Adjustment for the gutter <]
+  width: 100%;
+}
+
+.masonry-brick {
+  flex: auto;
+  width: 32.5%;
+  min-width: 300px;
+  margin: 0 8px 8px 0; /* Some gutter */
+}

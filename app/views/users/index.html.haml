@@ -106,7 +106,11 @@
 
   // content
   - if @users.present?
-    .card-columns.triple
+    -# .card-columns.triple
+      -# - @users.each do |user|
+        -# // render partial projects
+        -# = render partial: user
+    .masonry
       - @users.each do |user|
         // render partial projects
         = render partial: user
