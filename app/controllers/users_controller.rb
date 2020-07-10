@@ -31,10 +31,8 @@ class UsersController < ApplicationController
     # get all
     @users = User.all
 
-    # sort (needs to take place before search)
-     if params[:sort]
-       @users = @users.order(sort_column + ' ' + sort_direction)
-     end
+    # sort (note: needs to take place before search)
+    @users = @users.order(sort_column + ' ' + sort_direction)
 
     # search
     if params[:search]
@@ -109,7 +107,7 @@ class UsersController < ApplicationController
   end
 
   def sort_column
-    User.column_names.include?(params[:sort]) ? params[:sort] : 'name'
+    User.column_names.include?(params[:sort]) ? params[:sort] : 'firstname'
   end
 
   def sort_direction
