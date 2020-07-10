@@ -87,71 +87,74 @@
         - else
           .font-weight-normal.text-muted
             No information available
-  .card-footer.text-right
-    %span{'data-toggle': 'tooltip', title: 'Download', 'data-placement': 'auto'}
-      = link_to "<i class='fas fa-download'></i>".html_safe, download_freeformat_path(freeformat),
-        { class: "btn btn-sm btn-outline-light text-primary", 'data-turbolinks': false }
-    %span{'data-toggle': 'tooltip', title: 'Edit', 'data-placement': 'auto'}
-      = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
-        { class: "btn btn-sm btn-outline-light text-primary",
-          'data-toggle': "modal",
-          'data-target': "#edit_freeformat_file_#{freeformat.id}"}
-    %span{'data-toggle': 'tooltip', title: 'Delete', 'data-placement': 'auto'}
-      = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
-        { class: "btn btn-sm btn-outline-light text-primary",
-          'data-toggle': "modal",
-          'data-target': "#delete_freeformat_file_#{freeformat.id}"}
+  - if current_user
+    .card-footer.text-right
+      %span{'data-toggle': 'tooltip', title: 'Download', 'data-placement': 'auto'}
+        = link_to "<i class='fas fa-download'></i>".html_safe, download_freeformat_path(freeformat),
+          { class: "btn btn-sm btn-outline-light text-primary", 'data-turbolinks': false }
+      - if current_user.has_role?(:admin)
+        %span{'data-toggle': 'tooltip', title: 'Edit', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-pencil-alt'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-outline-light text-primary",
+              'data-toggle': "modal",
+              'data-target': "#edit_freeformat_file_#{freeformat.id}"}
+        %span{'data-toggle': 'tooltip', title: 'Delete', 'data-placement': 'auto'}
+          = link_to "<i class='fas fa-trash'></i>".html_safe, "#",
+            { class: "btn btn-sm btn-outline-light text-primary",
+              'data-toggle': "modal",
+              'data-target': "#delete_freeformat_file_#{freeformat.id}"}
 
-    // item specific moals
-    .text-left
-      // edit freeformat attachment dkta
-      .modal.fade{id: "edit_freeformat_file_#{freeformat.id}"}
-        .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
-          .modal-content
-            / Modal Header
-            .modal-header
-              %h4.modal-title
-                -# Edit attachment:
-                Edit attachment:
-              %button.close{"data-dismiss" => "modal", :type => "button"}
-                ×
-            / Modal body
-            .modal-body
-              .text-justify
-                You can edit the selected free format attachment here. If
-                you select a file it will replace the old one. If you
-                leave it empty
-              %br
-              .modal-form
-                = simple_form_for freeformat, html: { multipart: true }, wrapper_mappings: { file: :custom_file, boolean: :custom_boolean } do |f|
-                  = f.input :file, hint: 'Select and replace the currently attached file'
-                  = f.input :description, value: freeformat.description, hint: 'Adapt the descrittion'
-                  - if freeformat.freeformattable.is_a? Paperproposal
-                    = f.input :uri, placeholder: "An URI.  This can be a DOI or just an external link"
-                    = f.input :is_essential, as: :boolean, hint: 'Tick this if the attachment is an essential component of the suggested proposal e.g. a dataset which is required for the analysis'
-                  = f.button :submit, style: "display: none;", class: "btn btn-primary"
-            / Modal footer
-            .modal-footer
-              %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
-                Close
-              .submit_edit_freeformat_file_form.btn.btn-outline-primary
-                Submit
+      - if current_user.has_role?(:admin)
+        // item specific moals
+        .text-left
+          // edit freeformat attachment dkta
+          .modal.fade{id: "edit_freeformat_file_#{freeformat.id}"}
+            .modal-dialog.modal-dialog-centered.modal-dialog-scrollable
+              .modal-content
+                / Modal Header
+                .modal-header
+                  %h4.modal-title
+                    -# Edit attachment:
+                    Edit attachment:
+                  %button.close{"data-dismiss" => "modal", :type => "button"}
+                    ×
+                / Modal body
+                .modal-body
+                  .text-justify
+                    You can edit the selected free format attachment here. If
+                    you select a file it will replace the old one. If you
+                    leave it empty
+                  %br
+                  .modal-form
+                    = simple_form_for freeformat, html: { multipart: true }, wrapper_mappings: { file: :custom_file, boolean: :custom_boolean } do |f|
+                      = f.input :file, hint: 'Select and replace the currently attached file'
+                      = f.input :description, value: freeformat.description, hint: 'Adapt the descrittion'
+                      - if freeformat.freeformattable.is_a? Paperproposal
+                        = f.input :uri, placeholder: "An URI.  This can be a DOI or just an external link"
+                        = f.input :is_essential, as: :boolean, hint: 'Tick this if the attachment is an essential component of the suggested proposal e.g. a dataset which is required for the analysis'
+                      = f.button :submit, style: "display: none;", class: "btn btn-primary"
+                / Modal footer
+                .modal-footer
+                  %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"}
+                    Close
+                  .submit_edit_freeformat_file_form.btn.btn-outline-primary
+                    Submit
 
-      // delete dataset modal
-      .modal.fade{id: "delete_freeformat_file_#{freeformat.id}"}
-        .modal-dialog.modal-dialog-centered
-          .modal-content
-            / Modal Header
-            .modal-header
-              %h4.modal-title Delete
-              %button.close{"data-dismiss" => "modal", :type => "button"} ×
-            / Modal body
-            .modal-body
-              Do you really want to delete the attachment?
-            / Modal footer
-            .modal-footer
-              %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
-              = link_to 'Delete', freeformat_path(freeformat), method: :delete, class: 'btn btn-outline-primary'
+          // delete dataset modal
+          .modal.fade{id: "delete_freeformat_file_#{freeformat.id}"}
+            .modal-dialog.modal-dialog-centered
+              .modal-content
+                / Modal Header
+                .modal-header
+                  %h4.modal-title Delete
+                  %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                / Modal body
+                .modal-body
+                  Do you really want to delete the attachment?
+                / Modal footer
+                .modal-footer
+                  %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+                  = link_to 'Delete', freeformat_path(freeformat), method: :delete, class: 'btn btn-outline-primary'
 
 / scripts
 
