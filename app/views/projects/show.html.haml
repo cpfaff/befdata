@@ -265,7 +265,7 @@
                         'data-placement': "auto"}
 
                 // cards listing users
-                #filter_target_users.card-columns.double
+                #filter_target_users.masonry
                   - @project.users.each do |user|
                     = render partial: user, locals: { role: formated_role_text(user, @project) }
               - else
