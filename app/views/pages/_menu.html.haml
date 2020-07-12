@@ -1,7 +1,4 @@
 %nav.navbar.navbar-expand-lg.navbar-light.border-bottom.pb-0.pl-0.pr-0.pt-0
-  -# {:style => "background-color: #F5F5F5;"}.
-  -# .navbar-brand
-    -# = link_to 'BEF-Data', root_path, class: "font-weight-bold text-muted"
   %button.navbar-toggler{"aria-controls" => "navigation_bar",
     "aria-expanded" => "false", "aria-label" => "Toggle navigation",
     "data-target" => "#navigation_bar", "data-toggle" => "collapse", :type => "button"}
@@ -114,17 +111,12 @@
           #submit_login_form.btn.btn-outline-primary
             Submit
 
-/ modal: when the submit button is clicked on the login form
+// scripts
+
+// submit the login form when submit button is clicked
 :javascript
   $(document).ready(function() {
     $('#submit_login_form').click(function () {
       $('.modal-form').find('input[type=submit]').click();
     });
   });
-
-// todo: Add some code which based on the current url set the correct tab to active
-// this is not working:
--# $(document).ready(function () {
--# console.log($('a[href="' + this.location.pathname + '"]'))
--# //$('a[href="' + this.location.pathname + '"]').parent().addClass('active');
--# });
