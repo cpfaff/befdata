@@ -90,23 +90,15 @@
                 .font-weight-bold.text-dark
                   Short:
                 - if category.short.blank?
-                  .font-weight-normal.text-dark
+                  .font-weight-normal.text-muted
                     No information available
                 - else
                   .font-weight-normal.text-dark
                     = category.short.truncate(250)
                 .font-weight-bold.text-dark
-                  Long:
-                - if category.long.blank?
-                  .font-weight-normal.text-dark
-                    No information available
-                - else
-                  .font-weight-normal.text-dark
-                    = category.long.truncate(250)
-                .font-weight-bold.text-dark
                   Description:
                 - if category.description.blank?
-                  .font-weight-normal.text-dark
+                  .font-weight-normal.text-muted
                     No information available
                 - else
                   .font-weight-normal.text-dark
