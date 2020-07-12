@@ -52,24 +52,25 @@ html, body {
   min-height: 100%;
 }
 
-// these two push the footer down the viewport. This however
-// breaks the stick top sidebar which is handy.
-// main content let footer free
-// #main {
-  // overflow:auto;
-  // padding-bottom:150px; 
-  // // [> this needs to be bigger than footer height<]
-// }
+// todo: these two push the footer down the viewport. This however
+// breaks the stick top sidebar which is handy. Make them work together
 
-// // // footer to bottom
-// #footer {
-  // position: relative;
-  // margin-top: -150px; 
-  // // [> negative value of footer height <]
-  // height: 150px;
-  // clear:both;
-  // padding-top:20px;
-// } 
+// main content let footer free
+#main {
+  overflow:auto;
+  padding-bottom:150px; 
+  // [> this needs to be bigger than footer height<]
+}
+
+// footer to bottom
+#footer {
+  position: relative;
+  margin-top: -150px; 
+  // [> negative value of footer height <]
+  height: 150px;
+  clear:both;
+  padding-top:20px;
+} 
 
 // the navigation bar 
 
@@ -203,6 +204,10 @@ hr.header-footer.separator-lightgray {
   }
 }
 
+// use masonry like arrangement for cards as card columns use css columns in
+// which the items cannot be sorted horizontally
+
+// masonry environment
 .masonry { 
   display: flex;
   flex-flow: row wrap;
@@ -210,6 +215,7 @@ hr.header-footer.separator-lightgray {
   width: 100%;
 }
 
+// masonry item
 .masonry-brick-triple {
   flex: auto;
   width: 32.5%;

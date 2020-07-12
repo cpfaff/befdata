@@ -24,7 +24,7 @@
       - sidebar_exists = content_for?(:actions)
     // pushes the footer down the viewport
     #wrap
-      // pushes the footer down the viewport (for now disabled in the application.css)
+      // pushes the footer down the viewport
       #main.container.clear-top
         .row
           .col-12
@@ -59,7 +59,7 @@
                       %span
                         = yield :actions
 
-    // pushes the footer down the viewport (for now disabled in the application.css)
+    // pushes the footer down the viewport
     %footer#footer
       .container.pt-3
         = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/foot"
