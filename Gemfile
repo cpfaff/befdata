@@ -61,7 +61,7 @@ gem 'bootstrap-select-rails', '~> 1.13.8'
 gem 'jquery-datatables', '~> 1.10.20'
 
 # font awesome
-gem 'font_awesome5_rails', '~> 1.0.0'
+gem 'font_awesome5_rails', '~> 1.2.0'
 
 # simple form
 gem 'simple_form', '~> 5.0.1'
