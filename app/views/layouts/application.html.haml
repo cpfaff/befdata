@@ -24,6 +24,7 @@
     .container
       #header.span-12
         #logo
+          = render :partial => "pages/#{LayoutHelper::BEF_LAYOUT}/logo"
         #search
           = render :partial => 'pages/search'
         #menu
