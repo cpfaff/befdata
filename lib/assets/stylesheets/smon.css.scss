@@ -6,7 +6,7 @@ ul.navlist li
 }
 
 #header div#logo {
-        background: image-url("header-logo-smon.png") top no-repeat;
+        background: url(assets-path('header-logo-smon.png')) top no-repeat;
         height: 148px;
         width: 928;
 }
