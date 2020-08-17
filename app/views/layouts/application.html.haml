@@ -21,6 +21,7 @@
     = csrf_meta_tags
   %body
     %header
+      = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/logo"
       - sidebar_exists = content_for?(:actions)
     // pushes the footer down the viewport
     #wrap
