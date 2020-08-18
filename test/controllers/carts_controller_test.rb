@@ -6,9 +6,9 @@ class CartsControllerTest < ActionController::TestCase
   setup :activate_authlogic
 
   test 'should show cart' do
-    login_nadrowski
+    login_admin
 
-    get :show
+    get :show, params: { }
     assert_success_no_error
   end
 end
