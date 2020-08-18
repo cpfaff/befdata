@@ -1,6 +1,13 @@
-%h2 BEFdata
+%h2
+  BEFdata
 
 %p
   Welcome to your very own instance of BEFdata. You can modify the content of
   this page. You can read up in the documentation in the GitHub wiki on how to
   do this.
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_root_path').find('.nav-item').addClass('active');
+  });

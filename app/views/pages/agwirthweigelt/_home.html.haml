@@ -25,3 +25,9 @@
     Feel free to browse the data and read into the metadata and get in contact
     with us if you are interested in a collaboration. You find the contact in the legal
     information.
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_root_path').find('.nav-item').addClass('active');
+  });

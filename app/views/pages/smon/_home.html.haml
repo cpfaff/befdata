@@ -1,12 +1,13 @@
-%h2 Welcome to the BEFdata portal.
+%h2
+  Welcome to the BEFdata portal.
 
 %p
-  The data portal is a data management tool set up for workshop projects. sMon
-  is a two-year Synthesis Project of the German Centre for Integrative
+  This data portal is a data management tool, set up for workshop projects.
+  sMon is a two-year Synthesis Project of the German Centre for Integrative
   Biodiversity Research (iDiv) Halle-Jena-Leipzig. We aim at combining and
   harmonizing exemplary datasets of different taxa and habitats and to evaluate
-  the potentials and limits for analysing changes in the state of biodiversity in
-  Germany. Based on these insights, we will derive perspective for future
+  the potentials and limits for analysing changes in the state of biodiversity
+  in Germany. Based on these insights, we will derive perspective for future
   biodiversity monitoring programs in Germany.
 
   This data portal has been set up to allow for an easy and comprehensive
@@ -14,3 +15,9 @@
   can be uploaded and exchanged during the workshops, but usage rights are
   restricted to registered persons and access to data will only be granted upon
   authorization by the dataset owner.
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_root_path').find('.nav-item').addClass('active');
+  });
