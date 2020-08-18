@@ -10,6 +10,7 @@
     - if with_customized_layout?
       = stylesheet_link_tag 'site', media: 'all', 'data-turbolinks-track' => true
       = javascript_include_tag 'site', 'data-turbolinks-track' => true
+    // note: the title can be changed in the configuration file
     %title
       = SITE_CONFIG[:title]
       - if content_for? :title
@@ -21,25 +22,24 @@
     = csrf_meta_tags
   %body
     %header
-      = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/logo"
       - sidebar_exists = content_for?(:actions)
-    // pushes the footer down the viewport
+    // note: this pushes the footer down the viewport
     #wrap
-      // pushes the footer down the viewport
+      // note: this pushes the footer down the viewport
       #main.container.clear-top
         .row
           .col-12
-            // a logo ih the header
-            -# = link_to image_tag('header-logo.png')
+            // head section e.g. for a logo
             = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/head"
         .row
           .col-12
             .pt-2
-              // main navigation bar
+              // the main navigation bar
               = render partial: 'pages/menu'
         .row
           .col-12
             .mt-3
+              // flash notices
               %span
                 #flash
                   - flash.each do |name, msg|
@@ -48,6 +48,7 @@
                         %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} ×
                         = content_tag :div, msg, :id => "flash_#{name}"
         .row
+          // the right hand sidebar
           %div{:class => sidebar_exists ? "col-lg-11 col-md-11 col-sm-10 order-1" : "col-12"}
             = content_for?(:content) ? yield(:content) : yield
 
@@ -60,7 +61,7 @@
                       %span
                         = yield :actions
 
-    // pushes the footer down the viewport
+    // note : this pushes the footer down the viewport
     %footer#footer
       .container.pt-3
         = render partial: "pages/#{LayoutHelper::BEF_LAYOUT}/foot"

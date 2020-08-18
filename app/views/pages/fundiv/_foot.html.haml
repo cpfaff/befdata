@@ -1,0 +1,23 @@
+/ foot
+
+// separator
+%p.head-separator
+  %hr.header-footer.separator-lightgray
+  %hr.header-footer.separator-lightgray
+  %hr.header-footer.separator-lightgray
+
+// content
+.navbar{:style => "background-color: #F5F5F5;"}
+  // height
+  - img_heigt = '60'
+  // links or linked images to funding agencies or other institutions
+  -# = link_to image_tag('logo_mlu.png', :height => img_heigt), "https://www.botanik.uni-halle.de/geobotanik"
+  = link_to "FunDivEUROPE", "http://www.fundiveurope.eu"
+  = link_to "European Union", "http://europa.eu/"
+  = link_to "Seventh Framework Programme", "https://ec.europa.eu/research/fp7/index_en.cfm"
+  // the help and imprint pages
+  .float-right
+    = link_to 'Help', help_path, target: '_blank', class: "d-inline font-weight-bold text-muted pr-1"
+    .text-muted.d-inline.font-weight-bold
+      |
+    = link_to 'Legals', legal_path, class: "d-inline font-weight-bold text-muted pl-1"

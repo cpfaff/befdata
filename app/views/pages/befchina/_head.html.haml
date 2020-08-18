@@ -4,12 +4,15 @@
 -# = link_to image_tag('header-logo.png')
 
 // BEF-China cooperate design
-%h2.font-weight-bold.text-nowrap
-  %font{color: "green"} BEF
-  %font{color: "gray"} Data
-  %font{color: "darkgray"} China
-// separator
-%p.head-separator
-  %hr.header-footer.separator-lightgray
-  %hr.header-footer.separator-darkgray
-  %hr.header-footer.separator-green
+-# %h2.font-weight-bold.text-nowrap
+  -# %font{color: "green"} BEF
+  -# %font{color: "gray"} Data
+  -# %font{color: "darkgray"} China
+-# // separator
+-# %p.head-separator
+  -# %hr.header-footer.separator-lightgray
+  -# %hr.header-footer.separator-darkgray
+  -# %hr.header-footer.separator-green
+
+.pt-3.pb-3
+  = image_tag 'header-logo.png', class: 'pull-right rounded mx-auto d-block img-fluid w-100'
