@@ -374,7 +374,7 @@
                 .font-weight-normal.text-dark
                   No information available
 
-              #filter_target_datasets_empty_note.d-none
+              #filter_target_freeformats_empty_note.d-none
                 No information avialable
 
 
@@ -509,22 +509,22 @@
     $('#filter_input_freeformats').keyup(function (){
       $('.card').removeClass('d-none');
         var filter = $(this).val(); // get the value of the input, which we filter on
-          $('#filter_target_datasets').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
-          if (!$("#filter_target_datasets").find('.card').is(':visible')) {
-            $("#filter_target_datasets_empty_note").removeClass('d-none');
+          $('#filter_target_freeformats').find('.card .card-body:not(:contains("'+filter+'"))').parent().addClass('d-none');
+          if (!$("#filter_target_freeformats").find('.card').is(':visible')) {
+            $("#filter_target_freeformats_empty_note").removeClass('d-none');
           } else {
-            $("#filter_target_datasets_empty_note").addClass('d-none');
+            $("#filter_target_freeformats_empty_note").addClass('d-none');
           };
       });
     });
 
   $(document).ready(function() {
-    $('#button_clear_datasets_filter').click(function(){
+    $('#button_clear_freeformats_filter').click(function(){
       $('#filter_input_freeformats').each(function(){
         $(this).val('');
       });
-      $('#filter_target_datasets').find('.card').removeClass('d-none');
-      $("#filter_target_datasets_empty_note").addClass('d-none');
+      $('#filter_target_freeformats').find('.card').removeClass('d-none');
+      $("#filter_target_freeformats_empty_note").addClass('d-none');
     });
   });
 
@@ -532,8 +532,8 @@
     $('.nav-link').click(function(){
       $('#filter_input_freeformats').each(function(){
         $(this).val('');
-        $('#filter_target_datasets').find('.card').removeClass('d-none');
-        $("#filter_target_datasets_empty_note").addClass('d-none');
+        $('#filter_target_freeformats').find('.card').removeClass('d-none');
+        $("#filter_target_freeformats_empty_note").addClass('d-none');
       });
     });
   });
