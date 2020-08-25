@@ -101,6 +101,11 @@ html, body {
  border-color: lightgray;
 }
 
+// removes the focus outline which messes up the search and clear search buttons
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
 
 // remove underlines on hover over links
 a:hover {
