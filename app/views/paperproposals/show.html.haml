@@ -377,6 +377,25 @@
               #filter_target_freeformats_empty_note.d-none
                 No information avialable
 
+/ modals
+
+/ modals
+
+// delete dataset modal
+#delete_proposal.modal.fade
+  .modal-dialog.modal-dialog-centered
+    .modal-content
+      / Modal Header
+      .modal-header
+        %h4.modal-title Delete
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+      / Modal body
+      .modal-body
+        Do you really want to delete the dataset?
+      / Modal footer
+      .modal-footer
+        %button.btn.btn-outline-primary{"data-dismiss" => "modal", :type => "button"} Cancel
+        = link_to 'Delete', safe_delete_paperproposal_path(@paperproposal), method: :delete, class: 'btn btn-outline-primary'
 
 // add new freeformat file
 #new_freeformat_file.modal.fade
