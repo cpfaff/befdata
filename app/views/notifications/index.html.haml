@@ -31,7 +31,7 @@
               %br
               -# - @notifications.sort_by { |item| item.read? ? 1 : 0 }.each do |notification|
               - @notifications.where(read: false).each do |notification|
-                - read_string = notification.read ? 'read' : 'unread'
+                - read_string = notification.read ? 'mark as unread' : 'mark as read'
                 .card.shadow-sm.mb-4
                   .card-header
                     .font-weight-bold.text-muted
@@ -41,6 +41,16 @@
                   .card-body
                     %p.card-text
                       = notification.message.html_safe
+
+                    .pt-2.pb-3
+                      .float-left
+                        .badge.badge-pill.badge-light.m-1
+                          .p-1
+                            - if notification.created_at
+                              = fa_icon('calendar')
+                              Created at:
+                              = notification.created_at.strftime("%F")
+
                   .card-footer.text-right
                     - if notification.read
                       = link_to "<i class='fas fa-eye-slash'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
@@ -88,6 +98,16 @@
                   .card-body
                     %p.card-text
                       = notification.message.html_safe
+
+                    .pt-2.pb-3
+                      .float-left
+                        .badge.badge-pill.badge-light.m-1
+                          .p-1
+                            - if notification.created_at
+                              = fa_icon('calendar')
+                              Created at:
+                              = notification.created_at.strftime("%F")
+
                   .card-footer.text-right
                     - if notification.read
                       = link_to "<i class='fas fa-eye-slash'></i> ".html_safe, mark_as_read_notification_url(notification, read: !notification.read),
