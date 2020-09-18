@@ -1,0 +1,42 @@
+// body
+.div.pl-1.pr-1.pt-2
+  %h3
+    Welcome
+
+  %p
+    .pb-4
+      .text-justify
+
+        Welcome to the data mangement portal of the department of geobotany!
+        Our field of interest is geobotany in general: Which factors drive the
+        occurrence and abundance of plant species? We try to solve this riddle
+        combining several research fields, ranging from community ecology,
+        biogeography and invasion biology to ecophysiology. We are also
+        interested in the effects of plants: How do plants and how does plant
+        diversity affect ecosystem functioning in different ecosystems in the
+        world?
+
+        -# This is the data management portal of the working group Wirth/Weigelt:
+        -# "Systematic Botany and Functional Biodiversity" at the University of Leipzig.
+        -# This portal hosts all of the
+        -# -# = link_to "working group's", "https://biologie.lw.uni-leipzig.de/en/institut/ag/systematic-botany-and-functional-biodiversity/"
+        -# collected data across a wide variety of
+        -# = link_to "projects.", "https://biologie.lw.uni-leipzig.de/en/institut/ag/systematic-botany-and-functional-biodiversity/research/"
+  %p
+    .pb-4
+      = image_tag 'group_bruelheide.jpg', class: 'rounded mx-auto d-block border img-fluid shadow-lg'
+
+  %p
+
+    The data portal contains documentation of student works from bachelor to
+    doctoral degree, serves as backup solution for our data, but also makes the
+    collected data in our group available to other researchers and a wider
+    interested public for higher transparency. Feel free to browse the data and
+    read into the metadata and get in contact with us if you are interested in
+    a collaboration. You find the contact in the legal information.
+
+// activate the correct main navigation link
+:javascript
+  $(document).ready(function() {
+    $('#navigation_root_path').find('.nav-item').addClass('active');
+  });

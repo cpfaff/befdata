@@ -15,7 +15,11 @@
 // variables:
 
 // bootstrap
-$primary:       darkgreen !default;
+// $primary:       darkgreen !default;
+
+// halle university
+$primary:       #6c8834 !default;
+
 
 // import modules
 
@@ -155,6 +159,18 @@ hr.header-footer.separator-darkgray {
 // horizotal line header and footer lightgray 
 hr.header-footer.separator-lightgray {
   border: 2px solid lightgray;
+  border-radius: 5px;
+}
+
+// halle university colors
+hr.header-footer.separator-halle-green {
+  border: 2px solid #9BC34B;
+  border-radius: 5px;
+}
+
+// horizotal line header and footer lightgray 
+hr.header-footer.separator-halle-blue {
+  border: 2px solid #2D7AAB;
   border-radius: 5px;
 }
 
