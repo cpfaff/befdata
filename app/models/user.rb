@@ -19,7 +19,7 @@ class User < ApplicationRecord
   # related paperproposals. Roles include: proponent, main aspect dataset
   # owner, side aspect dataset owner, acknowledged.
   has_many :author_paperproposals,
-           -> { includes :paperproposals },
+           -> { includes :paperproposal },
            dependent: :destroy
 
   has_many :paperproposals_author_table,
