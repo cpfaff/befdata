@@ -127,7 +127,7 @@ group :development do
   gem 'puma', '~> 4.3.0'
 
   # gem 'debugger'
-  gem 'better_errors', '~> 2.5.1'
+  gem 'better_errors', '~> 2.9.1'
 
   # retrieve the binding of a method's caller
   gem 'binding_of_caller', '~> 0.8.0'
