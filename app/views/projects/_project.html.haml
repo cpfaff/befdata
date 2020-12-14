@@ -4,7 +4,7 @@
     .card-body
       %h4.card-title
         = project.shortname += ":"
-        = project.name
+        = project.name.truncate(80)
       %p.card-text
         .font-weight-bold.text-dark
           Description:

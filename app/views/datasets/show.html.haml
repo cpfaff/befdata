@@ -772,6 +772,7 @@
 :javascript
   $(document).ready(function() {
     $('#submit_new_freeformat_file_form').click(function () {
+      $(this).prop("disabled", true);
       $(this).closest('.modal-dialog').find('input[type=submit]').click();
     });
   });
