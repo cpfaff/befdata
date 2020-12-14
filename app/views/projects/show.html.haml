@@ -104,7 +104,7 @@
       - if current_user
         - unless @project.users.empty?
           .div.pt-2
-            %span{'data-toggle': 'tooltip', title: 'Email users', 'data-placement': 'auto'}
+            %span{'data-toggle': 'tooltip', title: 'Contact', 'data-placement': 'auto'}
               = link_to "<i class='fas fa-envelope'></i>".html_safe, "#",
                 { class: "btn btn-sm btn-block btn-outline-light text-success",
                 'data-toggle': "modal",
@@ -129,7 +129,7 @@
           %li.nav-item
             %a.active.nav-link.active{"data-toggle" => "tab", :href => "#project_tab_metadata", :role => "tab"} Metadata
           %li.nav-item
-            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_users", :role => "tab"} Users
+            %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_users", :role => "tab"} People
           %li.nav-item
             %a.nav-link{"data-toggle" => "tab", :href => "#project_tab_datasets", :role => "tab"} Datasets
           %li.nav-item
