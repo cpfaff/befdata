@@ -26,7 +26,7 @@ gem 'acl9', '~> 3.0'
 gem 'paperclip', '~> 6.1.0'
 
 # tag a single model on several contexts
-gem 'acts-as-taggable-on', '~> 5.0.0'
+gem 'acts-as-taggable-on', '~> 7.0.0'
 
 # read and write spreadsheet documents
 gem 'spreadsheet', '~> 1.2.5'
