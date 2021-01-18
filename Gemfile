@@ -147,7 +147,7 @@ group :development do
   gem 'bullet'
 
   # listen gem to detect on code changes
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'listen', '>= 3.0.5', '< 3.5'
 
   # bundle exec rake doc:rails
   # generates the API under doc/api.
