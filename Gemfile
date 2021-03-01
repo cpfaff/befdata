@@ -151,6 +151,6 @@ group :development do
 
   # bundle exec rake doc:rails
   # generates the API under doc/api.
-  gem 'sdoc', '~> 0.4.0'
+  gem 'sdoc', '~> 2.0.4'
 end
 
