@@ -79,7 +79,7 @@ gem 'jquery-ui-rails', '~> 6.0.0'
 gem 'turbolinks', '~> 5.2.1'
 
 # pagination
-gem 'pagy', '~> 3.7'
+gem 'pagy', '~> 3.12'
 
 # coffee script adapter
 gem 'coffee-rails', '~> 4.1.0'
